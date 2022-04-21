@@ -4,79 +4,151 @@
 <a href=https://60ke.github.io/archives/ title=归档>归档</a>
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>彻底搞懂gcc</h1></header><date class="post-meta meta-date">2021年10月29日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
 阅读</span></span></div><div class=post-content><p>最近又遇到gcc编译参数的问题了，之前因为拷贝博客md后删除了博客仓库，导致之前使用评论的笔记全部丢失了(还是用md靠谱啊)，再次重新记录说明一下。</p><p>上代码:
-a.out</p><pre tabindex=0><code>gcc test.c -L/lib64 -ldtcsp -ldtrtl -lskf -Wl,-rpath /lib64/
-root@user:/home/user/liurs-test# readelf -d a.out 
-
-Dynamic section at offset 0x2de0 contains 28 entries:
-  标记        类型                         名称/值
- 0x0000000000000001 (NEEDED)             共享库：[libdtcsp.so]
- 0x0000000000000001 (NEEDED)             共享库：[libdtrtl.so]
- 0x0000000000000001 (NEEDED)             共享库：[libskf.so]
- 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]
- 0x000000000000001d (RUNPATH)            Library runpath: [/lib64/]
- 0x000000000000000c (INIT)               0x401000
- 0x000000000000000d (FINI)               0x4011c4
- 0x0000000000000019 (INIT_ARRAY)         0x403dd0
- 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)
- 0x000000000000001a (FINI_ARRAY)         0x403dd8
- 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)
- 0x000000006ffffef5 (GNU_HASH)           0x400308
- 0x0000000000000005 (STRTAB)             0x4003a0
- 0x0000000000000006 (SYMTAB)             0x400328
- 0x000000000000000a (STRSZ)              127 (bytes)
- 0x000000000000000b (SYMENT)             24 (bytes)
- 0x0000000000000015 (DEBUG)              0x0
- 0x0000000000000003 (PLTGOT)             0x404000
- 0x0000000000000002 (PLTRELSZ)           48 (bytes)
- 0x0000000000000014 (PLTREL)             RELA
- 0x0000000000000017 (JMPREL)             0x400480
- 0x0000000000000007 (RELA)               0x400450
- 0x0000000000000008 (RELASZ)             48 (bytes)
- 0x0000000000000009 (RELAENT)            24 (bytes)
- 0x000000006ffffffe (VERNEED)            0x400430
- 0x000000006fffffff (VERNEEDNUM)         1
- 0x000000006ffffff0 (VERSYM)             0x400420
- 0x0000000000000000 (NULL)               0x0
-</code></pre><p>a.out1</p><pre tabindex=0><code>gcc test.c -L/lib64 -ldtcsp -Wl,-rpath /lib64/ -o a.out1
-root@user:/home/user/liurs-test# ls -al
--rwxr-xr-x  1 root root 16464 10月 29 10:36 a.out
--rwxr-xr-x  1 root root 16464 10月 29 10:36 a.out1
-
-068c56db4735486831000b6076e12e3c31fec90c1cbfd99ee7eacd41a54bfbe9  a.out
-
-ecf8902d32de250bb78a43e1801dbad979f21b3faa9d9688f663c7b953c49e2d  a.out1
-
-root@user:/home/user/liurs-test# readelf -d a.out1
-
-Dynamic section at offset 0x2e00 contains 26 entries:
-  标记        类型                         名称/值
- 0x0000000000000001 (NEEDED)             共享库：[libdtcsp.so]
- 0x0000000000000001 (NEEDED)             共享库：[libc.so.6]
- 0x000000000000001d (RUNPATH)            Library runpath: [/lib64/]
- 0x000000000000000c (INIT)               0x401000
- 0x000000000000000d (FINI)               0x4011c4
- 0x0000000000000019 (INIT_ARRAY)         0x403df0
- 0x000000000000001b (INIT_ARRAYSZ)       8 (bytes)
- 0x000000000000001a (FINI_ARRAY)         0x403df8
- 0x000000000000001c (FINI_ARRAYSZ)       8 (bytes)
- 0x000000006ffffef5 (GNU_HASH)           0x400308
- 0x0000000000000005 (STRTAB)             0x4003a0
- 0x0000000000000006 (SYMTAB)             0x400328
- 0x000000000000000a (STRSZ)              105 (bytes)
- 0x000000000000000b (SYMENT)             24 (bytes)
- 0x0000000000000015 (DEBUG)              0x0
- 0x0000000000000003 (PLTGOT)             0x404000
- 0x0000000000000002 (PLTRELSZ)           48 (bytes)
- 0x0000000000000014 (PLTREL)             RELA
- 0x0000000000000017 (JMPREL)             0x400468
- 0x0000000000000007 (RELA)               0x400438
- 0x0000000000000008 (RELASZ)             48 (bytes)
- 0x0000000000000009 (RELAENT)            24 (bytes)
- 0x000000006ffffffe (VERNEED)            0x400418
- 0x000000006fffffff (VERNEEDNUM)         1
- 0x000000006ffffff0 (VERSYM)             0x40040a
- 0x0000000000000000 (NULL)               0x0
-</code></pre></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/about/>关于我</a></li><li><a href=/archives/>归档</a></li><li><a href=/search/>搜索</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/gcc>gcc</a></li><li><a href=/tags/linux>linux</a></li><li><a href=/tags/c>c</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+a.out</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>gcc test.c -L/lib64 -ldtcsp -ldtrtl -lskf -Wl,-rpath /lib64/
+</span></span><span style=display:flex><span>root@user:/home/user/liurs-test# readelf -d a.out 
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Dynamic section at offset 0x2de0 contains <span style=color:#ae81ff>28</span> entries:
+</span></span><span style=display:flex><span>  标记        类型                         名称/值
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libdtcsp.so<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libdtrtl.so<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libskf.so<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libc.so.6<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x000000000000001d <span style=color:#f92672>(</span>RUNPATH<span style=color:#f92672>)</span>            Library runpath: <span style=color:#f92672>[</span>/lib64/<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x000000000000000c <span style=color:#f92672>(</span>INIT<span style=color:#f92672>)</span>               0x401000
+</span></span><span style=display:flex><span> 0x000000000000000d <span style=color:#f92672>(</span>FINI<span style=color:#f92672>)</span>               0x4011c4
+</span></span><span style=display:flex><span> 0x0000000000000019 <span style=color:#f92672>(</span>INIT_ARRAY<span style=color:#f92672>)</span>         0x403dd0
+</span></span><span style=display:flex><span> 0x000000000000001b <span style=color:#f92672>(</span>INIT_ARRAYSZ<span style=color:#f92672>)</span>       <span style=color:#ae81ff>8</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000000000001a <span style=color:#f92672>(</span>FINI_ARRAY<span style=color:#f92672>)</span>         0x403dd8
+</span></span><span style=display:flex><span> 0x000000000000001c <span style=color:#f92672>(</span>FINI_ARRAYSZ<span style=color:#f92672>)</span>       <span style=color:#ae81ff>8</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000006ffffef5 <span style=color:#f92672>(</span>GNU_HASH<span style=color:#f92672>)</span>           0x400308
+</span></span><span style=display:flex><span> 0x0000000000000005 <span style=color:#f92672>(</span>STRTAB<span style=color:#f92672>)</span>             0x4003a0
+</span></span><span style=display:flex><span> 0x0000000000000006 <span style=color:#f92672>(</span>SYMTAB<span style=color:#f92672>)</span>             0x400328
+</span></span><span style=display:flex><span> 0x000000000000000a <span style=color:#f92672>(</span>STRSZ<span style=color:#f92672>)</span>              <span style=color:#ae81ff>127</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000000000000b <span style=color:#f92672>(</span>SYMENT<span style=color:#f92672>)</span>             <span style=color:#ae81ff>24</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000015 <span style=color:#f92672>(</span>DEBUG<span style=color:#f92672>)</span>              0x0
+</span></span><span style=display:flex><span> 0x0000000000000003 <span style=color:#f92672>(</span>PLTGOT<span style=color:#f92672>)</span>             0x404000
+</span></span><span style=display:flex><span> 0x0000000000000002 <span style=color:#f92672>(</span>PLTRELSZ<span style=color:#f92672>)</span>           <span style=color:#ae81ff>48</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000014 <span style=color:#f92672>(</span>PLTREL<span style=color:#f92672>)</span>             RELA
+</span></span><span style=display:flex><span> 0x0000000000000017 <span style=color:#f92672>(</span>JMPREL<span style=color:#f92672>)</span>             0x400480
+</span></span><span style=display:flex><span> 0x0000000000000007 <span style=color:#f92672>(</span>RELA<span style=color:#f92672>)</span>               0x400450
+</span></span><span style=display:flex><span> 0x0000000000000008 <span style=color:#f92672>(</span>RELASZ<span style=color:#f92672>)</span>             <span style=color:#ae81ff>48</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000009 <span style=color:#f92672>(</span>RELAENT<span style=color:#f92672>)</span>            <span style=color:#ae81ff>24</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000006ffffffe <span style=color:#f92672>(</span>VERNEED<span style=color:#f92672>)</span>            0x400430
+</span></span><span style=display:flex><span> 0x000000006fffffff <span style=color:#f92672>(</span>VERNEEDNUM<span style=color:#f92672>)</span>         <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span> 0x000000006ffffff0 <span style=color:#f92672>(</span>VERSYM<span style=color:#f92672>)</span>             0x400420
+</span></span><span style=display:flex><span> 0x0000000000000000 <span style=color:#f92672>(</span>NULL<span style=color:#f92672>)</span>               0x0
+</span></span></code></pre></td></tr></table></div></div><p>a.out1</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>gcc test.c -L/lib64 -ldtcsp -Wl,-rpath /lib64/ -o a.out1
+</span></span><span style=display:flex><span>root@user:/home/user/liurs-test# ls -al
+</span></span><span style=display:flex><span>-rwxr-xr-x  <span style=color:#ae81ff>1</span> root root <span style=color:#ae81ff>16464</span> 10月 <span style=color:#ae81ff>29</span> 10:36 a.out
+</span></span><span style=display:flex><span>-rwxr-xr-x  <span style=color:#ae81ff>1</span> root root <span style=color:#ae81ff>16464</span> 10月 <span style=color:#ae81ff>29</span> 10:36 a.out1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>068c56db4735486831000b6076e12e3c31fec90c1cbfd99ee7eacd41a54bfbe9  a.out
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>ecf8902d32de250bb78a43e1801dbad979f21b3faa9d9688f663c7b953c49e2d  a.out1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>root@user:/home/user/liurs-test# readelf -d a.out1
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>Dynamic section at offset 0x2e00 contains <span style=color:#ae81ff>26</span> entries:
+</span></span><span style=display:flex><span>  标记        类型                         名称/值
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libdtcsp.so<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x0000000000000001 <span style=color:#f92672>(</span>NEEDED<span style=color:#f92672>)</span>             共享库：<span style=color:#f92672>[</span>libc.so.6<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x000000000000001d <span style=color:#f92672>(</span>RUNPATH<span style=color:#f92672>)</span>            Library runpath: <span style=color:#f92672>[</span>/lib64/<span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span> 0x000000000000000c <span style=color:#f92672>(</span>INIT<span style=color:#f92672>)</span>               0x401000
+</span></span><span style=display:flex><span> 0x000000000000000d <span style=color:#f92672>(</span>FINI<span style=color:#f92672>)</span>               0x4011c4
+</span></span><span style=display:flex><span> 0x0000000000000019 <span style=color:#f92672>(</span>INIT_ARRAY<span style=color:#f92672>)</span>         0x403df0
+</span></span><span style=display:flex><span> 0x000000000000001b <span style=color:#f92672>(</span>INIT_ARRAYSZ<span style=color:#f92672>)</span>       <span style=color:#ae81ff>8</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000000000001a <span style=color:#f92672>(</span>FINI_ARRAY<span style=color:#f92672>)</span>         0x403df8
+</span></span><span style=display:flex><span> 0x000000000000001c <span style=color:#f92672>(</span>FINI_ARRAYSZ<span style=color:#f92672>)</span>       <span style=color:#ae81ff>8</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000006ffffef5 <span style=color:#f92672>(</span>GNU_HASH<span style=color:#f92672>)</span>           0x400308
+</span></span><span style=display:flex><span> 0x0000000000000005 <span style=color:#f92672>(</span>STRTAB<span style=color:#f92672>)</span>             0x4003a0
+</span></span><span style=display:flex><span> 0x0000000000000006 <span style=color:#f92672>(</span>SYMTAB<span style=color:#f92672>)</span>             0x400328
+</span></span><span style=display:flex><span> 0x000000000000000a <span style=color:#f92672>(</span>STRSZ<span style=color:#f92672>)</span>              <span style=color:#ae81ff>105</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000000000000b <span style=color:#f92672>(</span>SYMENT<span style=color:#f92672>)</span>             <span style=color:#ae81ff>24</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000015 <span style=color:#f92672>(</span>DEBUG<span style=color:#f92672>)</span>              0x0
+</span></span><span style=display:flex><span> 0x0000000000000003 <span style=color:#f92672>(</span>PLTGOT<span style=color:#f92672>)</span>             0x404000
+</span></span><span style=display:flex><span> 0x0000000000000002 <span style=color:#f92672>(</span>PLTRELSZ<span style=color:#f92672>)</span>           <span style=color:#ae81ff>48</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000014 <span style=color:#f92672>(</span>PLTREL<span style=color:#f92672>)</span>             RELA
+</span></span><span style=display:flex><span> 0x0000000000000017 <span style=color:#f92672>(</span>JMPREL<span style=color:#f92672>)</span>             0x400468
+</span></span><span style=display:flex><span> 0x0000000000000007 <span style=color:#f92672>(</span>RELA<span style=color:#f92672>)</span>               0x400438
+</span></span><span style=display:flex><span> 0x0000000000000008 <span style=color:#f92672>(</span>RELASZ<span style=color:#f92672>)</span>             <span style=color:#ae81ff>48</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x0000000000000009 <span style=color:#f92672>(</span>RELAENT<span style=color:#f92672>)</span>            <span style=color:#ae81ff>24</span> <span style=color:#f92672>(</span>bytes<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span> 0x000000006ffffffe <span style=color:#f92672>(</span>VERNEED<span style=color:#f92672>)</span>            0x400418
+</span></span><span style=display:flex><span> 0x000000006fffffff <span style=color:#f92672>(</span>VERNEEDNUM<span style=color:#f92672>)</span>         <span style=color:#ae81ff>1</span>
+</span></span><span style=display:flex><span> 0x000000006ffffff0 <span style=color:#f92672>(</span>VERSYM<span style=color:#f92672>)</span>             0x40040a
+</span></span><span style=display:flex><span> 0x0000000000000000 <span style=color:#f92672>(</span>NULL<span style=color:#f92672>)</span>               0x0
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/about/>关于我</a></li><li><a href=/archives/>归档</a></li><li><a href=/search/>搜索</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/gcc>gcc</a></li><li><a href=/tags/linux>linux</a></li><li><a href=/tags/c>c</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
 <script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
