@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>default on LookForAdmin的博客</title><link>https://60ke.github.io/categories/default/</link><description>Recent content in default on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 02 Apr 2019 07:46:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/default/index.xml" rel="self" type="application/rss+xml"/><item><title>python中文文档阅读笔记</title><link>https://60ke.github.io/drafts/python%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</link><pubDate>Tue, 02 Apr 2019 07:46:00 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E4%B8%AD%E6%96%87%E6%96%87%E6%A1%A3%E9%98%85%E8%AF%BB%E7%AC%94%E8%AE%B0/</guid><description>当在序列中循环时,用 enumerate() 函数可以将索引位置和其对应的值同时取出 1 2 3 4 5 6 7 &amp;gt;&amp;gt;&amp;gt; &amp;gt;&amp;gt;&amp;gt; for i, v in enumerate([&amp;#39;tic&amp;#39;, &amp;#39;tac&amp;#39;, &amp;#39;toe&amp;#39;]): ... print(i, v) ... 0 tic 1 tac 2 toe 5.1.2. 列表作为队列使用¶ 列表也可以用作队列,其中先添加的元素被最先取出 (“先进先出”)；然而列表用作这个目的相当低效。因为在列表的末尾添加和弹出元素非常快,但是在列表的开头</description></item><item><title>deepin 使用</title><link>https://60ke.github.io/drafts/deepin-%E4%BD%BF%E7%94%A8/</link><pubDate>Wed, 18 Jul 2018 07:58:26 +0000</pubDate><guid>https://60ke.github.io/drafts/deepin-%E4%BD%BF%E7%94%A8/</guid><description>Ubuntu下的文件管理器为 nautilus deepin的是 dde-file-manager</description></item><item><title>python fromat保留｛｝</title><link>https://60ke.github.io/drafts/python-fromat%E4%BF%9D%E7%95%99/</link><pubDate>Fri, 13 Jul 2018 03:41:14 +0000</pubDate><guid>https://60ke.github.io/drafts/python-fromat%E4%BF%9D%E7%95%99/</guid><description>今天写程序执行 1 2 cmd = &amp;#34;ps -ef|grep {}|awk \&amp;#39;{print $2}\&amp;#39;|xargs kill -9&amp;#34; cmd.format(11) 结果报错： 1 2 3 Traceback (most recent call last): File &amp;#34;&amp;lt;stdin&amp;gt;&amp;#34;, line 1, in &amp;lt;module&amp;gt; KeyError: &amp;#39;print $2&amp;#39; 正确的写法： 1 2 cmd = &amp;#34;ps -ef|grep {}|awk \&amp;#39;{{print $2}}\&amp;#39;|xargs kill -9&amp;#34; cmd.format(11)</description></item><item><title>gitlab与github共存</title><link>https://60ke.github.io/drafts/gitlab%E4%B8%8Egithub%E5%85%B1%E5%AD%98/</link><pubDate>Thu, 05 Jul 2018 10:02:20 +0000</pubDate><guid>https://60ke.github.io/drafts/gitlab%E4%B8%8Egithub%E5%85%B1%E5%AD%98/</guid><description>gitlab与github共存 生成公私匙 ssh-keygen -t rsa -C &amp;quot;邮箱地址&amp;quot; 因为生成的时候有个默认的名字,所以注意修改名字使其共存 添加公匙 登录gitlab或者github,添加公匙 在.ssh文件下配置config（重点！！！） vim config Host git.goldeneye.org.cn HostName git.goldeneye.org.cn User git IdentityFile /c/Users/i5051/.ssh/gitlab Host github.com HostName github.com User git IdentityFile /c/Users/i5051/.ssh/github</description></item><item><title>python操作word</title><link>https://60ke.github.io/drafts/python%E6%93%8D%E4%BD%9Cword/</link><pubDate>Mon, 26 Feb 2018 09:21:51 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E6%93%8D%E4%BD%9Cword/</guid><description>使用python-docx生成Word文档 首先安装python-docx： pip install python-docx 例子： from docx import Document from docx.shared import Pt from docx.oxml.ns import qn from docx.shared import Inches #打开文档 document = Document() #加入不同等级的标题 document.add_heading('Document Title',0) document.add_heading(u'二级标题',1) document.add_heading(u'二级标题',2</description></item><item><title>sublime sftp 插件安装及破解</title><link>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</link><pubDate>Wed, 29 Nov 2017 03:17:00 +0000</pubDate><guid>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</guid><description>每次装完系统都需要重新安装配置sublime+python的环境,这次写个文章记一下。 1.python配置 在![](http://ww1.sinaimg.cn/large/6cf740f6ly1flyr6qgoj1j211y0lcjv9.jpg这里可以创建新的环境配置 linux(</description></item><item><title>pymysql</title><link>https://60ke.github.io/drafts/pymysql/</link><pubDate>Fri, 15 Sep 2017 10:46:51 +0000</pubDate><guid>https://60ke.github.io/drafts/pymysql/</guid><description>import os
+import json
+import codecs
+import pymysql
+import re
+jsondir = os.getcwd() + &amp;quot;/all&amp;quot;
+# print(os.walk(jsondir))
+jsonnames = []
+for dirs in os.walk(jsondir):
+jsonnames = dirs[2]
+conn = pymysql.connect(
+user = 'root',
+password = '529966',
+host = 'localhost',
+port = 3306,
+database = 'ceve',
+use_unicode=True,
+charset = 'utf8'
+)
+cursor = conn.cursor()
+for jsonname in jsonnames:
+f = codecs.open(jsondir+'/'+jsonname,'r',encoding='utf-8')
+data = json.load(f,encoding=&amp;quot;utf-8&amp;quot;)
+# print(data)
+# import pdb
+# pdb.set_trace()
+ceve_id = data['vid']
+name = data['vid']
+try:
+pub_date = data['published-datetime']
+pub_date = re.findall(&amp;quot;(.+?)T&amp;quot;,pub_date)[0]
+except:
+pub_date = &amp;quot;null&amp;quot;
+try:
+description =data['description']
+description = cursor.connection.escape(description)
+except:
+description = &amp;quot;null&amp;quot;
+# print(type(data['vuln_cvss']))
+try:
+cvss_score = data['vuln_cvss']['cvss_score']
+cvss_score = cursor.connection.escape(cvss_score)
+except:
+cvss_score = &amp;quot;null&amp;quot;
+try:
+cvss_confidentiality_impact = data['vuln_cvss'][&amp;quot;cvss_confidentiality-impact&amp;quot;]
+cvss_confidentiality_impact = cursor.connection.escape(cvss_confidentiality_impact)
+except:
+cvss_confidentiality_impact = &amp;quot;null&amp;quot;
+try:
+cvss_integrity_impact = data['vuln_cvss'][&amp;quot;cvss_integrity-impact&amp;quot;]
+cvss_integrity_impact = cursor.connection.escape(cvss_integrity_impact)
+except:
+cvss_integrity_impact = &amp;quot;null&amp;quot;
+try:
+cvss_availability_impact = data['vuln_cvss'][&amp;quot;cvss_availability-impact&amp;quot;]
+cvss_availability_impact = cursor.connection.escape(cvss_availability_impact)
+except:
+cvss_availability_impact = &amp;quot;null&amp;quot;
+try:
+cvss_access_complexity = data['vuln_cvss'][&amp;quot;cvss_access-complexity&amp;quot;]
+cvss_access_complexity = cursor.</description></item><item><title>caogao</title><link>https://60ke.github.io/drafts/caogao/</link><pubDate>Wed, 06 Sep 2017 06:46:00 +0000</pubDate><guid>https://60ke.github.io/drafts/caogao/</guid><description>python 爬虫 1.获取网页内容 1.1不包含js代码网页 对于静态网站,我们可以使用urllib,urllib2,requests,来获取网页的源代码；获取到的源代码,一般与我们在浏览器右键查看网页源代码看到的内容一致 免登录,构造post的爬虫 CNVD 1.2包含js代码网页 通过前端的js代码生成g</description></item><item><title>django框架博客开发-3</title><link>https://60ke.github.io/drafts/django%E6%A1%86%E6%9E%B6%E5%8D%9A%E5%AE%A2%E5%BC%80%E5%8F%91-3/</link><pubDate>Mon, 10 Apr 2017 09:18:20 +0000</pubDate><guid>https://60ke.github.io/drafts/django%E6%A1%86%E6%9E%B6%E5%8D%9A%E5%AE%A2%E5%BC%80%E5%8F%91-3/</guid><description>&lt;h2 id="创建应用">创建应用&lt;/h2>
+&lt;ul>
+&lt;li>进入manage.py同级目录&lt;/li>
+&lt;li>命令行输入 python manage.py startapp blog&lt;/li>
+&lt;li>添加应用名到settings.py中的INATALLED_APPS里&lt;/li>
+&lt;/ul></description></item><item><title>在github上搭建自己的博客</title><link>https://60ke.github.io/drafts/%E5%9C%A8github%E4%B8%8A%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</link><pubDate>Wed, 14 Dec 2016 19:08:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E5%9C%A8github%E4%B8%8A%E6%90%AD%E5%BB%BA%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/</guid><description/></item><item><title>服务器搬回国内了</title><link>https://60ke.github.io/drafts/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AC%E5%9B%9E%E5%9B%BD%E5%86%85%E4%BA%86/</link><pubDate>Tue, 13 Dec 2016 17:37:15 +0000</pubDate><guid>https://60ke.github.io/drafts/%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%90%AC%E5%9B%9E%E5%9B%BD%E5%86%85%E4%BA%86/</guid><description>网站备案通过了放回国内</description></item></channel></rss>

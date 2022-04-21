@@ -1,0 +1,189 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>从typecho迁移到hexo | LookForAdmin的博客</title><meta property="og:title" content="从typecho迁移到hexo - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2019-05-31T11:14:21+08:00"><meta property="article:modified_time" content="2019-05-31T11:14:21+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="从typecho迁移到hexo"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/%E4%BB%8Etypecho%E8%BF%81%E7%A7%BB%E5%88%B0hexo/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>从typecho迁移到hexo</h1></header><date class="post-meta meta-date">2019年5月31日</date><div class=post-meta><span>|</span>
+<span class=meta-category><a href=/categories/MySQL>MySQL</a></span></div><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
+阅读</span></span></div><div class=post-content><p>vps翻墙用的也不多而且延迟比较高,以前总是因为typecho上的博客所以一直断断续续的在用,现在把typecho的博客在mysql中的文章导出为markdown格式从而迁移到hexo。</p><p>下面是代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#75715e># -*- coding: utf-8 -*-</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> codecs
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> os
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> torndb
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> arrow
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> sys
+</span></span><span style=display:flex><span>reload(sys)
+</span></span><span style=display:flex><span>sys<span style=color:#f92672>.</span>setdefaultencoding(<span style=color:#e6db74>&#39;utf-8&#39;</span>)
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>create_data</span>(db):
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 创建分类和标签</span>
+</span></span><span style=display:flex><span>    categories <span style=color:#f92672>=</span> db<span style=color:#f92672>.</span>query(<span style=color:#e6db74>&#34;select type, slug, name from typecho_metas&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> cate <span style=color:#f92672>in</span> categories:
+</span></span><span style=display:flex><span>        path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;data/</span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#39;</span> <span style=color:#f92672>%</span> cate<span style=color:#f92672>.</span>slug
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> os<span style=color:#f92672>.</span>path<span style=color:#f92672>.</span>exists(path):
+</span></span><span style=display:flex><span>            os<span style=color:#f92672>.</span>makedirs(path)
+</span></span><span style=display:flex><span>        f <span style=color:#f92672>=</span> codecs<span style=color:#f92672>.</span>open(<span style=color:#e6db74>&#39;</span><span style=color:#e6db74>%s</span><span style=color:#e6db74>/index.md&#39;</span> <span style=color:#f92672>%</span> path, <span style=color:#e6db74>&#39;w&#39;</span>, <span style=color:#e6db74>&#34;utf-8&#34;</span>)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;title: </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> cate<span style=color:#f92672>.</span>slug)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;date: </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> arrow<span style=color:#f92672>.</span>now()<span style=color:#f92672>.</span>format(<span style=color:#e6db74>&#39;YYYY-MM-DD HH:mm:ss&#39;</span>))
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 区分分类和标签</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> cate<span style=color:#f92672>.</span>type <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;category&#39;</span>:
+</span></span><span style=display:flex><span>            f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#39;type: &#34;categories&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>elif</span> cate<span style=color:#f92672>.</span>type <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;tags&#39;</span>:
+</span></span><span style=display:flex><span>            f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#39;type: &#34;tags&#34;</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#39;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 禁止评论</span>
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;comments: true</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;---</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>close()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 创建文章</span>
+</span></span><span style=display:flex><span>    entries <span style=color:#f92672>=</span> db<span style=color:#f92672>.</span>query(<span style=color:#e6db74>&#34;select cid, title, slug, text, created from typecho_contents where type=&#39;post&#39;&#34;</span>)
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> e <span style=color:#f92672>in</span> entries:
+</span></span><span style=display:flex><span>        title <span style=color:#f92672>=</span> e<span style=color:#f92672>.</span>title
+</span></span><span style=display:flex><span>        urlname <span style=color:#f92672>=</span> e<span style=color:#f92672>.</span>slug
+</span></span><span style=display:flex><span>        print(title)
+</span></span><span style=display:flex><span>        content <span style=color:#f92672>=</span> str(e<span style=color:#f92672>.</span>text)<span style=color:#f92672>.</span>replace(<span style=color:#e6db74>&#39;&lt;!--markdown--&gt;&#39;</span>, <span style=color:#e6db74>&#39;&#39;</span>)
+</span></span><span style=display:flex><span>        tags <span style=color:#f92672>=</span> []
+</span></span><span style=display:flex><span>        category <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e># 找出文章的tag及category</span>
+</span></span><span style=display:flex><span>        metas <span style=color:#f92672>=</span> db<span style=color:#f92672>.</span>query(
+</span></span><span style=display:flex><span>            <span style=color:#e6db74>&#34;select type, name, slug from `typecho_relationships` ts, typecho_metas tm where tm.mid = ts.mid and ts.cid = </span><span style=color:#e6db74>%s</span><span style=color:#e6db74>&#34;</span>,
+</span></span><span style=display:flex><span>            e<span style=color:#f92672>.</span>cid)
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> m <span style=color:#f92672>in</span> metas:
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> m<span style=color:#f92672>.</span>type <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;tag&#39;</span>:
+</span></span><span style=display:flex><span>                tags<span style=color:#f92672>.</span>append(m<span style=color:#f92672>.</span>name)
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>if</span> m<span style=color:#f92672>.</span>type <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;category&#39;</span>:
+</span></span><span style=display:flex><span>                category <span style=color:#f92672>=</span> m<span style=color:#f92672>.</span>slug
+</span></span><span style=display:flex><span>        path <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;data/_posts/&#39;</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span> <span style=color:#f92672>not</span> os<span style=color:#f92672>.</span>path<span style=color:#f92672>.</span>exists(path):
+</span></span><span style=display:flex><span>            os<span style=color:#f92672>.</span>makedirs(path)
+</span></span><span style=display:flex><span>        f <span style=color:#f92672>=</span> codecs<span style=color:#f92672>.</span>open(<span style=color:#e6db74>r</span><span style=color:#e6db74>&#34;</span><span style=color:#e6db74>%s%s</span><span style=color:#e6db74>.md&#34;</span> <span style=color:#f92672>%</span> (path,title), <span style=color:#e6db74>&#39;w+&#39;</span>, <span style=color:#e6db74>&#34;utf-8&#34;</span>)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;---</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;title: </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> title)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;date: </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> arrow<span style=color:#f92672>.</span>get(e<span style=color:#f92672>.</span>created)<span style=color:#f92672>.</span>format(<span style=color:#e6db74>&#39;YYYY-MM-DD HH:mm:ss&#39;</span>))
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;categories: [&#34;</span><span style=color:#f92672>%</span>s\n<span style=color:#e6db74>&#34; </span><span style=color:#e6db74>% c</span><span style=color:#e6db74>ategory)&#34;</span>]
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;tags: [</span><span style=color:#e6db74>%s</span><span style=color:#e6db74>]</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> <span style=color:#e6db74>&#39;,&#39;</span><span style=color:#f92672>.</span>join(tags))
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;urlname: </span><span style=color:#e6db74>%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span> <span style=color:#f92672>%</span> urlname)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(<span style=color:#e6db74>&#34;---</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>)
+</span></span><span style=display:flex><span>        <span style=color:#75715e>#:import pdb; pdb.set_trace()</span>
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>write(content)
+</span></span><span style=display:flex><span>        f<span style=color:#f92672>.</span>close()
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>():
+</span></span><span style=display:flex><span>    <span style=color:#75715e># 把数据库连接信息</span>
+</span></span><span style=display:flex><span>    db <span style=color:#f92672>=</span> torndb<span style=color:#f92672>.</span>Connection(host<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span>, database<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;typecho&#34;</span>, user<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;root&#34;</span>, password<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span>)
+</span></span><span style=display:flex><span>    create_data(db)
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;__main__&#34;</span>:
+</span></span><span style=display:flex><span>    main()
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/%E6%97%B6%E5%85%89%E6%9C%BA%E5%A4%87%E5%BF%98/>时光机备忘</a></li><li><a href=/drafts/mac%E4%B8%8B%E7%9A%84Python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/>mac下的Python2的mysql模块</a></li><li><a href=/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/>homebrew 安装mysql</a></li><li><a href=/drafts/paramiko-%E6%89%A7%E8%A1%8Csudo/>paramiko 执行sudo</a></li><li><a href=/drafts/%E5%B0%8F%E5%8F%AF%E7%88%B1%E5%AD%A6Python01/>小可爱学Python01</a></li></ul></div><div class="post-meta meta-tags">没有标签</div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

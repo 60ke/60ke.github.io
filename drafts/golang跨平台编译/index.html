@@ -1,0 +1,329 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>跨平台编译 | LookForAdmin的博客</title><meta property="og:title" content="跨平台编译 - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2021-11-08T11:27:50+08:00"><meta property="article:modified_time" content="2021-11-08T11:27:50+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="跨平台编译"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/golang%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#运行go-tool-dist-list查看golang当前支持的平台>运行<code>go tool dist list</code>查看golang当前支持的平台</a></li><li><a href=#编译测试>编译测试</a><ul><li><a href=#darwinarm64>darwin/arm64</a></li><li><a href=#darwinamd64>darwin/amd64</a></li><li><a href=#linux386>linux/386</a></li><li><a href=#linuxamd64>linux/amd64</a></li><li><a href=#二进制大小>二进制大小</a></li></ul></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>跨平台编译</h1></header><date class="post-meta meta-date">2021年11月8日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
+阅读</span></span></div><div class=post-content><h1 id=golang跨平台编译>golang跨平台编译</h1><h2 id=运行go-tool-dist-list查看golang当前支持的平台>运行<code>go tool dist list</code>查看golang当前支持的平台</h2><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>aix/ppc64
+</span></span><span style=display:flex><span>android/386
+</span></span><span style=display:flex><span>android/amd64
+</span></span><span style=display:flex><span>android/arm
+</span></span><span style=display:flex><span>android/arm64
+</span></span><span style=display:flex><span>darwin/amd64
+</span></span><span style=display:flex><span>darwin/arm64
+</span></span><span style=display:flex><span>dragonfly/amd64
+</span></span><span style=display:flex><span>freebsd/386
+</span></span><span style=display:flex><span>freebsd/amd64
+</span></span><span style=display:flex><span>freebsd/arm
+</span></span><span style=display:flex><span>freebsd/arm64
+</span></span><span style=display:flex><span>illumos/amd64
+</span></span><span style=display:flex><span>ios/amd64
+</span></span><span style=display:flex><span>ios/arm64
+</span></span><span style=display:flex><span>js/wasm
+</span></span><span style=display:flex><span>linux/386
+</span></span><span style=display:flex><span>linux/amd64
+</span></span><span style=display:flex><span>linux/arm
+</span></span><span style=display:flex><span>linux/arm64
+</span></span><span style=display:flex><span>linux/mips
+</span></span><span style=display:flex><span>linux/mips64
+</span></span><span style=display:flex><span>linux/mips64le
+</span></span><span style=display:flex><span>linux/mipsle
+</span></span><span style=display:flex><span>linux/ppc64
+</span></span><span style=display:flex><span>linux/ppc64le
+</span></span><span style=display:flex><span>linux/riscv64
+</span></span><span style=display:flex><span>linux/s390x
+</span></span><span style=display:flex><span>netbsd/386
+</span></span><span style=display:flex><span>netbsd/amd64
+</span></span><span style=display:flex><span>netbsd/arm
+</span></span><span style=display:flex><span>netbsd/arm64
+</span></span><span style=display:flex><span>openbsd/386
+</span></span><span style=display:flex><span>openbsd/amd64
+</span></span><span style=display:flex><span>openbsd/arm
+</span></span><span style=display:flex><span>openbsd/arm64
+</span></span><span style=display:flex><span>openbsd/mips64
+</span></span><span style=display:flex><span>plan9/386
+</span></span><span style=display:flex><span>plan9/amd64
+</span></span><span style=display:flex><span>plan9/arm
+</span></span><span style=display:flex><span>solaris/amd64
+</span></span><span style=display:flex><span>windows/386
+</span></span><span style=display:flex><span>windows/amd64
+</span></span><span style=display:flex><span>windows/arm
+</span></span><span style=display:flex><span>windows/arm64
+</span></span></code></pre></td></tr></table></div></div><p>额外的说一句,go竟然支持<code>ios/amd64</code>以及官方支持<code>js/wasm</code></p><h2 id=编译测试>编译测试</h2><h3 id=darwinarm64>darwin/arm64</h3><p>使用命令<code>GOOS="darwin" GOARCH="arm64" go build hello.go</code>编译<code>hello.go</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;hello&#34;</span>)
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>查看hello的mach-o及大小</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>file hello
+</span></span><span style=display:flex><span>hello: Mach-O 64-bit executable arm64
+</span></span><span style=display:flex><span>stat -f <span style=color:#e6db74>&#34;%z bytes&#34;</span> hello                      
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1932594</span> bytes
+</span></span></code></pre></td></tr></table></div></div><p>可以看到<code>hello</code>为<code>arm64</code>可执行文件</p><h3 id=darwinamd64>darwin/amd64</h3><p>使用命令<code>GOOS="darwin" GOARCH="amd64" go build hello.go</code>编译<code>hello.go</code>
+查看hello的mach-o及大小</p><pre tabindex=0><code>file hello
+hello: Mach-O 64-bit executable x86_64
+stat -f &#34;%z bytes&#34; hello
+1865360 bytes
+</code></pre><p>可以看到<code>hello</code>为<code>amd64</code>可执行文件</p><h3 id=linux386>linux/386</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>GOOS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;linux&#34;</span> GOARCH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;amd64&#34;</span> go build hello.go
+</span></span><span style=display:flex><span>stat -f <span style=color:#e6db74>&#34;%z bytes&#34;</span> hello                     
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1766270</span> bytes
+</span></span><span style=display:flex><span>file hello
+</span></span><span style=display:flex><span>hello: ELF 64-bit LSB executable, x86-64, version <span style=color:#ae81ff>1</span> <span style=color:#f92672>(</span>SYSV<span style=color:#f92672>)</span>, statically linked, Go BuildID<span style=color:#f92672>=</span>4nLzeHpdkqWlrRwR6mPk/JAdxwggmJ5gsqVMt4mlt/Xol5lWt0hZOunqxxKn7P/es_ZQQWFuE-5KUihCVx5, not stripped
+</span></span></code></pre></td></tr></table></div></div><p>测试上传到centos可正常运行</p><h3 id=linuxamd64>linux/amd64</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>GOOS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;linux&#34;</span> GOARCH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;386&#34;</span> go build hello.go
+</span></span><span style=display:flex><span>file hello
+</span></span><span style=display:flex><span>hello: ELF 32-bit LSB executable, Intel 80386, version <span style=color:#ae81ff>1</span> <span style=color:#f92672>(</span>SYSV<span style=color:#f92672>)</span>, statically linked, Go BuildID<span style=color:#f92672>=</span>xpuIhVMKxJXV7Bg0bcc5/c8f9swVvGB1bHVdYXYCv/yjdgnmlDdpgUtuOKuZZ8/k8vjZwJaP57BC6_zfTiQ, not stripped
+</span></span><span style=display:flex><span>stat -f <span style=color:#e6db74>&#34;%z bytes&#34;</span> hello
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1633884</span> bytes
+</span></span></code></pre></td></tr></table></div></div><p>测试上传到centos可正常运行</p><h3 id=二进制大小>二进制大小</h3><p>mac下<code>hello.go</code>amd64二进制比arm64的小.</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>GOOS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;darwin&#34;</span> GOARCH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;amd64&#34;</span> go build hello.go 
+</span></span><span style=display:flex><span>stat -f <span style=color:#e6db74>&#34;%z bytes&#34;</span> hello
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1865360</span> bytes
+</span></span><span style=display:flex><span>GOOS<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;darwin&#34;</span> GOARCH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;arm64&#34;</span> go build hello.go 
+</span></span><span style=display:flex><span>stat -f <span style=color:#e6db74>&#34;%z bytes&#34;</span> hello                      
+</span></span><span style=display:flex><span><span style=color:#ae81ff>1932594</span> bytes
+</span></span></code></pre></td></tr></table></div></div><p>linux amd64位比x86小(应该不限于linux)</p><p>PS:mac下可用<code>otool -L file</code>查看mach-o动态库依赖</p><h1 id=rust>RUST</h1><p>运行命令<code>rustup target list</code>查当前支持的平台:</p><pre tabindex=0><code>aarch64-apple-darwin (installed)
+aarch64-apple-ios
+aarch64-apple-ios-sim
+aarch64-fuchsia
+aarch64-linux-android
+aarch64-pc-windows-msvc
+aarch64-unknown-linux-gnu (installed)
+aarch64-unknown-linux-musl
+aarch64-unknown-none
+aarch64-unknown-none-softfloat
+arm-linux-androideabi
+arm-unknown-linux-gnueabi
+arm-unknown-linux-gnueabihf
+arm-unknown-linux-musleabi
+arm-unknown-linux-musleabihf
+armebv7r-none-eabi
+armebv7r-none-eabihf
+armv5te-unknown-linux-gnueabi
+armv5te-unknown-linux-musleabi
+armv7-linux-androideabi
+armv7-unknown-linux-gnueabi
+armv7-unknown-linux-gnueabihf
+armv7-unknown-linux-musleabi
+armv7-unknown-linux-musleabihf
+armv7a-none-eabi
+armv7r-none-eabi
+armv7r-none-eabihf
+asmjs-unknown-emscripten
+i586-pc-windows-msvc
+i586-unknown-linux-gnu
+i586-unknown-linux-musl
+i686-linux-android
+i686-pc-windows-gnu
+i686-pc-windows-msvc
+i686-unknown-freebsd
+i686-unknown-linux-gnu
+i686-unknown-linux-musl
+mips-unknown-linux-gnu
+mips-unknown-linux-musl
+mips64-unknown-linux-gnuabi64
+mips64-unknown-linux-muslabi64
+mips64el-unknown-linux-gnuabi64
+mips64el-unknown-linux-muslabi64
+mipsel-unknown-linux-gnu
+mipsel-unknown-linux-musl
+nvptx64-nvidia-cuda
+powerpc-unknown-linux-gnu
+powerpc64-unknown-linux-gnu
+powerpc64le-unknown-linux-gnu
+riscv32i-unknown-none-elf
+riscv32imac-unknown-none-elf
+riscv32imc-unknown-none-elf
+riscv64gc-unknown-linux-gnu
+riscv64gc-unknown-none-elf (installed)
+riscv64imac-unknown-none-elf
+s390x-unknown-linux-gnu
+sparc64-unknown-linux-gnu
+sparcv9-sun-solaris
+thumbv6m-none-eabi
+thumbv7em-none-eabi
+thumbv7em-none-eabihf
+thumbv7m-none-eabi
+thumbv7neon-linux-androideabi
+thumbv7neon-unknown-linux-gnueabihf
+thumbv8m.base-none-eabi
+thumbv8m.main-none-eabi
+thumbv8m.main-none-eabihf
+wasm32-unknown-emscripten
+wasm32-unknown-unknown (installed)
+wasm32-wasi
+x86_64-apple-darwin
+x86_64-apple-ios
+x86_64-fortanix-unknown-sgx
+x86_64-fuchsia
+x86_64-linux-android
+x86_64-pc-solaris
+x86_64-pc-windows-gnu
+x86_64-pc-windows-msvc
+x86_64-sun-solaris
+x86_64-unknown-freebsd
+x86_64-unknown-illumos
+x86_64-unknown-linux-gnu
+x86_64-unknown-linux-gnux32
+x86_64-unknown-linux-musl
+x86_64-unknown-netbsd
+x86_64-unknown-redox
+</code></pre><p>rust相对于go来说平台明显更多不知道是不是用了llvm的原因</p><h1 id=m1-mac-c编译x86>M1-mac-c编译x86</h1><p>arm64是可以直接运行x86程序的,也可编译为x86:
+下面例子来源于:
+<a href=https://stackoverflow.com/questions/68279407/does-intel-binary-run-faster-than-arm64-binary-on-m1-macbook>https://stackoverflow.com/questions/68279407/does-intel-binary-run-faster-than-arm64-binary-on-m1-macbook</a></p><pre tabindex=0><code>$ arch
+arm64
+$ make
+arch -x86_64 cc fib.c -o x86.out
+arch -arm64 cc fib.c -o arm64.out
+file *.out
+arm64.out: Mach-O 64-bit executable arm64
+x86.out:   Mach-O 64-bit executable x86_64
+time ./x86.out
+Fibonacci 45 is 1134903170
+        8.32 real         7.54 user         0.01 sys
+time ./arm64.out
+Fibonacci 45 is 1134903170
+       10.21 real         9.77 user         0.01 sys
+</code></pre><p><code>cat fib.c</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>fibonacci</span>(<span style=color:#66d9ef>int</span> n);
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>int</span> n <span style=color:#f92672>=</span> <span style=color:#ae81ff>45</span>;
+</span></span><span style=display:flex><span>  <span style=color:#75715e>// Print out number of characters in n
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>  printf(<span style=color:#e6db74>&#34;Fibonacci %i is %i</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>, n, fibonacci(n));
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>fibonacci</span>(<span style=color:#66d9ef>int</span> n) {
+</span></span><span style=display:flex><span>  <span style=color:#66d9ef>if</span> (n <span style=color:#f92672>==</span> <span style=color:#ae81ff>0</span> <span style=color:#f92672>||</span> n <span style=color:#f92672>==</span> <span style=color:#ae81ff>1</span>) {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> n;
+</span></span><span style=display:flex><span>  } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> fibonacci(n<span style=color:#f92672>-</span><span style=color:#ae81ff>1</span>) <span style=color:#f92672>+</span> fibonacci(n<span style=color:#f92672>-</span><span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>  }
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/go%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F8-5-goroutine%E8%A7%A3%E6%83%91/>go语言圣经8.5--goroutine解惑</a></li><li><a href=/posts/antlr4/>write a antlr4 visitor with golang</a></li><li><a href=/drafts/go%E8%B0%83%E7%94%A8RUST/>go调用RUST</a></li><li><a href=/drafts/M1-vscode-lldb/>M1-vscode-lldb</a></li><li><a href=/drafts/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0nosql%E6%95%B0%E6%8D%AE%E5%BA%93/>从零实现nosql数据库</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/golang>golang</a></li><li><a href=/tags/c>c</a></li><li><a href=/tags/rust>rust</a></li><li><a href=/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0>跨平台</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

@@ -1,0 +1,195 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>rust闭包 | LookForAdmin的博客</title><meta property="og:title" content="rust闭包 - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2020-09-18T14:15:42+08:00"><meta property="article:modified_time" content="2020-09-18T14:15:42+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="rust闭包"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/rust%E9%97%AD%E5%8C%85/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#概念>概念</a></li><li><a href=#进阶>进阶</a></li><li><a href=#额外的>额外的</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>rust闭包</h1></header><date class="post-meta meta-date">2020年9月18日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
+阅读</span></span></div><div class=post-content><h2 id=概念>概念</h2><p>“闭包（closure）是一种匿名函数,具有“捕获”外部变量的能力。闭包有时候也被称作lambda表达式。它有两个特点：（1）可以像函数一样被调用；（2）可以捕获当前环境中的变量。”</p><p>摘录来自: 范长春. “深入浅出Rust。”
+闭包与函数的显著区别是闭包可以补货变量。</p><p>code is cheap,show code:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>add_2</span>(a:<span style=color:#66d9ef>i32</span>)-&gt;<span style=color:#66d9ef>i32</span>{
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;run func add_2&#34;</span>);
+</span></span><span style=display:flex><span>    a <span style=color:#f92672>+</span> <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> a <span style=color:#f92672>=</span> <span style=color:#f92672>|</span>x<span style=color:#f92672>|</span>x<span style=color:#f92672>+</span><span style=color:#ae81ff>2</span>;
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;3 + 2 is {}&#34;</span>,a(<span style=color:#ae81ff>3</span>));
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> b <span style=color:#f92672>=</span> add_2(<span style=color:#ae81ff>3</span>);
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;b is {}&#34;</span>,b);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><h2 id=进阶>进阶</h2><p>闭包的类型:
+添加一个返回类型为闭包的函数：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>test_return</span>(a:<span style=color:#66d9ef>i32</span>)-&gt;Box<span style=color:#f92672>&lt;</span> Fn(<span style=color:#66d9ef>i32</span>)-&gt;<span style=color:#66d9ef>i32</span><span style=color:#f92672>&gt;</span>{
+</span></span><span style=display:flex><span>    print!(<span style=color:#e6db74>&#34;a is {} but unused\n&#34;</span>,a);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> b <span style=color:#f92672>=</span> Box::new(<span style=color:#f92672>|</span>x<span style=color:#f92672>|</span>x<span style=color:#f92672>+</span><span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>    b
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> c <span style=color:#f92672>=</span> test_return(<span style=color:#ae81ff>3</span>);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> d <span style=color:#f92672>=</span> c(<span style=color:#ae81ff>5</span>);
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;d is {}&#34;</span>,d);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p><code>cargo run</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>   Compiling just_test v0.1.0 <span style=color:#f92672>(</span>/Users/ke/Desktop/rust_test/just_test<span style=color:#f92672>)</span>
+</span></span><span style=display:flex><span>warning: trait objects without an explicit <span style=color:#e6db74>`</span>dyn<span style=color:#e6db74>`</span> are deprecated
+</span></span><span style=display:flex><span> --&gt; src/main.rs:2:29
+</span></span><span style=display:flex><span>  |
+</span></span><span style=display:flex><span><span style=color:#ae81ff>2</span> | fn test_return<span style=color:#f92672>(</span>a:i32<span style=color:#f92672>)</span>-&gt;Box&lt; Fn<span style=color:#f92672>(</span>i32<span style=color:#f92672>)</span>-&gt;i32&gt;<span style=color:#f92672>{</span>
+</span></span><span style=display:flex><span>  |                             ^^^^^^^^^^^^ help: use <span style=color:#e6db74>`</span>dyn<span style=color:#e6db74>`</span>: <span style=color:#e6db74>`</span>dyn Fn<span style=color:#f92672>(</span>i32<span style=color:#f92672>)</span>-&gt;i32<span style=color:#e6db74>`</span>
+</span></span><span style=display:flex><span>  |
+</span></span><span style=display:flex><span>  <span style=color:#f92672>=</span> note: <span style=color:#e6db74>`</span><span style=color:#75715e>#[warn(bare_trait_objects)]` on by default</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>warning: <span style=color:#ae81ff>1</span> warning emitted
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span>    Finished dev <span style=color:#f92672>[</span>unoptimized + debuginfo<span style=color:#f92672>]</span> target<span style=color:#f92672>(</span>s<span style=color:#f92672>)</span> in 0.36s
+</span></span><span style=display:flex><span>     Running <span style=color:#e6db74>`</span>target/debug/just_test<span style=color:#e6db74>`</span>
+</span></span><span style=display:flex><span>a is <span style=color:#ae81ff>3</span> but unused
+</span></span><span style=display:flex><span>d is <span style=color:#ae81ff>7</span>
+</span></span></code></pre></td></tr></table></div></div><p>上面的代码有两个需要注意的地方:</p><ul><li>返回类型里面的box：
+rust的闭包又叫unboxed closure 本质是一个unboxed trait,当我们仅返回闭包时编译器会报错<code>return type cannot have an unboxed trait object</code>。因为匿名函数是编译器生成的匿名类型,根本不存在具体对象一说,这意味着它无法有一个明确的 size,所以只能被放置于 堆内存 之中,并取得一个 胖指针 （即除了原始指针以外还包括对指针、指针指向内存的额外描述信息等的 “指针”。故我们需要将closure boxed。</li><li>dyn warning:
+这个问题可以参考:
+<a href=https://www.insp.top/article/lets-understand-new-keywords-those-impl-and-dyn-of-rust-2018-edition>理解 Rust 2018 edition 的两个新关键字 —— impl 和 dyn</a>
+<a href=https://rustwiki.org/zh-CN/edition-guide/rust-2018/trait-system/impl-trait-for-returning-complex-types-with-ease.html>3.4.1. impl Trait 轻松返回复杂的类型</a>
+dyn 修饰trait是为了消除与impl trait的歧义,所以我们在了解dyn之前我们需要知道impl Trait:
+将下面的函数用impl trait重写：</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>test_return</span>(a:<span style=color:#66d9ef>i32</span>)-&gt;Box<span style=color:#f92672>&lt;</span> Fn(<span style=color:#66d9ef>i32</span>)-&gt;<span style=color:#66d9ef>i32</span><span style=color:#f92672>&gt;</span>{
+</span></span><span style=display:flex><span>    print!(<span style=color:#e6db74>&#34;a is {} but unused\n&#34;</span>,a);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> b <span style=color:#f92672>=</span> Box::new(<span style=color:#f92672>|</span>x<span style=color:#f92672>|</span>x<span style=color:#f92672>+</span><span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>    b
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>重写:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>test_return</span>(a:<span style=color:#66d9ef>i32</span>)-&gt; <span style=color:#a6e22e>impl</span> Fn(<span style=color:#66d9ef>i32</span>)-&gt;<span style=color:#66d9ef>i32</span>{
+</span></span><span style=display:flex><span>    print!(<span style=color:#e6db74>&#34;a is {} but unused\n&#34;</span>,a);
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> b <span style=color:#f92672>=</span> Box::new(<span style=color:#f92672>|</span>x<span style=color:#f92672>|</span>x<span style=color:#f92672>+</span><span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>    b    
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><p>测试可以正常运行。
+impl Trait 是指定实现特定特征的未命名但有具体类型的新方法。重点在于有具体类型。因为有具体类型,匿名函数对于编译器来说是不确定trait,故需要进行box包装来返回,而impl trait由于已经约束了具体类型,所以可以直接作为函数返回类型。</p><p>dyn是dynamic(动态的缩写),有了impl trait后使用dyn trait可以更好的与其对应以及消除类型歧义:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>trait</span> Trait {}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>impl</span> Trait <span style=color:#66d9ef>for</span> <span style=color:#66d9ef>i32</span> {}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// old
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>function1</span>() -&gt; Box<span style=color:#f92672>&lt;</span>Trait<span style=color:#f92672>&gt;</span> {
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e>// new
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>function2</span>() -&gt; Box<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>dyn</span> Trait<span style=color:#f92672>&gt;</span> {
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div><h2 id=额外的>额外的</h2><p>用泛型重写上面的代码:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>calc_by</span><span style=color:#f92672>&lt;</span>F<span style=color:#f92672>&gt;</span>(var: <span style=color:#66d9ef>&amp;</span><span style=color:#66d9ef>i32</span>, f: <span style=color:#a6e22e>F</span>) -&gt; <span style=color:#66d9ef>i32</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>where</span> F: Fn(<span style=color:#f92672>&amp;</span><span style=color:#66d9ef>i32</span>) -&gt; <span style=color:#66d9ef>i32</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> local <span style=color:#f92672>=</span> <span style=color:#f92672>*</span>var;
+</span></span><span style=display:flex><span>    f(<span style=color:#f92672>&amp;</span>local)
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> local <span style=color:#f92672>=</span> <span style=color:#ae81ff>10</span>;
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> result <span style=color:#f92672>=</span> calc_by(<span style=color:#f92672>&amp;</span>local, <span style=color:#f92672>|</span>i<span style=color:#f92672>|</span> i<span style=color:#f92672>*</span><span style=color:#ae81ff>2</span>);
+</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;{}&#34;</span>, result);
+</span></span><span style=display:flex><span>}
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/rust%E7%AC%94%E8%AE%B0/>rust笔记</a></li><li><a href=/drafts/rust%E6%B5%8B%E8%AF%95/>rust测试</a></li><li><a href=/posts/Enclave%E5%BC%80%E5%8F%91/>Enclave开发</a></li><li><a href=/posts/sgx/>sgx开发</a></li><li><a href=/drafts/rust%E5%AE%8F%E5%B1%95%E5%BC%80/>rust宏展开</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/rust>rust</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

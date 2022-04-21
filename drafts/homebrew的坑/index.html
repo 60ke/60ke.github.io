@@ -1,0 +1,105 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>homebrew的坑 | LookForAdmin的博客</title><meta property="og:title" content="homebrew的坑 - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2020-03-18T20:39:03+08:00"><meta property="article:modified_time" content="2020-03-18T20:39:03+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="homebrew的坑"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/homebrew%E7%9A%84%E5%9D%91/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1卸载openssl-10>1.卸载openssl 1.0</a></li><li><a href=#2启用openssl>2.启用openssl</a></li><li><a href=#3清理无效的系统变量和软连接>3.清理无效的系统变量和软连接</a></li><li><a href=#4安装python-38>4.安装python 3.8</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>homebrew的坑</h1></header><date class="post-meta meta-date">2020年3月18日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
+阅读</span></span></div><div class=post-content><p>现在python最新版本是3.8,brew默认安装的python3是3.7。于是乎想给python升级,突然发现brew安装的文件夹<code>/usr/local/Cellar</code>下面有多个python3的文件夹,但是运行<code>brew list</code>的时候只显示一个python3,看起来用<code>brew</code>是没法卸载了。惨的是之前安装的openssl里面也有<code>1.0</code>,<code>1.1</code>两个文件夹。但是卸载1.0的时候也对应的是<code>1.1</code>,而且还没生效。</p><h2 id=1卸载openssl-10>1.卸载openssl 1.0</h2><p>1.删除brew 安装的文件夹 <code>/usr/local/Cellar/openssl</code>
+2.查看有没有软连接<code>ls -al /usr/local/bin/openssl</code>以及<code>ls -al /usr/local/opt/openssl</code>,有则删除</p><h2 id=2启用openssl>2.启用openssl</h2><p><code>brew link openssl</code></p><h2 id=3清理无效的系统变量和软连接>3.清理无效的系统变量和软连接</h2><p>1.先查看环境变量<code>echo $PATH</code>确定哪些无效
+有时候可能一下子找不到,知道系统的环境变量的加载顺序可以用的上：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>/etc/profile
+</span></span><span style=display:flex><span>/etc/paths 
+</span></span><span style=display:flex><span>/etc/paths.d/
+</span></span><span style=display:flex><span>~/.bash_profile 
+</span></span><span style=display:flex><span>~/.bash_login
+</span></span><span style=display:flex><span>~/.profile
+</span></span><span style=display:flex><span>~/.bashrc
+</span></span></code></pre></td></tr></table></div></div><p>/etc/profile和/etc/paths, /etc/paths.d/是系统级别的,系统启动就会加载；
+2.在系统环境变量里删除无效的软连接
+可以用这个bash删除指定目录下的无效软连接：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e>#! /bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span>echo <span style=color:#e6db74>&#34;enter scan path: &#34;</span>
+</span></span><span style=display:flex><span>read path
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> -z $path <span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>then</span>
+</span></span><span style=display:flex><span>    echo <span style=color:#e6db74>&#34;please enter scan path&#34;</span>
+</span></span><span style=display:flex><span>    exit
+</span></span><span style=display:flex><span><span style=color:#66d9ef>fi</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> file in <span style=color:#66d9ef>$(</span>find $path -type l<span style=color:#66d9ef>)</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>do</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> ! -e $file <span style=color:#f92672>]</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>then</span>
+</span></span><span style=display:flex><span>        echo <span style=color:#e6db74>&#34;rm </span>$file<span style=color:#e6db74>&#34;</span>
+</span></span><span style=display:flex><span>        rm -f $file
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>fi</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=4安装python-38>4.安装python 3.8</h2><p>1.运行brew 安装
+<code>brew install python@3.8</code>,特别的运行<code>pip3 install packages</code>时如果提示权限问题,可以加<code>--user</code>参数。
+2.调整系统变量使<code>python3</code>生效
+像python3这样的一般brew安装完,会直接调用<code>brew link python3</code>使系统的环境变量生效,如果没有可以手动运行一遍,按照提示继续操作。</p></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/openvpn%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/>openvpn</a></li><li><a href=/drafts/Mac%E5%AE%89%E8%A3%85LaTeX/>Mac安装LaTeX</a></li><li><a href=/drafts/mac%E4%B8%8B%E7%9A%84Python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/>mac下的Python2的mysql模块</a></li><li><a href=/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/>homebrew 安装mysql</a></li><li><a href=/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/>通过ssh实现mac远程桌面</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/mac>mac</a></li><li><a href=/tags/homebrew>homebrew</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

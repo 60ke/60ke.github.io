@@ -1,0 +1,50 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>go | LookForAdmin的博客</title><meta property="og:title" content="go - LookForAdmin的博客"><meta property="og:type" content="article"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="go"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/categories/go/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><link rel=alternate type=application/rss+xml href=https://60ke.github.io/categories/go/index.xml title=LookForAdmin的博客><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><h3 class=archive-title>分类
+<span class=keyword>go</span>
+中的文章</h3><article class=post><header><h1 class=post-title><a href=https://60ke.github.io/drafts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE/>数据结构之子字符串查找</a></h1></header><date class="post-meta meta-date">2021年4月16日</date><div class="post-meta meta-category">|
+<a href=/categories/go>go</a></div><div class=post-content>实现一个查找 substring 的函数。如果在母串中找到了子串,返回子串在母串中出现的下标,如果没有找到,返回 -1,如果子串是空串,则返回 0 。 go语言可以用strings直接实现 1 2 3 4 import "strings" func strStr(haystack string, needle string) int { return strings.Index(haystack, needle) } strings中的index是Rabin–Karp算法实现的 实现同样的功能的算法还有 s……<p class=readmore><a href=https://60ke.github.io/drafts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE/>阅读全文</a></p></div></article><article class=post><header><h1 class=post-title><a href=https://60ke.github.io/drafts/go%E8%B0%83%E7%94%A8RUST/>go调用RUST</a></h1></header><date class="post-meta meta-date">2021年4月6日</date><div class="post-meta meta-category">|
+<a href=/categories/go>go</a></div><div class=post-content>无参函数调用 先写一个rust的lib项目生成动态库 1 cargo new --lib embed Cargo.toml 1 2 3 4 5 6 7 8 9 10 11 12 13 [package] name = "embed" version = "0.1.0" authors = ["k &lt;2589788697@qq.com>"] edition = "2018" # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html [dependencies] [lib] name = "embed" crate-type = ["dylib"] lib.rs 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 use std::thread; #[no_mangle] fn process(){ let handles:Vec&lt;_>=(0..=10).map(|_|{ thread::spawn(||{ let mut x = 0; for _ in 0..5000000{ x += 1 } x }) }).collect(); for h in handles{ println!("thread finished with count={}",h.join().map_err(|_|"could not join a thread").unwrap()); } } 编译 运行 cargo build -……<p class=readmore><a href=https://60ke.github.io/drafts/go%E8%B0%83%E7%94%A8RUST/>阅读全文</a></p></div></article></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>

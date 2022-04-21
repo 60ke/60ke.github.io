@@ -1,0 +1,579 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>微信公众号开发-1 | LookForAdmin的博客</title><meta property="og:title" content="微信公众号开发-1 - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2016-01-24T15:06:00+08:00"><meta property="article:modified_time" content="2016-01-24T15:06:00+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="微信公众号开发-1"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/%E5%BE%AE%E4%BF%A1%E5%85%AC%E4%BC%97%E5%8F%B7%E5%BC%80%E5%8F%91-1/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
+<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
+<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
+<a href=https://60ke.github.io/archives/ title=归档>归档</a>
+<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>微信公众号开发-1</h1></header><date class="post-meta meta-date">2016年1月24日</date><div class=post-meta><span>|</span>
+<span class=meta-category><a href=/categories/php>php</a></span></div><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
+阅读</span></span></div><div class=post-content><ol><li>注册微信公众平台账号
+微信公众平台:
+<a href=https://mp.weixin.qq.com/>https://mp.weixin.qq.com/</a></li></ol><p>注: 目前一张身份证只能注册两个账号,账号名称关乎加V认证,请慎重注册。</p><ol start=2><li><p>申请服务器/虚拟主机
+没有服务器/虚拟主机的童鞋可以使用BAE和SAE,不多介绍。</p></li><li><p>开启开发者模式
+微信公众平台有两个模式,一个是编辑模式（傻瓜模式）,简单但功能单一。另一个是开发者模式,可以通过开发实现复杂功能。两个模式互斥,显而易见,登录微信公众平台并通过“高级功能”菜单开启开发者模式。</p></li><li><p>填写接口配置信息
+同样是在“高级功能”菜单中配置,需要配置两项参数:
+URL: 开发者应用访问地址,目前仅支持80端口,以“http://www.worileqing.top/weixin/index.php”为例。
+TOKEN: 随意填写,用于生成签名,以“YoonPer”为例。
+填写完把下面代码保存为index.php并上传至http://www.worileqing.top/weixin/目录,最后点击“提交”完成验证。</p></li></ol><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>define</span>(<span style=color:#e6db74>&#34;TOKEN&#34;</span>, <span style=color:#e6db74>&#34;YoonPer&#34;</span>); <span style=color:#75715e>//TOKEN值
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>03</span>
+</span></span><span style=display:flex><span>$wechatObj <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>wechat</span>();
+</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
+</span></span><span style=display:flex><span>$wechatObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>valid</span>();
+</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>wechat</span> {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>valid</span>() {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span>        $echoStr <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;echostr&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>($this<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>checkSignature</span>()){
+</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>echo</span> $echoStr;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>exit</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>checkSignature</span>() {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>15</span>
+</span></span><span style=display:flex><span>        $signature <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;signature&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#ae81ff>16</span>
+</span></span><span style=display:flex><span>        $timestamp <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;timestamp&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#ae81ff>17</span>
+</span></span><span style=display:flex><span>        $nonce <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;nonce&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span>        $token <span style=color:#f92672>=</span> <span style=color:#a6e22e>TOKEN</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span>        $tmpArr <span style=color:#f92672>=</span> <span style=color:#66d9ef>array</span>($token, $timestamp, $nonce);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sort</span>($tmpArr);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span>        $tmpStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>implode</span>( $tmpArr );
+</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
+</span></span><span style=display:flex><span>        $tmpStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>sha1</span>( $tmpStr );
+</span></span><span style=display:flex><span><span style=color:#ae81ff>23</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>( $tmpStr <span style=color:#f92672>==</span> $signature ) {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>24</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>25</span>
+</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>26</span>
+</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>27</span>
+</span></span><span style=display:flex><span>        }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>28</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>29</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#ae81ff>30</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span></span></code></pre></td></tr></table></div></div><p>这玩意儿就是微信公众平台校验URL是否正确接入,研究代码没有实质性意义,验证完即可删除文件,就不详细说明了,有兴趣的童鞋可以查看官方文档。
+微信公众平台API文档:
+<a href=http://mp.weixin.qq.com/wiki/index.php>http://mp.weixin.qq.com/wiki/index.php</a></p><ol start=5><li>开发微信公众平台功能
+OK,上面提到了,微信公众平台与开发者之间的数据交互是通过XML完成的,既然用到XML,当然得遵循规范,所以在着手开发之前先看看官方接口文档提供的XML规范,以文本消息为例:</li></ol><p>当用户向微信公众账号发送消息时,微信服务器会POST给开发者一些数据:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">122
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">123
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">124
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">125
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">126
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">127
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">128
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">129
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">130
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">131
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">132
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">133
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">134
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">135
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">136
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">137
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">138
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">139
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">140
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">141
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">142
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">143
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>开发者微信号</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>toUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>发送方帐号（OpenID）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>fromUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息创建时间</span> <span style=color:#a6e22e>（整型）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>12345678</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息类别</span> <span style=color:#a6e22e>（text文本消息）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA1</span>]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息内容</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>content</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息ID</span> <span style=color:#a6e22e>（64位整型）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgId</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>1234567890123456</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>MsgId</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#a6e22e>开发者在处理完消息后需要返回数据给微信服务器</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>接收方帐号（OpenID）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>toUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>开发者微信号</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>fromUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息创建时间</span> <span style=color:#a6e22e>（整型）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>12345678</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息类别</span> <span style=color:#a6e22e>（text文本消息）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA1</span>]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>回复消息内容</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>content</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>星标操作（位0x0001被标志时</span> <span style=color:#a6e22e>星标刚收到的消息）</span><span style=color:#f92672>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FuncFlag</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>0</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>FuncFlag</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#a6e22e>除文本消息外</span>,<span style=color:#a6e22e>微信公众平台还支持用户发送图片消息、地理位置消息、链接消息、事件推送</span>,<span style=color:#a6e22e>而开发者还可以向微信公众平台回复音乐消息和图文消息</span>,<span style=color:#a6e22e>各类消息XML规范也可以参见官方文档。</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#a6e22e>来看看官方提供的一个PHP示例</span>,<span style=color:#a6e22e>我做了一些精简</span><span style=color:#f92672>:</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
+</span></span><span style=display:flex><span>$wechatObj <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>wechat</span>();
+</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
+</span></span><span style=display:flex><span>$wechatObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>responseMsg</span>();
+</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>wechat</span> {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>responseMsg</span>() {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//---------- 接 收 数 据 ---------- //
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
+</span></span><span style=display:flex><span>        $postStr <span style=color:#f92672>=</span> $GLOBALS[<span style=color:#e6db74>&#34;HTTP_RAW_POST_DATA&#34;</span>]; <span style=color:#75715e>//获取POST数据
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//用SimpleXML解析POST过来的XML数据
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span>        $postObj <span style=color:#f92672>=</span> <span style=color:#a6e22e>simplexml_load_string</span>($postStr,<span style=color:#e6db74>&#39;SimpleXMLElement&#39;</span>,<span style=color:#a6e22e>LIBXML_NOCDATA</span>);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
+</span></span><span style=display:flex><span>        $fromUsername <span style=color:#f92672>=</span> $postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>FromUserName</span>; <span style=color:#75715e>//获取发送方帐号（OpenID）
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>15</span>
+</span></span><span style=display:flex><span>        $toUsername <span style=color:#f92672>=</span> $postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>ToUserName</span>; <span style=color:#75715e>//获取接收方账号
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>16</span>
+</span></span><span style=display:flex><span>        $keyword <span style=color:#f92672>=</span> <span style=color:#a6e22e>trim</span>($postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>Content</span>); <span style=color:#75715e>//获取消息内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>17</span>
+</span></span><span style=display:flex><span>        $time <span style=color:#f92672>=</span> <span style=color:#a6e22e>time</span>(); <span style=color:#75715e>//获取当前时间戳
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//---------- 返 回 数 据 ---------- //
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//返回消息模板
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>23</span>
+</span></span><span style=display:flex><span>        $textTpl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&lt;xml&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>24
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>25
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>26
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>27
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>28
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>29
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>30
+</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;/xml&gt;&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>31</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>32</span>
+</span></span><span style=display:flex><span>        $msgType <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;text&#34;</span>; <span style=color:#75715e>//消息类型
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>33</span>
+</span></span><span style=display:flex><span>        $contentStr <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;http://www.worileqing.top&#39;</span>; <span style=color:#75715e>//返回消息内容
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>34</span>
+</span></span><span style=display:flex><span> 
+</span></span><span style=display:flex><span><span style=color:#ae81ff>35</span>
+</span></span><span style=display:flex><span>        <span style=color:#75715e>//格式化消息模板
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>36</span>
+</span></span><span style=display:flex><span>        $resultStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>sprintf</span>($textTpl,$fromUsername,$toUsername,
+</span></span><span style=display:flex><span><span style=color:#ae81ff>37</span>
+</span></span><span style=display:flex><span>        $time,$msgType,$contentStr);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>38</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>echo</span> $resultStr; <span style=color:#75715e>//输出结果
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>39</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>40</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#ae81ff>41</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span></span></code></pre></td></tr></table></div></div><p>把代码保存为index.php并上传至http://www.worileqing.top/weixin/目录,如果刚才没删除该文件,则直接覆盖。</p><p>现在用户通过微信公众平台发送任何消息公众账号均会返回一条内容为“http://www.worileqing.top”的消息。
+接下来需要做的就是根据用户消息动态返回结果~</p><p>SimSimi（小黄鸡）是目前比较火的聊天机器人,我用CURL开发了一个免费的SimSimi（小黄鸡）接口,传入关键词会返回文本回复,这部分不是本文重点,就不多说明,直接上代码(2014.07.28更新):</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
+</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
+</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
+</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>simsimi</span> ($keyword)
+</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
+</span></span><span style=display:flex><span>{
+</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
+</span></span><span style=display:flex><span>    $keyword <span style=color:#f92672>=</span> <span style=color:#a6e22e>urlencode</span>($keyword);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//----------- 获取COOKIE ----------//
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span>    $url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://www.simsimi.com/&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
+</span></span><span style=display:flex><span>    $ch <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_init</span>($url);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_HEADER</span>, <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_RETURNTRANSFER</span>, <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span>    $content <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_exec</span>($ch);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>list</span>($header, $body) <span style=color:#f92672>=</span> <span style=color:#a6e22e>explode</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\r\n\r\n</span><span style=color:#e6db74>&#34;</span>, $content);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>preg_match_all</span>(<span style=color:#e6db74>&#34;/set\-cookie:([^</span><span style=color:#ae81ff>\r\n</span><span style=color:#e6db74>]*);/iU&#34;</span>, $header, $matches);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span>    $cookie <span style=color:#f92672>=</span> <span style=color:#a6e22e>implode</span>(<span style=color:#e6db74>&#39;;&#39;</span>, $matches[<span style=color:#ae81ff>1</span>])<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;;simsimi_uid=1;&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_close</span>($ch);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>15</span>
+</span></span><span style=display:flex><span>    <span style=color:#75715e>//----------- 抓 取 回 复 ----------//
+</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>16</span>
+</span></span><span style=display:flex><span>    $url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://www.simsimi.com/func/reqN?lc=ch&amp;ft=0.0&amp;req=</span><span style=color:#e6db74>$keyword</span><span style=color:#e6db74>&amp;fl=http%3A%2F%2Fwww.simsimi.com%2Ftalk.htm&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>17</span>
+</span></span><span style=display:flex><span>    $ch <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_init</span>($url);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_RETURNTRANSFER</span>, <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_COOKIE</span>, $cookie);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
+</span></span><span style=display:flex><span>    $content <span style=color:#f92672>=</span> <span style=color:#a6e22e>json_decode</span>(<span style=color:#a6e22e>curl_exec</span>($ch), <span style=color:#ae81ff>1</span>);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_close</span>($ch);
+</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
+</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> ( $content[<span style=color:#e6db74>&#39;result&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;200&#39;</span> ) {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>23</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> $content[<span style=color:#e6db74>&#39;sentence_resp&#39;</span>];
+</span></span><span style=display:flex><span><span style=color:#ae81ff>24</span>
+</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
+</span></span><span style=display:flex><span><span style=color:#ae81ff>25</span>
+</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#39;我还不会回答这个问题...&#39;</span>;
+</span></span><span style=display:flex><span><span style=color:#ae81ff>26</span>
+</span></span><span style=display:flex><span>    }
+</span></span><span style=display:flex><span><span style=color:#ae81ff>27</span>
+</span></span><span style=display:flex><span>}
+</span></span><span style=display:flex><span><span style=color:#ae81ff>28</span>
+</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span></span></code></pre></td></tr></table></div></div><p>把上面两段代码整合在一起就大功告成了,需要说明一点,微信服务器在5秒内收不到响应会断掉连接,通过此接口有可能会超时,且SimSimi已经屏蔽了BAE和SAE上的抓取请求,推荐使用SimSimi官方收费API,速度比较快~</p></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/about/>关于我</a></li><li><a href=/archives/>归档</a></li><li><a href=/search/>搜索</a></li></ul></div><div class="post-meta meta-tags">没有标签</div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-dark crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src="//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML" async></script>
+<a id=rocket href=#top></a>
+<script type=text/javascript src="/js/totop.js?v=0.0.0" async></script>
+<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
+<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
+<input type=hidden name=sitesearch value=https://60ke.github.io>
+<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li><li><a href=https://60ke.github.io/posts/Enclave%E5%BC%80%E5%8F%91/ title=Enclave开发>Enclave开发</a></li><li><a href=https://60ke.github.io/posts/sgx/ title=sgx开发>sgx开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (2)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
+<a href=https://60ke.github.io/tags/c/>c</a>
+<a href=https://60ke.github.io/tags/emacs/>emacs</a>
+<a href=https://60ke.github.io/tags/english/>english</a>
+<a href=https://60ke.github.io/tags/go/>go</a>
+<a href=https://60ke.github.io/tags/golang/>golang</a>
+<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
+<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
+<a href=https://60ke.github.io/tags/ios/>ios</a>
+<a href=https://60ke.github.io/tags/linux/>linux</a>
+<a href=https://60ke.github.io/tags/lisp/>lisp</a>
+<a href=https://60ke.github.io/tags/mac/>mac</a>
+<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
+<a href=https://60ke.github.io/tags/mysql/>mysql</a>
+<a href=https://60ke.github.io/tags/other/>other</a>
+<a href=https://60ke.github.io/tags/others/>others</a>
+<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
+<a href=https://60ke.github.io/tags/python/>python</a>
+<a href=https://60ke.github.io/tags/rust/>rust</a>
+<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
+<a href=https://60ke.github.io/tags/sgx/>sgx</a>
+<a href=https://60ke.github.io/tags/shell/>shell</a>
+<a href=https://60ke.github.io/tags/sublime/>sublime</a>
+<a href=https://60ke.github.io/tags/vscode/>vscode</a>
+<a href=https://60ke.github.io/tags/wasm/>wasm</a>
+<a href=https://60ke.github.io/tags/xpath/>xpath</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
+<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
+<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
+<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
+<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
+<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
+<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
+<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
+<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
+<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
+<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
