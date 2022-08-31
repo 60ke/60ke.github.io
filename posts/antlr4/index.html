@@ -5,19 +5,19 @@
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#install-antlr>install antlr</a><ul><li><a href=#安装java>安装java</a></li><li><a href=#安装antlr>安装antlr</a></li><li><a href=#运行示例测试>运行示例测试</a></li></ul></li><li><a href=#golang-visitor实现>golang visitor实现</a><ul><li><a href=#antlr-grammar文件编写>antlr grammar文件编写</a></li><li><a href=#使用antlr生成相关的go文件>使用antlr生成相关的go文件</a></li><li><a href=#编写go的main程序>编写go的<code>main</code>程序</a></li></ul></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>write a antlr4 visitor with golang</h1></header><date class="post-meta meta-date">2021年5月11日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
 阅读</span></span></div><div class=post-content><p>ANTLR（全名：ANother Tool for Language Recognition）是基于LL(*)算法实现的语法解析器生成器（parser generator）,用Java语言编写,使用自上而下（top-down）的递归下降LL剖析器方法。由旧金山大学的Terence Parr博士等人于1989年开始发展。
 目前网上的antlr示例大多为java,python,c++等,其github上虽有关于go的一个文档:<a href=https://github.com/antlr/antlr4/blob/master/doc/go-target.md>go-target.md</a>,但是是基于listener模式实现的,而本文是基于visitor实现的一个简单计算器</p><h2 id=install-antlr>install antlr</h2><h3 id=安装java>安装java</h3><p>antlr是基于Java开发的的,其运行依赖java环境。
-当前(2021年05月11日18:39:11) mac可使用<code>homebrew</code>命令<code>brew install openjdk</code>但是M1的openjdk兼容性有问题,使用antlr生成<code>AST</code>树的图片时总会异常退出,最终选择使用<a href=https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-jdk16.0.1-macosx_aarch64.dmg>Azul Zulu的dmg二进制安装</a>可正常运行</p><h3 id=安装antlr>安装antlr</h3><p><a href=https://www.antlr.org/>antlr官网</a>首页已经给出了安装教程:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+当前(2021年05月11日18:39:11) mac可使用<code>homebrew</code>命令<code>brew install openjdk</code>但是M1的openjdk兼容性有问题,使用antlr生成<code>AST</code>树的图片时总会异常退出,最终选择使用<a href=https://cdn.azul.com/zulu/bin/zulu16.30.15-ca-jdk16.0.1-macosx_aarch64.dmg>Azul Zulu的dmg二进制安装</a>可正常运行</p><h3 id=安装antlr>安装antlr</h3><p><a href=https://www.antlr.org/>antlr官网</a>首页已经给出了安装教程:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>OS X
-</span></span><span style=display:flex><span>$ cd /usr/local/lib
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>OS X
+</span></span><span style=display:flex><span>$ <span style=color:#0086b3>cd</span> /usr/local/lib
 </span></span><span style=display:flex><span>$ sudo curl -O https://www.antlr.org/download/antlr-4.9.2-complete.jar
-</span></span><span style=display:flex><span>$ export CLASSPATH<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;.:/usr/local/lib/antlr-4.9.2-complete.jar:</span>$CLASSPATH<span style=color:#e6db74>&#34;</span>
-</span></span><span style=display:flex><span>$ alias antlr4<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;java -jar /usr/local/lib/antlr-4.9.2-complete.jar&#39;</span>
-</span></span><span style=display:flex><span>$ alias grun<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;java org.antlr.v4.gui.TestRig&#39;</span>
-</span></span></code></pre></td></tr></table></div></div><h3 id=运行示例测试>运行示例测试</h3><ul><li>编写Expr.g4<div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span><span style=display:flex><span>$ <span style=color:#0086b3>export</span> <span style=color:teal>CLASSPATH</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#34;.:/usr/local/lib/antlr-4.9.2-complete.jar:</span><span style=color:teal>$CLASSPATH</span><span style=color:#d14>&#34;</span>
+</span></span><span style=display:flex><span>$ <span style=color:#0086b3>alias</span> <span style=color:teal>antlr4</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#39;java -jar /usr/local/lib/antlr-4.9.2-complete.jar&#39;</span>
+</span></span><span style=display:flex><span>$ <span style=color:#0086b3>alias</span> <span style=color:teal>grun</span><span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#39;java org.antlr.v4.gui.TestRig&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=运行示例测试>运行示例测试</h3><ul><li>编写Expr.g4<div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
@@ -26,16 +26,16 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-antlr data-lang=antlr><span style=display:flex><span><span style=color:#66d9ef>grammar</span> <span style=color:#a6e22e>Expr</span>;		
-</span></span><span style=display:flex><span>prog:	<span style=color:#f92672>(</span>expr <span style=color:#66d9ef>NEWLINE</span><span style=color:#f92672>)*</span> ;
-</span></span><span style=display:flex><span>expr:	expr <span style=color:#f92672>(</span><span style=color:#e6db74>&#39;*&#39;</span><span style=color:#f92672>|</span><span style=color:#e6db74>&#39;/&#39;</span><span style=color:#f92672>)</span> expr
-</span></span><span style=display:flex><span>    <span style=color:#f92672>|</span>	expr <span style=color:#f92672>(</span><span style=color:#e6db74>&#39;+&#39;</span><span style=color:#f92672>|</span><span style=color:#e6db74>&#39;-&#39;</span><span style=color:#f92672>)</span> expr
-</span></span><span style=display:flex><span>    <span style=color:#f92672>|</span>	<span style=color:#66d9ef>INT</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>|</span>	<span style=color:#e6db74>&#39;(&#39;</span> expr <span style=color:#e6db74>&#39;)&#39;</span>
-</span></span><span style=display:flex><span>    ;
-</span></span><span style=display:flex><span>NEWLINE : [\r\n]<span style=color:#f92672>+</span> ;
-</span></span><span style=display:flex><span>INT     : [0-9]<span style=color:#f92672>+</span> ;
-</span></span></code></pre></td></tr></table></div></div></li><li>运行antlr工具<pre tabindex=0><code>$ antlr4 Expr.g4
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-antlr data-lang=antlr><span style=display:flex><span><span style=color:#000;font-weight:700>grammar</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>Expr</span>;<span style=color:#bbb>		
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#900;font-weight:700>prog</span>:<span style=color:#bbb>	</span><span style=color:#000;font-weight:700>(</span><span style=color:teal>expr</span><span style=color:#bbb> </span><span style=color:teal>NEWLINE</span><span style=color:#000;font-weight:700>)*</span><span style=color:#bbb> </span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#900;font-weight:700>expr</span>:<span style=color:#bbb>	</span><span style=color:teal>expr</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>(</span><span style=color:#d14>&#39;*&#39;</span><span style=color:#000;font-weight:700>|</span><span style=color:#d14>&#39;/&#39;</span><span style=color:#000;font-weight:700>)</span><span style=color:#bbb> </span><span style=color:teal>expr</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb>	</span><span style=color:teal>expr</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>(</span><span style=color:#d14>&#39;+&#39;</span><span style=color:#000;font-weight:700>|</span><span style=color:#d14>&#39;-&#39;</span><span style=color:#000;font-weight:700>)</span><span style=color:#bbb> </span><span style=color:teal>expr</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb>	</span><span style=color:teal>INT</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>|</span><span style=color:#bbb>	</span><span style=color:#d14>&#39;(&#39;</span><span style=color:#bbb> </span><span style=color:teal>expr</span><span style=color:#bbb> </span><span style=color:#d14>&#39;)&#39;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#900;font-weight:700>NEWLINE</span><span style=color:#bbb> </span>:<span style=color:#bbb> </span>[\r\n]<span style=color:#000;font-weight:700>+</span><span style=color:#bbb> </span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#900;font-weight:700>INT</span><span style=color:#bbb>     </span>:<span style=color:#bbb> </span>[0-9]<span style=color:#000;font-weight:700>+</span><span style=color:#bbb> </span>;<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div></li><li>运行antlr工具<pre tabindex=0><code>$ antlr4 Expr.g4
 $ javac Expr*.java
 $ grun Expr prog -gui
 100+2*34
@@ -54,7 +54,7 @@ expr:	left=expr op=(&#39;*&#39;|&#39;/&#39;) right=expr  # OpExpr
 INT : [0-9]+ ;
 WS  :   [ \t]+ -&gt; skip ;
 </code></pre><h3 id=使用antlr生成相关的go文件>使用antlr生成相关的go文件</h3><p><code>antlr4 -Dlanguage=Go -o parser -package parser -visitor -no-listener Expression.g4</code>
-上面的命令参数作用一目了然不在赘述,需要注意的是antlr默认会生成listenner模式的相关文件,所以我们使用了<code>-no-listener</code>参数阻止</p><h3 id=编写go的main程序>编写go的<code>main</code>程序</h3><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+上面的命令参数作用一目了然不在赘述,需要注意的是antlr默认会生成listenner模式的相关文件,所以我们使用了<code>-no-listener</code>参数阻止</p><h3 id=编写go的main程序>编写go的<code>main</code>程序</h3><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -137,90 +137,90 @@ WS  :   [ \t]+ -&gt; skip ;
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">81
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">82
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">83
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Go data-lang=Go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-Go data-lang=Go><span style=display:flex><span><span style=color:#000;font-weight:700>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;antlrtest/parser&#34;</span>
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;strconv&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;antlrtest/parser&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;strconv&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;github.com/antlr/antlr4/runtime/Go/antlr&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;github.com/antlr/antlr4/runtime/Go/antlr&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Visitor</span> <span style=color:#66d9ef>struct</span> {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>CalculantlrVisitor</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>type</span> Visitor <span style=color:#000;font-weight:700>struct</span> {
+</span></span><span style=display:flex><span>	parser.CalculantlrVisitor
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>v</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Visitor</span>) <span style=color:#a6e22e>Visit</span>(<span style=color:#a6e22e>tree</span> <span style=color:#a6e22e>antlr</span>.<span style=color:#a6e22e>ParseTree</span>) <span style=color:#66d9ef>float64</span> {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>switch</span> <span style=color:#a6e22e>val</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>tree</span>.(<span style=color:#66d9ef>type</span>) {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>AtomExprContext</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>VisitAtomExpr</span>(<span style=color:#a6e22e>val</span>)
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>ParenExprContext</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>VisitParenExpr</span>(<span style=color:#a6e22e>val</span>)
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>OpExprContext</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>VisitOpExpr</span>(<span style=color:#a6e22e>val</span>)
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>default</span>:
-</span></span><span style=display:flex><span>		panic(<span style=color:#e6db74>&#34;Unknown context&#34;</span>)
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> (v <span style=color:#000;font-weight:700>*</span>Visitor) <span style=color:#900;font-weight:700>Visit</span>(tree antlr.ParseTree) <span style=color:#458;font-weight:700>float64</span> {
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>switch</span> val <span style=color:#000;font-weight:700>:=</span> tree.(<span style=color:#000;font-weight:700>type</span>) {
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#000;font-weight:700>*</span>parser.AtomExprContext:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> v.<span style=color:#900;font-weight:700>VisitAtomExpr</span>(val)
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#000;font-weight:700>*</span>parser.ParenExprContext:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> v.<span style=color:#900;font-weight:700>VisitParenExpr</span>(val)
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#000;font-weight:700>*</span>parser.OpExprContext:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> v.<span style=color:#900;font-weight:700>VisitOpExpr</span>(val)
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>default</span>:
+</span></span><span style=display:flex><span>		<span style=color:#0086b3>panic</span>(<span style=color:#d14>&#34;Unknown context&#34;</span>)
 </span></span><span style=display:flex><span>	}
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>v</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Visitor</span>) <span style=color:#a6e22e>VisitAtomExpr</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>AtomExprContext</span>) <span style=color:#66d9ef>float64</span> {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;atom&#34;</span>, <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetText</span>())
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>i1</span>, <span style=color:#a6e22e>_</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>strconv</span>.<span style=color:#a6e22e>ParseFloat</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetText</span>(), <span style=color:#ae81ff>64</span>)
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> (v <span style=color:#000;font-weight:700>*</span>Visitor) <span style=color:#900;font-weight:700>VisitAtomExpr</span>(ctx <span style=color:#000;font-weight:700>*</span>parser.AtomExprContext) <span style=color:#458;font-weight:700>float64</span> {
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;atom&#34;</span>, ctx.<span style=color:#900;font-weight:700>GetText</span>())
+</span></span><span style=display:flex><span>	i1, _ <span style=color:#000;font-weight:700>:=</span> strconv.<span style=color:#900;font-weight:700>ParseFloat</span>(ctx.<span style=color:#900;font-weight:700>GetText</span>(), <span style=color:#099>64</span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>i1</span>
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>return</span> i1
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>v</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Visitor</span>) <span style=color:#a6e22e>VisitParenExpr</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>ParenExprContext</span>) <span style=color:#66d9ef>float64</span> {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;parent&#34;</span>, <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetText</span>())
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tar</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>Visit</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>Expr</span>())
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>tar</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> (v <span style=color:#000;font-weight:700>*</span>Visitor) <span style=color:#900;font-weight:700>VisitParenExpr</span>(ctx <span style=color:#000;font-weight:700>*</span>parser.ParenExprContext) <span style=color:#458;font-weight:700>float64</span> {
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;parent&#34;</span>, ctx.<span style=color:#900;font-weight:700>GetText</span>())
+</span></span><span style=display:flex><span>	tar <span style=color:#000;font-weight:700>:=</span> v.<span style=color:#900;font-weight:700>Visit</span>(ctx.<span style=color:#900;font-weight:700>Expr</span>())
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>return</span> tar
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> (<span style=color:#a6e22e>v</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>Visitor</span>) <span style=color:#a6e22e>VisitOpExpr</span>(<span style=color:#a6e22e>ctx</span> <span style=color:#f92672>*</span><span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>OpExprContext</span>) <span style=color:#66d9ef>float64</span> {
-</span></span><span style=display:flex><span>	<span style=color:#75715e>// fmt.Println(&#34;op&#34;)
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>l</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>Visit</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetLeft</span>())
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>r</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>v</span>.<span style=color:#a6e22e>Visit</span>(<span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetRight</span>())
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>op</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>ctx</span>.<span style=color:#a6e22e>GetOp</span>().<span style=color:#a6e22e>GetText</span>()
-</span></span><span style=display:flex><span>	<span style=color:#75715e>// if op == &#34;+&#34; {
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// 	return l + r
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#75715e>// }
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;op&#34;</span>, <span style=color:#a6e22e>op</span>)
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>switch</span> <span style=color:#a6e22e>op</span> {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#34;+&#34;</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>l</span> <span style=color:#f92672>+</span> <span style=color:#a6e22e>r</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#34;-&#34;</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>l</span> <span style=color:#f92672>-</span> <span style=color:#a6e22e>r</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#34;*&#34;</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>l</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>r</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>case</span> <span style=color:#e6db74>&#34;/&#34;</span>:
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>return</span> <span style=color:#a6e22e>l</span> <span style=color:#f92672>/</span> <span style=color:#a6e22e>r</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> (v <span style=color:#000;font-weight:700>*</span>Visitor) <span style=color:#900;font-weight:700>VisitOpExpr</span>(ctx <span style=color:#000;font-weight:700>*</span>parser.OpExprContext) <span style=color:#458;font-weight:700>float64</span> {
+</span></span><span style=display:flex><span>	<span style=color:#998;font-style:italic>// fmt.Println(&#34;op&#34;)
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	l <span style=color:#000;font-weight:700>:=</span> v.<span style=color:#900;font-weight:700>Visit</span>(ctx.<span style=color:#900;font-weight:700>GetLeft</span>())
+</span></span><span style=display:flex><span>	r <span style=color:#000;font-weight:700>:=</span> v.<span style=color:#900;font-weight:700>Visit</span>(ctx.<span style=color:#900;font-weight:700>GetRight</span>())
+</span></span><span style=display:flex><span>	op <span style=color:#000;font-weight:700>:=</span> ctx.<span style=color:#900;font-weight:700>GetOp</span>().<span style=color:#900;font-weight:700>GetText</span>()
+</span></span><span style=display:flex><span>	<span style=color:#998;font-style:italic>// if op == &#34;+&#34; {
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	<span style=color:#998;font-style:italic>// 	return l + r
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	<span style=color:#998;font-style:italic>// }
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;op&#34;</span>, op)
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>switch</span> op {
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#d14>&#34;+&#34;</span>:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> l <span style=color:#000;font-weight:700>+</span> r
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#d14>&#34;-&#34;</span>:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> l <span style=color:#000;font-weight:700>-</span> r
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#d14>&#34;*&#34;</span>:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> l <span style=color:#000;font-weight:700>*</span> r
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>case</span> <span style=color:#d14>&#34;/&#34;</span>:
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>return</span> l <span style=color:#000;font-weight:700>/</span> r
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>return</span> <span style=color:#099>0</span>
 </span></span><span style=display:flex><span>}
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>// func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
-</span></span></span><span style=display:flex><span><span style=color:#75715e>// 	fmt.Println(ctx.GetText())
-</span></span></span><span style=display:flex><span><span style=color:#75715e>// }
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>expression</span> <span style=color:#f92672>:=</span> <span style=color:#e6db74>&#34;100 + 3 * 4 + 5&#34;</span>
-</span></span><span style=display:flex><span>	<span style=color:#75715e>// input, _ := antlr.NewFileStream(os.Args[1])
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>input</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>antlr</span>.<span style=color:#a6e22e>NewInputStream</span>(<span style=color:#a6e22e>expression</span>)
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>// func (this *TreeShapeListener) EnterEveryRule(ctx antlr.ParserRuleContext) {
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>// 	fmt.Println(ctx.GetText())
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>// }
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> <span style=color:#900;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>	expression <span style=color:#000;font-weight:700>:=</span> <span style=color:#d14>&#34;100 + 3 * 4 + 5&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#998;font-style:italic>// input, _ := antlr.NewFileStream(os.Args[1])
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	input <span style=color:#000;font-weight:700>:=</span> antlr.<span style=color:#900;font-weight:700>NewInputStream</span>(expression)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>lexer</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>NewCalculantlrLexer</span>(<span style=color:#a6e22e>input</span>)
+</span></span><span style=display:flex><span>	lexer <span style=color:#000;font-weight:700>:=</span> parser.<span style=color:#900;font-weight:700>NewCalculantlrLexer</span>(input)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>stream</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>antlr</span>.<span style=color:#a6e22e>NewCommonTokenStream</span>(<span style=color:#a6e22e>lexer</span>, <span style=color:#ae81ff>0</span>)
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>p</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>parser</span>.<span style=color:#a6e22e>NewCalculantlrParser</span>(<span style=color:#a6e22e>stream</span>)
+</span></span><span style=display:flex><span>	stream <span style=color:#000;font-weight:700>:=</span> antlr.<span style=color:#900;font-weight:700>NewCommonTokenStream</span>(lexer, <span style=color:#099>0</span>)
+</span></span><span style=display:flex><span>	p <span style=color:#000;font-weight:700>:=</span> parser.<span style=color:#900;font-weight:700>NewCalculantlrParser</span>(stream)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#75715e>// p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>	<span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>BuildParseTrees</span> = <span style=color:#66d9ef>true</span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tree</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>p</span>.<span style=color:#a6e22e>Expr</span>()
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>visitor</span> = <span style=color:#a6e22e>Visitor</span>{}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>result</span> = <span style=color:#a6e22e>visitor</span>.<span style=color:#a6e22e>Visit</span>(<span style=color:#a6e22e>tree</span>)
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>expression</span>, <span style=color:#e6db74>&#34;=&#34;</span>, <span style=color:#a6e22e>result</span>)
+</span></span><span style=display:flex><span>	<span style=color:#998;font-style:italic>// p.AddErrorListener(antlr.NewDiagnosticErrorListener(true))
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>	p.BuildParseTrees = <span style=color:#000;font-weight:700>true</span>
+</span></span><span style=display:flex><span>	tree <span style=color:#000;font-weight:700>:=</span> p.<span style=color:#900;font-weight:700>Expr</span>()
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>var</span> visitor = Visitor{}
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>var</span> result = visitor.<span style=color:#900;font-weight:700>Visit</span>(tree)
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(expression, <span style=color:#d14>&#34;=&#34;</span>, result)
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>其它关于go的mod的一些基础操作这里不提,运行<code>go run test.go</code>可以看到以下输出</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span></code></pre></td></tr></table></div></div><p>其它关于go的mod的一些基础操作这里不提,运行<code>go run test.go</code>可以看到以下输出</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
@@ -228,14 +228,14 @@ WS  :   [ \t]+ -&gt; skip ;
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>atom <span style=color:#ae81ff>100</span>
-</span></span><span style=display:flex><span>atom <span style=color:#ae81ff>3</span>
-</span></span><span style=display:flex><span>atom <span style=color:#ae81ff>4</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>atom <span style=color:#099>100</span>
+</span></span><span style=display:flex><span>atom <span style=color:#099>3</span>
+</span></span><span style=display:flex><span>atom <span style=color:#099>4</span>
 </span></span><span style=display:flex><span>op *
 </span></span><span style=display:flex><span>op +
-</span></span><span style=display:flex><span>atom <span style=color:#ae81ff>5</span>
+</span></span><span style=display:flex><span>atom <span style=color:#099>5</span>
 </span></span><span style=display:flex><span>op +
-</span></span><span style=display:flex><span><span style=color:#ae81ff>100</span> + <span style=color:#ae81ff>3</span> * <span style=color:#ae81ff>4</span> + 5 <span style=color:#f92672>=</span> <span style=color:#ae81ff>117</span>
+</span></span><span style=display:flex><span><span style=color:#099>100</span> + <span style=color:#099>3</span> * <span style=color:#099>4</span> + <span style=color:teal>5</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#099>117</span>
 </span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><ul class=post-copyright><li><strong>原文作者：</strong><a rel=author href=https://60ke.github.io>LookForAdmin</a></li><li style=word-break:break-all><strong>原文链接：</strong><a href=https://60ke.github.io/posts/antlr4/>https://60ke.github.io/posts/antlr4/</a></li><li><strong>版权声明：</strong>本作品采用<a rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/>知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li></ul></div><br><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/python%E8%A7%A3%E9%87%8A%E5%99%A8%E5%88%9D%E6%8E%A2/>python解释器初探</a></li><li><a href=/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/>终端录屏</a></li><li><a href=/drafts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE/>数据结构之子字符串查找</a></li><li><a href=/drafts/go%E8%B0%83%E7%94%A8RUST/>go调用RUST</a></li><li><a href=/drafts/M1-vscode-lldb/>M1-vscode-lldb</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/golang>golang</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>

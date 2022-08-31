@@ -12,7 +12,7 @@
 同样是在“高级功能”菜单中配置,需要配置两项参数:
 URL: 开发者应用访问地址,目前仅支持80端口,以“http://www.worileqing.top/weixin/index.php”为例。
 TOKEN: 随意填写,用于生成签名,以“YoonPer”为例。
-填写完把下面代码保存为index.php并上传至http://www.worileqing.top/weixin/目录,最后点击“提交”完成验证。</p></li></ol><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+填写完把下面代码保存为index.php并上传至http://www.worileqing.top/weixin/目录,最后点击“提交”完成验证。</p></li></ol><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -72,70 +72,70 @@ TOKEN: 随意填写,用于生成签名,以“YoonPer”为例。
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>define</span>(<span style=color:#e6db74>&#34;TOKEN&#34;</span>, <span style=color:#e6db74>&#34;YoonPer&#34;</span>); <span style=color:#75715e>//TOKEN值
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>03</span>
-</span></span><span style=display:flex><span>$wechatObj <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>wechat</span>();
-</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
-</span></span><span style=display:flex><span>$wechatObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>valid</span>();
-</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>wechat</span> {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>valid</span>() {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
-</span></span><span style=display:flex><span>        $echoStr <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;echostr&#34;</span>];
-</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>($this<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>checkSignature</span>()){
-</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>echo</span> $echoStr;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>exit</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#099>01</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;?</span>php
+</span></span><span style=display:flex><span><span style=color:#099>02</span>
+</span></span><span style=display:flex><span>define(<span style=color:#d14>&#34;TOKEN&#34;</span>, <span style=color:#d14>&#34;YoonPer&#34;</span>); <span style=color:#998;font-style:italic>//TOKEN值
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>03</span>
+</span></span><span style=display:flex><span><span style=color:teal>$wechatObj</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#000;font-weight:700>new</span> wechat();
+</span></span><span style=display:flex><span><span style=color:#099>04</span>
+</span></span><span style=display:flex><span><span style=color:teal>$wechatObj</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>valid</span>();
+</span></span><span style=display:flex><span><span style=color:#099>05</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>class</span> <span style=color:#458;font-weight:700>wechat</span> {
+</span></span><span style=display:flex><span><span style=color:#099>06</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>public</span> <span style=color:#000;font-weight:700>function</span> <span style=color:#900;font-weight:700>valid</span>() {
+</span></span><span style=display:flex><span><span style=color:#099>07</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$echoStr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$_GET</span>[<span style=color:#d14>&#34;echostr&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#099>08</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>if</span>(<span style=color:teal>$this</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>checkSignature</span>()){
+</span></span><span style=display:flex><span><span style=color:#099>09</span>
+</span></span><span style=display:flex><span>            <span style=color:#000;font-weight:700>echo</span> <span style=color:teal>$echoStr</span>;
+</span></span><span style=display:flex><span><span style=color:#099>10</span>
+</span></span><span style=display:flex><span>            <span style=color:#000;font-weight:700>exit</span>;
+</span></span><span style=display:flex><span><span style=color:#099>11</span>
 </span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
+</span></span><span style=display:flex><span><span style=color:#099>12</span>
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span><span style=color:#099>13</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>private</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>checkSignature</span>() {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>15</span>
-</span></span><span style=display:flex><span>        $signature <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;signature&#34;</span>];
-</span></span><span style=display:flex><span><span style=color:#ae81ff>16</span>
-</span></span><span style=display:flex><span>        $timestamp <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;timestamp&#34;</span>];
-</span></span><span style=display:flex><span><span style=color:#ae81ff>17</span>
-</span></span><span style=display:flex><span>        $nonce <span style=color:#f92672>=</span> $_GET[<span style=color:#e6db74>&#34;nonce&#34;</span>];
-</span></span><span style=display:flex><span><span style=color:#ae81ff>18</span>
-</span></span><span style=display:flex><span>        $token <span style=color:#f92672>=</span> <span style=color:#a6e22e>TOKEN</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
-</span></span><span style=display:flex><span>        $tmpArr <span style=color:#f92672>=</span> <span style=color:#66d9ef>array</span>($token, $timestamp, $nonce);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
-</span></span><span style=display:flex><span>        <span style=color:#a6e22e>sort</span>($tmpArr);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>21</span>
-</span></span><span style=display:flex><span>        $tmpStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>implode</span>( $tmpArr );
-</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
-</span></span><span style=display:flex><span>        $tmpStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>sha1</span>( $tmpStr );
-</span></span><span style=display:flex><span><span style=color:#ae81ff>23</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>if</span>( $tmpStr <span style=color:#f92672>==</span> $signature ) {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>24</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>true</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>25</span>
-</span></span><span style=display:flex><span>        } <span style=color:#66d9ef>else</span> {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>26</span>
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>return</span> <span style=color:#66d9ef>false</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>27</span>
+</span></span><span style=display:flex><span><span style=color:#099>14</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>private</span> <span style=color:#000;font-weight:700>function</span> <span style=color:#900;font-weight:700>checkSignature</span>() {
+</span></span><span style=display:flex><span><span style=color:#099>15</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$signature</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$_GET</span>[<span style=color:#d14>&#34;signature&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#099>16</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$timestamp</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$_GET</span>[<span style=color:#d14>&#34;timestamp&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#099>17</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$nonce</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$_GET</span>[<span style=color:#d14>&#34;nonce&#34;</span>];
+</span></span><span style=display:flex><span><span style=color:#099>18</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$token</span> <span style=color:#000;font-weight:700>=</span> TOKEN;
+</span></span><span style=display:flex><span><span style=color:#099>19</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$tmpArr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#000;font-weight:700>array</span>(<span style=color:teal>$token</span>, <span style=color:teal>$timestamp</span>, <span style=color:teal>$nonce</span>);
+</span></span><span style=display:flex><span><span style=color:#099>20</span>
+</span></span><span style=display:flex><span>        sort(<span style=color:teal>$tmpArr</span>);
+</span></span><span style=display:flex><span><span style=color:#099>21</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$tmpStr</span> <span style=color:#000;font-weight:700>=</span> implode( <span style=color:teal>$tmpArr</span> );
+</span></span><span style=display:flex><span><span style=color:#099>22</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$tmpStr</span> <span style=color:#000;font-weight:700>=</span> sha1( <span style=color:teal>$tmpStr</span> );
+</span></span><span style=display:flex><span><span style=color:#099>23</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>if</span>( <span style=color:teal>$tmpStr</span> <span style=color:#000;font-weight:700>==</span> <span style=color:teal>$signature</span> ) {
+</span></span><span style=display:flex><span><span style=color:#099>24</span>
+</span></span><span style=display:flex><span>            <span style=color:#000;font-weight:700>return</span> <span style=color:#000;font-weight:700>true</span>;
+</span></span><span style=display:flex><span><span style=color:#099>25</span>
+</span></span><span style=display:flex><span>        } <span style=color:#000;font-weight:700>else</span> {
+</span></span><span style=display:flex><span><span style=color:#099>26</span>
+</span></span><span style=display:flex><span>            <span style=color:#000;font-weight:700>return</span> <span style=color:#000;font-weight:700>false</span>;
+</span></span><span style=display:flex><span><span style=color:#099>27</span>
 </span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>28</span>
+</span></span><span style=display:flex><span><span style=color:#099>28</span>
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>29</span>
+</span></span><span style=display:flex><span><span style=color:#099>29</span>
 </span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span><span style=color:#ae81ff>30</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span><span style=display:flex><span><span style=color:#099>30</span>
+</span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
 </span></span></span></code></pre></td></tr></table></div></div><p>这玩意儿就是微信公众平台校验URL是否正确接入,研究代码没有实质性意义,验证完即可删除文件,就不详细说明了,有兴趣的童鞋可以查看官方文档。
 微信公众平台API文档:
 <a href=http://mp.weixin.qq.com/wiki/index.php>http://mp.weixin.qq.com/wiki/index.php</a></p><ol start=5><li>开发微信公众平台功能
-OK,上面提到了,微信公众平台与开发者之间的数据交互是通过XML完成的,既然用到XML,当然得遵循规范,所以在着手开发之前先看看官方接口文档提供的XML规范,以文本消息为例:</li></ol><p>当用户向微信公众账号发送消息时,微信服务器会POST给开发者一些数据:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+OK,上面提到了,微信公众平台与开发者之间的数据交互是通过XML完成的,既然用到XML,当然得遵循规范,所以在着手开发之前先看看官方接口文档提供的XML规范,以文本消息为例:</li></ol><p>当用户向微信公众账号发送消息时,微信服务器会POST给开发者一些数据:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
@@ -278,151 +278,151 @@ OK,上面提到了,微信公众平台与开发者之间的数据交互是通过X
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">141
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">142
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">143
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>开发者微信号</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>toUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>发送方帐号（OpenID）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>fromUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息创建时间</span> <span style=color:#a6e22e>（整型）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>12345678</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息类别</span> <span style=color:#a6e22e>（text文本消息）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA1</span>]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息内容</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>content</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息ID</span> <span style=color:#a6e22e>（64位整型）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgId</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>1234567890123456</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>MsgId</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#099>01</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>xml<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>02</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>开发者微信号<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>03</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>ToUserName<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[toUser]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>ToUserName<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>04</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>发送方帐号（OpenID）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>05</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>FromUserName<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[fromUser]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>FromUserName<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>06</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息创建时间 （整型）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>07</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>CreateTime<span style=color:#000;font-weight:700>&gt;</span><span style=color:#099>12345678</span><span style=color:#000;font-weight:700>&lt;/</span>CreateTime<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>08</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息类别 （text文本消息）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>09</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>MsgType<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA1]<span style=color:#000;font-weight:700>&gt;&lt;/</span>MsgType<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>10</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息内容<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>11</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>Content<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[content]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>Content<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>12</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息ID （64位整型）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>13</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>MsgId<span style=color:#000;font-weight:700>&gt;</span><span style=color:#099>1234567890123456</span><span style=color:#000;font-weight:700>&lt;/</span>MsgId<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>14</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;/</span>xml<span style=color:#000;font-weight:700>&gt;</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#a6e22e>开发者在处理完消息后需要返回数据给微信服务器</span><span style=color:#f92672>:</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>01</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>接收方帐号（OpenID）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>toUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>ToUserName</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>开发者微信号</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>fromUser</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>FromUserName</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息创建时间</span> <span style=color:#a6e22e>（整型）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>12345678</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>CreateTime</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>消息类别</span> <span style=color:#a6e22e>（text文本消息）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA1</span>]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>MsgType</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>回复消息内容</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;&lt;!</span>[<span style=color:#a6e22e>CDATA</span>[<span style=color:#a6e22e>content</span>]]<span style=color:#f92672>&gt;&lt;/</span><span style=color:#a6e22e>Content</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;!--</span><span style=color:#a6e22e>星标操作（位0x0001被标志时</span> <span style=color:#a6e22e>星标刚收到的消息）</span><span style=color:#f92672>--&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;</span><span style=color:#a6e22e>FuncFlag</span><span style=color:#f92672>&gt;</span><span style=color:#ae81ff>0</span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>FuncFlag</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;/</span><span style=color:#a6e22e>xml</span><span style=color:#f92672>&gt;</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>除文本消息外</span>,<span style=color:#a6e22e>微信公众平台还支持用户发送图片消息、地理位置消息、链接消息、事件推送</span>,<span style=color:#a6e22e>而开发者还可以向微信公众平台回复音乐消息和图文消息</span>,<span style=color:#a6e22e>各类消息XML规范也可以参见官方文档。</span>
+</span></span><span style=display:flex><span>开发者在处理完消息后需要返回数据给微信服务器<span style=color:#000;font-weight:700>:</span>
+</span></span><span style=display:flex><span><span style=color:#099>01</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>xml<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>02</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>接收方帐号（OpenID）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>03</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>ToUserName<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[toUser]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>ToUserName<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>04</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>开发者微信号<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>05</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>FromUserName<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[fromUser]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>FromUserName<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>06</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息创建时间 （整型）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>07</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>CreateTime<span style=color:#000;font-weight:700>&gt;</span><span style=color:#099>12345678</span><span style=color:#000;font-weight:700>&lt;/</span>CreateTime<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>08</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>消息类别 （text文本消息）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>09</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>MsgType<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA1]<span style=color:#000;font-weight:700>&gt;&lt;/</span>MsgType<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>10</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>回复消息内容<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>11</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>Content<span style=color:#000;font-weight:700>&gt;&lt;!</span>[CDATA[content]]<span style=color:#000;font-weight:700>&gt;&lt;/</span>Content<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>12</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;!--</span>星标操作（位0x0001被标志时 星标刚收到的消息）<span style=color:#000;font-weight:700>--&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>13</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;</span>FuncFlag<span style=color:#000;font-weight:700>&gt;</span><span style=color:#099>0</span><span style=color:#000;font-weight:700>&lt;/</span>FuncFlag<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span><span style=color:#099>14</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;/</span>xml<span style=color:#000;font-weight:700>&gt;</span>
+</span></span><span style=display:flex><span>除文本消息外,微信公众平台还支持用户发送图片消息、地理位置消息、链接消息、事件推送,而开发者还可以向微信公众平台回复音乐消息和图文消息,各类消息XML规范也可以参见官方文档。
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#a6e22e>来看看官方提供的一个PHP示例</span>,<span style=color:#a6e22e>我做了一些精简</span><span style=color:#f92672>:</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>01</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
-</span></span><span style=display:flex><span>$wechatObj <span style=color:#f92672>=</span> <span style=color:#66d9ef>new</span> <span style=color:#a6e22e>wechat</span>();
-</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
-</span></span><span style=display:flex><span>$wechatObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>responseMsg</span>();
-</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>class</span> <span style=color:#a6e22e>wechat</span> {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>public</span> <span style=color:#66d9ef>function</span> <span style=color:#a6e22e>responseMsg</span>() {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>06</span>
+</span></span><span style=display:flex><span>来看看官方提供的一个PHP示例,我做了一些精简<span style=color:#000;font-weight:700>:</span>
+</span></span><span style=display:flex><span><span style=color:#099>01</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;?</span>php
+</span></span><span style=display:flex><span><span style=color:#099>02</span>
+</span></span><span style=display:flex><span><span style=color:teal>$wechatObj</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#000;font-weight:700>new</span> wechat();
+</span></span><span style=display:flex><span><span style=color:#099>03</span>
+</span></span><span style=display:flex><span><span style=color:teal>$wechatObj</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>responseMsg</span>();
+</span></span><span style=display:flex><span><span style=color:#099>04</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>class</span> <span style=color:#458;font-weight:700>wechat</span> {
+</span></span><span style=display:flex><span><span style=color:#099>05</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>public</span> <span style=color:#000;font-weight:700>function</span> <span style=color:#900;font-weight:700>responseMsg</span>() {
+</span></span><span style=display:flex><span><span style=color:#099>06</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e>//---------- 接 收 数 据 ---------- //
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>08</span>
+</span></span><span style=display:flex><span><span style=color:#099>07</span>
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>//---------- 接 收 数 据 ---------- //
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>08</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
-</span></span><span style=display:flex><span>        $postStr <span style=color:#f92672>=</span> $GLOBALS[<span style=color:#e6db74>&#34;HTTP_RAW_POST_DATA&#34;</span>]; <span style=color:#75715e>//获取POST数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>10</span>
+</span></span><span style=display:flex><span><span style=color:#099>09</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$postStr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$GLOBALS</span>[<span style=color:#d14>&#34;HTTP_RAW_POST_DATA&#34;</span>]; <span style=color:#998;font-style:italic>//获取POST数据
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>10</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e>//用SimpleXML解析POST过来的XML数据
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>12</span>
-</span></span><span style=display:flex><span>        $postObj <span style=color:#f92672>=</span> <span style=color:#a6e22e>simplexml_load_string</span>($postStr,<span style=color:#e6db74>&#39;SimpleXMLElement&#39;</span>,<span style=color:#a6e22e>LIBXML_NOCDATA</span>);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
+</span></span><span style=display:flex><span><span style=color:#099>11</span>
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>//用SimpleXML解析POST过来的XML数据
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>12</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$postObj</span> <span style=color:#000;font-weight:700>=</span> simplexml_load_string(<span style=color:teal>$postStr</span>,<span style=color:#d14>&#39;SimpleXMLElement&#39;</span>,LIBXML_NOCDATA);
+</span></span><span style=display:flex><span><span style=color:#099>13</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
-</span></span><span style=display:flex><span>        $fromUsername <span style=color:#f92672>=</span> $postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>FromUserName</span>; <span style=color:#75715e>//获取发送方帐号（OpenID）
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>15</span>
-</span></span><span style=display:flex><span>        $toUsername <span style=color:#f92672>=</span> $postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>ToUserName</span>; <span style=color:#75715e>//获取接收方账号
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>16</span>
-</span></span><span style=display:flex><span>        $keyword <span style=color:#f92672>=</span> <span style=color:#a6e22e>trim</span>($postObj<span style=color:#f92672>-&gt;</span><span style=color:#a6e22e>Content</span>); <span style=color:#75715e>//获取消息内容
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>17</span>
-</span></span><span style=display:flex><span>        $time <span style=color:#f92672>=</span> <span style=color:#a6e22e>time</span>(); <span style=color:#75715e>//获取当前时间戳
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>18</span>
+</span></span><span style=display:flex><span><span style=color:#099>14</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$fromUsername</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$postObj</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>FromUserName</span>; <span style=color:#998;font-style:italic>//获取发送方帐号（OpenID）
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>15</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$toUsername</span> <span style=color:#000;font-weight:700>=</span> <span style=color:teal>$postObj</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>ToUserName</span>; <span style=color:#998;font-style:italic>//获取接收方账号
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>16</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$keyword</span> <span style=color:#000;font-weight:700>=</span> trim(<span style=color:teal>$postObj</span><span style=color:#000;font-weight:700>-&gt;</span><span style=color:teal>Content</span>); <span style=color:#998;font-style:italic>//获取消息内容
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>17</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$time</span> <span style=color:#000;font-weight:700>=</span> time(); <span style=color:#998;font-style:italic>//获取当前时间戳
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>18</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
+</span></span><span style=display:flex><span><span style=color:#099>19</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e>//---------- 返 回 数 据 ---------- //
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>21</span>
+</span></span><span style=display:flex><span><span style=color:#099>20</span>
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>//---------- 返 回 数 据 ---------- //
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>21</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e>//返回消息模板
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>23</span>
-</span></span><span style=display:flex><span>        $textTpl <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;&lt;xml&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>24
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>25
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>26
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>27
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>28
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>29
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>30
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        &lt;/xml&gt;&#34;</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>31</span>
+</span></span><span style=display:flex><span><span style=color:#099>22</span>
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>//返回消息模板
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>23</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$textTpl</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;&lt;xml&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>24
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;ToUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/ToUserName&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>25
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;FromUserName&gt;&lt;![CDATA[%s]]&gt;&lt;/FromUserName&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>26
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;CreateTime&gt;%s&lt;/CreateTime&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>27
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;MsgType&gt;&lt;![CDATA[%s]]&gt;&lt;/MsgType&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>28
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;Content&gt;&lt;![CDATA[%s]]&gt;&lt;/Content&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>29
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;FuncFlag&gt;0&lt;/FuncFlag&gt;
+</span></span></span><span style=display:flex><span><span style=color:#d14>30
+</span></span></span><span style=display:flex><span><span style=color:#d14>        &lt;/xml&gt;&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#099>31</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>32</span>
-</span></span><span style=display:flex><span>        $msgType <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;text&#34;</span>; <span style=color:#75715e>//消息类型
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>33</span>
-</span></span><span style=display:flex><span>        $contentStr <span style=color:#f92672>=</span> <span style=color:#e6db74>&#39;http://www.worileqing.top&#39;</span>; <span style=color:#75715e>//返回消息内容
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>34</span>
+</span></span><span style=display:flex><span><span style=color:#099>32</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$msgType</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;text&#34;</span>; <span style=color:#998;font-style:italic>//消息类型
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>33</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$contentStr</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#39;http://www.worileqing.top&#39;</span>; <span style=color:#998;font-style:italic>//返回消息内容
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>34</span>
 </span></span><span style=display:flex><span> 
-</span></span><span style=display:flex><span><span style=color:#ae81ff>35</span>
-</span></span><span style=display:flex><span>        <span style=color:#75715e>//格式化消息模板
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>36</span>
-</span></span><span style=display:flex><span>        $resultStr <span style=color:#f92672>=</span> <span style=color:#a6e22e>sprintf</span>($textTpl,$fromUsername,$toUsername,
-</span></span><span style=display:flex><span><span style=color:#ae81ff>37</span>
-</span></span><span style=display:flex><span>        $time,$msgType,$contentStr);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>38</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>echo</span> $resultStr; <span style=color:#75715e>//输出结果
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>39</span>
+</span></span><span style=display:flex><span><span style=color:#099>35</span>
+</span></span><span style=display:flex><span>        <span style=color:#998;font-style:italic>//格式化消息模板
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>36</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$resultStr</span> <span style=color:#000;font-weight:700>=</span> sprintf(<span style=color:teal>$textTpl</span>,<span style=color:teal>$fromUsername</span>,<span style=color:teal>$toUsername</span>,
+</span></span><span style=display:flex><span><span style=color:#099>37</span>
+</span></span><span style=display:flex><span>        <span style=color:teal>$time</span>,<span style=color:teal>$msgType</span>,<span style=color:teal>$contentStr</span>);
+</span></span><span style=display:flex><span><span style=color:#099>38</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>echo</span> <span style=color:teal>$resultStr</span>; <span style=color:#998;font-style:italic>//输出结果
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>39</span>
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>40</span>
+</span></span><span style=display:flex><span><span style=color:#099>40</span>
 </span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span><span style=color:#ae81ff>41</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span><span style=display:flex><span><span style=color:#099>41</span>
+</span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
 </span></span></span></code></pre></td></tr></table></div></div><p>把代码保存为index.php并上传至http://www.worileqing.top/weixin/目录,如果刚才没删除该文件,则直接覆盖。</p><p>现在用户通过微信公众平台发送任何消息公众账号均会返回一条内容为“http://www.worileqing.top”的消息。
-接下来需要做的就是根据用户消息动态返回结果~</p><p>SimSimi（小黄鸡）是目前比较火的聊天机器人,我用CURL开发了一个免费的SimSimi（小黄鸡）接口,传入关键词会返回文本回复,这部分不是本文重点,就不多说明,直接上代码(2014.07.28更新):</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+接下来需要做的就是根据用户消息动态返回结果~</p><p>SimSimi（小黄鸡）是目前比较火的聊天机器人,我用CURL开发了一个免费的SimSimi（小黄鸡）接口,传入关键词会返回文本回复,这部分不是本文重点,就不多说明,直接上代码(2014.07.28更新):</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -478,62 +478,62 @@ OK,上面提到了,微信公众平台与开发者之间的数据交互是通过X
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#ae81ff>01</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>&lt;?</span><span style=color:#a6e22e>php</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>02</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>function</span> <span style=color:#a6e22e>simsimi</span> ($keyword)
-</span></span><span style=display:flex><span><span style=color:#ae81ff>03</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-php data-lang=php><span style=display:flex><span><span style=color:#099>01</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>&lt;?</span>php
+</span></span><span style=display:flex><span><span style=color:#099>02</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>function</span> <span style=color:#900;font-weight:700>simsimi</span> (<span style=color:teal>$keyword</span>)
+</span></span><span style=display:flex><span><span style=color:#099>03</span>
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span><span style=color:#ae81ff>04</span>
-</span></span><span style=display:flex><span>    $keyword <span style=color:#f92672>=</span> <span style=color:#a6e22e>urlencode</span>($keyword);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>05</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e>//----------- 获取COOKIE ----------//
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>06</span>
-</span></span><span style=display:flex><span>    $url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://www.simsimi.com/&#34;</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>07</span>
-</span></span><span style=display:flex><span>    $ch <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_init</span>($url);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>08</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_HEADER</span>, <span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>09</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_RETURNTRANSFER</span>, <span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>10</span>
-</span></span><span style=display:flex><span>    $content <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_exec</span>($ch);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>11</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>list</span>($header, $body) <span style=color:#f92672>=</span> <span style=color:#a6e22e>explode</span>(<span style=color:#e6db74>&#34;</span><span style=color:#ae81ff>\r\n\r\n</span><span style=color:#e6db74>&#34;</span>, $content);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>12</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>preg_match_all</span>(<span style=color:#e6db74>&#34;/set\-cookie:([^</span><span style=color:#ae81ff>\r\n</span><span style=color:#e6db74>]*);/iU&#34;</span>, $header, $matches);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>13</span>
-</span></span><span style=display:flex><span>    $cookie <span style=color:#f92672>=</span> <span style=color:#a6e22e>implode</span>(<span style=color:#e6db74>&#39;;&#39;</span>, $matches[<span style=color:#ae81ff>1</span>])<span style=color:#f92672>.</span><span style=color:#e6db74>&#34;;simsimi_uid=1;&#34;</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>14</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_close</span>($ch);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>15</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e>//----------- 抓 取 回 复 ----------//
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#ae81ff>16</span>
-</span></span><span style=display:flex><span>    $url <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;http://www.simsimi.com/func/reqN?lc=ch&amp;ft=0.0&amp;req=</span><span style=color:#e6db74>$keyword</span><span style=color:#e6db74>&amp;fl=http%3A%2F%2Fwww.simsimi.com%2Ftalk.htm&#34;</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>17</span>
-</span></span><span style=display:flex><span>    $ch <span style=color:#f92672>=</span> <span style=color:#a6e22e>curl_init</span>($url);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>18</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_RETURNTRANSFER</span>, <span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>19</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_setopt</span>($ch, <span style=color:#a6e22e>CURLOPT_COOKIE</span>, $cookie);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>20</span>
-</span></span><span style=display:flex><span>    $content <span style=color:#f92672>=</span> <span style=color:#a6e22e>json_decode</span>(<span style=color:#a6e22e>curl_exec</span>($ch), <span style=color:#ae81ff>1</span>);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>21</span>
-</span></span><span style=display:flex><span>    <span style=color:#a6e22e>curl_close</span>($ch);
-</span></span><span style=display:flex><span><span style=color:#ae81ff>22</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> ( $content[<span style=color:#e6db74>&#39;result&#39;</span>] <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;200&#39;</span> ) {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>23</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> $content[<span style=color:#e6db74>&#39;sentence_resp&#39;</span>];
-</span></span><span style=display:flex><span><span style=color:#ae81ff>24</span>
-</span></span><span style=display:flex><span>    } <span style=color:#66d9ef>else</span> {
-</span></span><span style=display:flex><span><span style=color:#ae81ff>25</span>
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#39;我还不会回答这个问题...&#39;</span>;
-</span></span><span style=display:flex><span><span style=color:#ae81ff>26</span>
+</span></span><span style=display:flex><span><span style=color:#099>04</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$keyword</span> <span style=color:#000;font-weight:700>=</span> urlencode(<span style=color:teal>$keyword</span>);
+</span></span><span style=display:flex><span><span style=color:#099>05</span>
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic>//----------- 获取COOKIE ----------//
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>06</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$url</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;http://www.simsimi.com/&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#099>07</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$ch</span> <span style=color:#000;font-weight:700>=</span> curl_init(<span style=color:teal>$url</span>);
+</span></span><span style=display:flex><span><span style=color:#099>08</span>
+</span></span><span style=display:flex><span>    curl_setopt(<span style=color:teal>$ch</span>, CURLOPT_HEADER, <span style=color:#099>1</span>);
+</span></span><span style=display:flex><span><span style=color:#099>09</span>
+</span></span><span style=display:flex><span>    curl_setopt(<span style=color:teal>$ch</span>, CURLOPT_RETURNTRANSFER, <span style=color:#099>1</span>);
+</span></span><span style=display:flex><span><span style=color:#099>10</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$content</span> <span style=color:#000;font-weight:700>=</span> curl_exec(<span style=color:teal>$ch</span>);
+</span></span><span style=display:flex><span><span style=color:#099>11</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>list</span>(<span style=color:teal>$header</span>, <span style=color:teal>$body</span>) <span style=color:#000;font-weight:700>=</span> explode(<span style=color:#d14>&#34;</span><span style=color:#d14>\r\n\r\n</span><span style=color:#d14>&#34;</span>, <span style=color:teal>$content</span>);
+</span></span><span style=display:flex><span><span style=color:#099>12</span>
+</span></span><span style=display:flex><span>    preg_match_all(<span style=color:#d14>&#34;/set\-cookie:([^</span><span style=color:#d14>\r\n</span><span style=color:#d14>]*);/iU&#34;</span>, <span style=color:teal>$header</span>, <span style=color:teal>$matches</span>);
+</span></span><span style=display:flex><span><span style=color:#099>13</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$cookie</span> <span style=color:#000;font-weight:700>=</span> implode(<span style=color:#d14>&#39;;&#39;</span>, <span style=color:teal>$matches</span>[<span style=color:#099>1</span>])<span style=color:#000;font-weight:700>.</span><span style=color:#d14>&#34;;simsimi_uid=1;&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#099>14</span>
+</span></span><span style=display:flex><span>    curl_close(<span style=color:teal>$ch</span>);
+</span></span><span style=display:flex><span><span style=color:#099>15</span>
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic>//----------- 抓 取 回 复 ----------//
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#099>16</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$url</span> <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;http://www.simsimi.com/func/reqN?lc=ch&amp;ft=0.0&amp;req=</span><span style=color:#d14>$keyword</span><span style=color:#d14>&amp;fl=http%3A%2F%2Fwww.simsimi.com%2Ftalk.htm&#34;</span>;
+</span></span><span style=display:flex><span><span style=color:#099>17</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$ch</span> <span style=color:#000;font-weight:700>=</span> curl_init(<span style=color:teal>$url</span>);
+</span></span><span style=display:flex><span><span style=color:#099>18</span>
+</span></span><span style=display:flex><span>    curl_setopt(<span style=color:teal>$ch</span>, CURLOPT_RETURNTRANSFER, <span style=color:#099>1</span>);
+</span></span><span style=display:flex><span><span style=color:#099>19</span>
+</span></span><span style=display:flex><span>    curl_setopt(<span style=color:teal>$ch</span>, CURLOPT_COOKIE, <span style=color:teal>$cookie</span>);
+</span></span><span style=display:flex><span><span style=color:#099>20</span>
+</span></span><span style=display:flex><span>    <span style=color:teal>$content</span> <span style=color:#000;font-weight:700>=</span> json_decode(curl_exec(<span style=color:teal>$ch</span>), <span style=color:#099>1</span>);
+</span></span><span style=display:flex><span><span style=color:#099>21</span>
+</span></span><span style=display:flex><span>    curl_close(<span style=color:teal>$ch</span>);
+</span></span><span style=display:flex><span><span style=color:#099>22</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>if</span> ( <span style=color:teal>$content</span>[<span style=color:#d14>&#39;result&#39;</span>] <span style=color:#000;font-weight:700>==</span> <span style=color:#d14>&#39;200&#39;</span> ) {
+</span></span><span style=display:flex><span><span style=color:#099>23</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>return</span> <span style=color:teal>$content</span>[<span style=color:#d14>&#39;sentence_resp&#39;</span>];
+</span></span><span style=display:flex><span><span style=color:#099>24</span>
+</span></span><span style=display:flex><span>    } <span style=color:#000;font-weight:700>else</span> {
+</span></span><span style=display:flex><span><span style=color:#099>25</span>
+</span></span><span style=display:flex><span>        <span style=color:#000;font-weight:700>return</span> <span style=color:#d14>&#39;我还不会回答这个问题...&#39;</span>;
+</span></span><span style=display:flex><span><span style=color:#099>26</span>
 </span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span><span style=color:#ae81ff>27</span>
+</span></span><span style=display:flex><span><span style=color:#099>27</span>
 </span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span><span style=color:#ae81ff>28</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>?&gt;</span><span style=color:#960050;background-color:#1e0010>
+</span></span><span style=display:flex><span><span style=color:#099>28</span>
+</span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>?&gt;</span><span style=color:#a61717;background-color:#e3d2d2>
 </span></span></span></code></pre></td></tr></table></div></div><p>把上面两段代码整合在一起就大功告成了,需要说明一点,微信服务器在5秒内收不到响应会断掉连接,通过此接口有可能会超时,且SimSimi已经屏蔽了BAE和SAE上的抓取请求,推荐使用SimSimi官方收费API,速度比较快~</p></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/about/>关于我</a></li><li><a href=/archives/>归档</a></li><li><a href=/search/>搜索</a></li></ul></div><div class="post-meta meta-tags">没有标签</div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>

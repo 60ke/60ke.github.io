@@ -3,27 +3,27 @@
 <a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
 <a href=https://60ke.github.io/archives/ title=归档>归档</a>
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>rust笔记</h1></header><date class="post-meta meta-date">2020年9月18日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
-阅读</span></span></div><div class=post-content><ul><li>10进制转换为16进制并输出</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>assert_eq!(format!(<span style=color:#e6db74>&#34;{:x}&#34;</span>, <span style=color:#ae81ff>42</span>), <span style=color:#e6db74>&#34;2a&#34;</span>);
-</span></span></code></pre></td></tr></table></div></div><ul><li>根据value从列表中获取对应的index （How do I find the index of an element in an array, vector or slice?）</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+阅读</span></span></div><div class=post-content><ul><li>10进制转换为16进制并输出</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span>assert_eq!(format!(<span style=color:#d14>&#34;{:x}&#34;</span>,<span style=color:#bbb> </span><span style=color:#099>42</span>),<span style=color:#bbb> </span><span style=color:#d14>&#34;2a&#34;</span>);<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>根据value从列表中获取对应的index （How do I find the index of an element in an array, vector or slice?）</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> test <span style=color:#f92672>=</span> vec![<span style=color:#e6db74>&#34;one&#34;</span>, <span style=color:#e6db74>&#34;two&#34;</span>, <span style=color:#e6db74>&#34;three&#34;</span>];
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> index <span style=color:#f92672>=</span> test.iter().position(<span style=color:#f92672>|&amp;</span>r<span style=color:#f92672>|</span> r <span style=color:#f92672>==</span> <span style=color:#e6db74>&#34;two&#34;</span>).unwrap();
-</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;{}&#34;</span>, index);
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>rust int与string的转换</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>main</span>()<span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>test<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>vec![<span style=color:#d14>&#34;one&#34;</span>,<span style=color:#bbb> </span><span style=color:#d14>&#34;two&#34;</span>,<span style=color:#bbb> </span><span style=color:#d14>&#34;three&#34;</span>];<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>index<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>test.iter().position(<span style=color:#000;font-weight:700>|&amp;</span>r<span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span>r<span style=color:#bbb> </span><span style=color:#000;font-weight:700>==</span><span style=color:#bbb> </span><span style=color:#d14>&#34;two&#34;</span>).unwrap();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{}&#34;</span>,<span style=color:#bbb> </span>index);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>rust int与string的转换</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>let</span> my_string <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;27&#34;</span>.to_string();  <span style=color:#75715e>// `parse()` works with `&amp;str` and `String`!
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span><span style=color:#66d9ef>let</span> my_int <span style=color:#f92672>=</span> my_string.parse::<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>i32</span><span style=color:#f92672>&gt;</span>().unwrap();
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>let</span> my_int: <span style=color:#66d9ef>i32</span> <span style=color:#f92672>=</span> my_string.parse().unwrap();
-</span></span></code></pre></td></tr></table></div></div><ul><li>rust 合并list实例</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>my_string<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>&#34;27&#34;</span>.to_string();<span style=color:#bbb>  </span><span style=color:#998;font-style:italic>// `parse()` works with `&amp;str` and `String`!
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>my_int<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>my_string.parse::<span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>i32</span><span style=color:#000;font-weight:700>&gt;</span>().unwrap();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>my_int: <span style=color:#458;font-weight:700>i32</span> <span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>my_string.parse().unwrap();<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>rust 合并list实例</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
@@ -174,158 +174,158 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">149
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">150
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">151
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>extern</span> <span style=color:#66d9ef>crate</span> hex;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>extern</span> <span style=color:#66d9ef>crate</span> serde;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> std::collections::HashMap;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> serde::ser::{Serialize, Serializer, SerializeSeq, SerializeMap, SerializeStruct};
-</span></span><span style=display:flex><span><span style=color:#75715e>#[macro_use]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>extern</span> <span style=color:#66d9ef>crate</span> serde_derive;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>type</span> <span style=color:#a6e22e>Dictionary</span> <span style=color:#f92672>=</span> HashMap<span style=color:#f92672>&lt;</span>String, String<span style=color:#f92672>&gt;</span>;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[derive(Debug,Serialize, Deserialize,Clone)]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Account</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> address: String,
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> balance: <span style=color:#66d9ef>usize</span>,
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> code: String,
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> storage: <span style=color:#a6e22e>Dictionary</span>,
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[derive(Debug,Serialize, Deserialize,Clone)]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>WriteSet</span> {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> accounts: Vec<span style=color:#f92672>&lt;</span>Account<span style=color:#f92672>&gt;</span>,
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> gas: <span style=color:#66d9ef>usize</span>,
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>impl</span> Default <span style=color:#66d9ef>for</span> WriteSet {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>default</span>() -&gt; <span style=color:#a6e22e>WriteSet</span> {
-</span></span><span style=display:flex><span>        WriteSet{
-</span></span><span style=display:flex><span>            accounts: Vec::new(),
-</span></span><span style=display:flex><span>            gas: <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>impl</span> Account{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>address</span>(<span style=color:#f92672>&amp;</span>self) -&gt; String {
-</span></span><span style=display:flex><span>        self.address.clone()
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>get_write_addrlist</span>(writeset : <span style=color:#66d9ef>&amp;</span> <span style=color:#a6e22e>WriteSet</span>) -&gt; Vec<span style=color:#f92672>&lt;</span>String<span style=color:#f92672>&gt;</span>{
-</span></span><span style=display:flex><span>    <span style=color:#75715e>// let mut v = Vec::new();
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> vec: Vec<span style=color:#f92672>&lt;</span>String<span style=color:#f92672>&gt;</span> <span style=color:#f92672>=</span> Vec::new();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> account <span style=color:#66d9ef>in</span> <span style=color:#f92672>&amp;</span>writeset.accounts{
-</span></span><span style=display:flex><span>        vec.push(account.address())
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    vec.dedup();
-</span></span><span style=display:flex><span>    vec
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>push_write_account</span>(<span style=color:#66d9ef>mut</span> writeset : <span style=color:#a6e22e>WriteSet</span>,accounts:Vec<span style=color:#f92672>&lt;</span>Account<span style=color:#f92672>&gt;</span>) -&gt; <span style=color:#a6e22e>WriteSet</span>{
-</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> account <span style=color:#66d9ef>in</span> accounts{    
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> writeset_copy <span style=color:#f92672>=</span> writeset.clone();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> writeset_accs <span style=color:#f92672>=</span> get_write_addrlist(<span style=color:#f92672>&amp;</span>writeset);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#f92672>!</span> writeset_accs.contains(<span style=color:#f92672>&amp;</span>account.address()){
-</span></span><span style=display:flex><span>        writeset.accounts.push(account);
-</span></span><span style=display:flex><span>    }<span style=color:#66d9ef>else</span>{
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// let index = writeset.accounts.iter();
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        <span style=color:#66d9ef>let</span> index <span style=color:#f92672>=</span> writeset.accounts.iter().position(<span style=color:#f92672>|</span>r<span style=color:#f92672>|</span> r.address <span style=color:#f92672>==</span> account.address()).unwrap();
-</span></span><span style=display:flex><span>        <span style=color:#66d9ef>for</span> (k,v) <span style=color:#66d9ef>in</span> account.storage{
-</span></span><span style=display:flex><span>            writeset.accounts[index].storage.insert(k, v);
-</span></span><span style=display:flex><span>        }
-</span></span><span style=display:flex><span>        <span style=color:#75715e>// writeset.accounts[index] = account;
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>        println!(<span style=color:#e6db74>&#34;index {:?}&#34;</span>, writeset.accounts[index]);
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> writeset
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> code <span style=color:#f92672>=</span> <span style=color:#960050;background-color:#1e0010>&#34;</span><span style=color:#ae81ff>6080604052600436106049576000357</span>c0100000000000000000000000000000<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>000000000000000000000000000900463</span>ffffffff16806360fe47b114604e57<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>80636</span>d4ce63c146078575b600080fd5b348015605957600080fd5b506076600<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>4803603810190808035906020019092919050505060</span>a0565b005b3480156083<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>57600080</span>fd5b50608a60aa565b6040518082815260200191505060405180910<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>390</span>f35b8060008190555050565b600080549050905600a165627a7a72305820<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>99</span>c66a25d59f0aa78f7ebc40748fa1d1fbc335d8d780f284841b30e0365acd9<span style=color:#960050;background-color:#1e0010>\</span>
-</span></span><span style=display:flex><span>                <span style=color:#ae81ff>60029</span><span style=color:#e6db74>&#34;;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let tar = hex::decode(code).unwrap();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>hexo code test {:<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;,tar);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut struct_tar = WriteSet::default();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    struct_tar.accounts.push(
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        Account{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            address: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            balance: 20,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            code: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            storage: HashMap::new(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }        
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    );
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    struct_tar.accounts.push(
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        Account{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            address: &#34;</span><span style=color:#ae81ff>0102</span><span style=color:#e6db74>&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            balance: 20,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            code: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            storage: HashMap::new(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }        
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    );    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut to_insert = HashMap::new();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_insert.insert(&#34;</span><span style=color:#ae81ff>0</span><span style=color:#e6db74>&#34;.to_string(),&#34;</span><span style=color:#ae81ff>0</span><span style=color:#e6db74>&#34;.to_string());
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    struct_tar.accounts.push(
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        Account{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            address: &#34;</span><span style=color:#ae81ff>0101</span><span style=color:#e6db74>&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            balance: 20,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            code: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            storage: to_insert.clone(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }        
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    );      
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>struct_tar {:#<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;,struct_tar);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut addrlist = get_write_addrlist(&amp;struct_tar);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>addrlist {:#<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;, addrlist);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    if ! addrlist.contains(&amp;&#34;</span><span style=color:#ae81ff>11</span><span style=color:#e6db74>&#34;.to_string()){
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        addrlist.push(&#34;</span><span style=color:#ae81ff>11</span><span style=color:#e6db74>&#34;.to_string())
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    }
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>addrlist {:#<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;, addrlist);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut to_insert1 = HashMap::new();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_insert1.insert(&#34;</span><span style=color:#ae81ff>0</span><span style=color:#e6db74>&#34;.to_string(),&#34;</span><span style=color:#ae81ff>1010</span><span style=color:#e6db74>&#34;.to_string());
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_insert1.insert(&#34;</span><span style=color:#ae81ff>1</span><span style=color:#e6db74>&#34;.to_string(),&#34;</span><span style=color:#ae81ff>1010</span><span style=color:#e6db74>&#34;.to_string());
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut to_insert2 = HashMap::new();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_insert2.insert(&#34;</span><span style=color:#ae81ff>0</span><span style=color:#e6db74>&#34;.to_string(),&#34;</span><span style=color:#ae81ff>1010</span><span style=color:#e6db74>&#34;.to_string());
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_insert2.insert(&#34;</span><span style=color:#ae81ff>1</span><span style=color:#e6db74>&#34;.to_string(),&#34;</span><span style=color:#ae81ff>1010</span><span style=color:#e6db74>&#34;.to_string());    
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut to_push = Vec::new();
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_push.push(Account{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            address: &#34;</span><span style=color:#ae81ff>0101</span><span style=color:#e6db74>&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            balance: 20,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            code: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            storage: to_insert1,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        });
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    to_push.push(Account{
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            address: &#34;</span><span style=color:#ae81ff>0102</span><span style=color:#e6db74>&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            balance: 20,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            code: &#34;&#34;.to_string(),
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            storage: to_insert2,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        });        
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let mut res = push_write_account(struct_tar, to_push);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>{:#<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;, res);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    let aa = format!(&#34;</span>{:<span style=color:#a6e22e>x</span>}<span style=color:#e6db74>&#34;, 42);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>{}<span style=color:#e6db74>&#34;,&#34;</span><span style=color:#ae81ff>0</span>x<span style=color:#e6db74>&#34;.to_string() + &amp;aa);
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>    println!(&#34;</span>{:<span style=color:#f92672>?</span>}<span style=color:#e6db74>&#34;, &#34;</span><span style=color:#ae81ff>4322065350</span><span style=color:#960050;background-color:#1e0010>&#34;</span>.to_string().parse::<span style=color:#f92672>&lt;</span><span style=color:#66d9ef>u128</span><span style=color:#f92672>&gt;</span>().unwrap());
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/rust%E6%B5%8B%E8%AF%95/>rust测试</a></li><li><a href=/posts/Enclave%E5%BC%80%E5%8F%91/>Enclave开发</a></li><li><a href=/posts/sgx/>sgx开发</a></li><li><a href=/drafts/rust%E5%AE%8F%E5%B1%95%E5%BC%80/>rust宏展开</a></li><li><a href=/drafts/rust%E5%AD%A6%E4%B9%A002/>rust学习02</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/rust>rust</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>crate</span><span style=color:#bbb> </span>hex;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>crate</span><span style=color:#bbb> </span>serde;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::collections::HashMap;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>serde::ser::{Serialize,<span style=color:#bbb> </span>Serializer,<span style=color:#bbb> </span>SerializeSeq,<span style=color:#bbb> </span>SerializeMap,<span style=color:#bbb> </span>SerializeStruct};<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[macro_use]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>crate</span><span style=color:#bbb> </span>serde_derive;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>type</span> <span style=color:#458;font-weight:700>Dictionary</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>HashMap<span style=color:#000;font-weight:700>&lt;</span><span style=color:#0086b3>String</span>,<span style=color:#bbb> </span><span style=color:#0086b3>String</span><span style=color:#000;font-weight:700>&gt;</span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[derive(Debug,Serialize, Deserialize,Clone)]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>Account</span><span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>address: <span style=color:#0086b3>String</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>balance: <span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>code: <span style=color:#0086b3>String</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>storage: <span style=color:#458;font-weight:700>Dictionary</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[derive(Debug,Serialize, Deserialize,Clone)]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>WriteSet</span><span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>accounts: <span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span>Account<span style=color:#000;font-weight:700>&gt;</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>gas: <span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span><span style=color:#0086b3>Default</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>WriteSet<span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>default</span>()<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>WriteSet</span><span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>WriteSet{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>accounts: <span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>gas: <span style=color:#099>0</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span>Account{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>address</span>(<span style=color:#000;font-weight:700>&amp;</span><span style=color:#999>self</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#0086b3>String</span> {<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#999>self</span>.address.clone()<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>get_write_addrlist</span>(writeset<span style=color:#bbb> </span>: <span style=color:#000;font-weight:700>&amp;</span> <span style=color:#458;font-weight:700>WriteSet</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#0086b3>String</span><span style=color:#000;font-weight:700>&gt;</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic>// let mut v = Vec::new();
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>vec: <span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#0086b3>String</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#0086b3>Vec</span>::new();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>account<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>&amp;</span>writeset.accounts{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>vec.push(account.address())<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>vec.dedup();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>vec<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>push_write_account</span>(<span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>writeset<span style=color:#bbb> </span>: <span style=color:#458;font-weight:700>WriteSet</span>,accounts:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span>Account<span style=color:#000;font-weight:700>&gt;</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>WriteSet</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>account<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span>accounts{<span style=color:#bbb>    
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>writeset_copy<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>writeset.clone();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>writeset_accs<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>get_write_addrlist(<span style=color:#000;font-weight:700>&amp;</span>writeset);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>if</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>!</span><span style=color:#bbb> </span>writeset_accs.contains(<span style=color:#000;font-weight:700>&amp;</span>account.address()){<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>writeset.accounts.push(account);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#000;font-weight:700>else</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#998;font-style:italic>// let index = writeset.accounts.iter();
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>index<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>writeset.accounts.iter().position(<span style=color:#000;font-weight:700>|</span>r<span style=color:#000;font-weight:700>|</span><span style=color:#bbb> </span>r.address<span style=color:#bbb> </span><span style=color:#000;font-weight:700>==</span><span style=color:#bbb> </span>account.address()).unwrap();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>(k,v)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span>account.storage{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>writeset.accounts[index].storage.insert(k,<span style=color:#bbb> </span>v);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#998;font-style:italic>// writeset.accounts[index] = account;
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#bbb>        </span>println!(<span style=color:#d14>&#34;index {:?}&#34;</span>,<span style=color:#bbb> </span>writeset.accounts[index]);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>return</span><span style=color:#bbb> </span>writeset<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>main</span>()<span style=color:#bbb> </span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>code<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#a61717;background-color:#e3d2d2>&#34;</span><span style=color:#099>6080604052600436106049576000357</span>c0100000000000000000000000000000<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>000000000000000000000000000900463</span>ffffffff16806360fe47b114604e57<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>80636</span>d4ce63c146078575b600080fd5b348015605957600080fd5b506076600<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>4803603810190808035906020019092919050505060</span>a0565b005b3480156083<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>57600080</span>fd5b50608a60aa565b6040518082815260200191505060405180910<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>390</span>f35b8060008190555050565b600080549050905600a165627a7a72305820<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>99</span>c66a25d59f0aa78f7ebc40748fa1d1fbc335d8d780f284841b30e0365acd9<span style=color:#a61717;background-color:#e3d2d2>\</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span><span style=color:#099>60029</span><span style=color:#d14>&#34;;
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let tar = hex::decode(code).unwrap();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>hexo<span style=color:#bbb> </span>code<span style=color:#bbb> </span>test<span style=color:#bbb> </span>{:<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;,tar);
+</span></span></span><span style=display:flex><span><span style=color:#d14>
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut struct_tar = WriteSet::default();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    
+</span></span></span><span style=display:flex><span><span style=color:#d14>    struct_tar.accounts.push(
+</span></span></span><span style=display:flex><span><span style=color:#d14>        Account{
+</span></span></span><span style=display:flex><span><span style=color:#d14>            address: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            balance: 20,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            code: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            storage: HashMap::new(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>        }        
+</span></span></span><span style=display:flex><span><span style=color:#d14>    );
+</span></span></span><span style=display:flex><span><span style=color:#d14>    struct_tar.accounts.push(
+</span></span></span><span style=display:flex><span><span style=color:#d14>        Account{
+</span></span></span><span style=display:flex><span><span style=color:#d14>            address: &#34;</span><span style=color:#099>0102</span><span style=color:#d14>&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            balance: 20,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            code: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            storage: HashMap::new(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>        }        
+</span></span></span><span style=display:flex><span><span style=color:#d14>    );    
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut to_insert = HashMap::new();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_insert.insert(&#34;</span><span style=color:#099>0</span><span style=color:#d14>&#34;.to_string(),&#34;</span><span style=color:#099>0</span><span style=color:#d14>&#34;.to_string());
+</span></span></span><span style=display:flex><span><span style=color:#d14>    struct_tar.accounts.push(
+</span></span></span><span style=display:flex><span><span style=color:#d14>        Account{
+</span></span></span><span style=display:flex><span><span style=color:#d14>            address: &#34;</span><span style=color:#099>0101</span><span style=color:#d14>&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            balance: 20,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            code: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            storage: to_insert.clone(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>        }        
+</span></span></span><span style=display:flex><span><span style=color:#d14>    );      
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>struct_tar<span style=color:#bbb> </span>{:#<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;,struct_tar);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut addrlist = get_write_addrlist(&amp;struct_tar);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>addrlist<span style=color:#bbb> </span>{:#<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;, addrlist);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    if ! addrlist.contains(&amp;&#34;</span><span style=color:#099>11</span><span style=color:#d14>&#34;.to_string()){
+</span></span></span><span style=display:flex><span><span style=color:#d14>        addrlist.push(&#34;</span><span style=color:#099>11</span><span style=color:#d14>&#34;.to_string())
+</span></span></span><span style=display:flex><span><span style=color:#d14>    }
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>addrlist<span style=color:#bbb> </span>{:#<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;, addrlist);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut to_insert1 = HashMap::new();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_insert1.insert(&#34;</span><span style=color:#099>0</span><span style=color:#d14>&#34;.to_string(),&#34;</span><span style=color:#099>1010</span><span style=color:#d14>&#34;.to_string());
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_insert1.insert(&#34;</span><span style=color:#099>1</span><span style=color:#d14>&#34;.to_string(),&#34;</span><span style=color:#099>1010</span><span style=color:#d14>&#34;.to_string());
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut to_insert2 = HashMap::new();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_insert2.insert(&#34;</span><span style=color:#099>0</span><span style=color:#d14>&#34;.to_string(),&#34;</span><span style=color:#099>1010</span><span style=color:#d14>&#34;.to_string());
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_insert2.insert(&#34;</span><span style=color:#099>1</span><span style=color:#d14>&#34;.to_string(),&#34;</span><span style=color:#099>1010</span><span style=color:#d14>&#34;.to_string());    
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut to_push = Vec::new();
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_push.push(Account{
+</span></span></span><span style=display:flex><span><span style=color:#d14>            address: &#34;</span><span style=color:#099>0101</span><span style=color:#d14>&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            balance: 20,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            code: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            storage: to_insert1,
+</span></span></span><span style=display:flex><span><span style=color:#d14>        });
+</span></span></span><span style=display:flex><span><span style=color:#d14>    to_push.push(Account{
+</span></span></span><span style=display:flex><span><span style=color:#d14>            address: &#34;</span><span style=color:#099>0102</span><span style=color:#d14>&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            balance: 20,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            code: &#34;&#34;.to_string(),
+</span></span></span><span style=display:flex><span><span style=color:#d14>            storage: to_insert2,
+</span></span></span><span style=display:flex><span><span style=color:#d14>        });        
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let mut res = push_write_account(struct_tar, to_push);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>{:#<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;, res);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    let aa = format!(&#34;</span>{:<span style=color:#458;font-weight:700>x</span>}<span style=color:#d14>&#34;, 42);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>{}<span style=color:#d14>&#34;,&#34;</span><span style=color:#099>0</span>x<span style=color:#d14>&#34;.to_string() + &amp;aa);
+</span></span></span><span style=display:flex><span><span style=color:#d14>    println!(&#34;</span>{:<span style=color:#000;font-weight:700>?</span>}<span style=color:#d14>&#34;, &#34;</span><span style=color:#099>4322065350</span><span style=color:#a61717;background-color:#e3d2d2>&#34;</span>.to_string().parse::<span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u128</span><span style=color:#000;font-weight:700>&gt;</span>().unwrap());<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/rust%E6%B5%8B%E8%AF%95/>rust测试</a></li><li><a href=/posts/Enclave%E5%BC%80%E5%8F%91/>Enclave开发</a></li><li><a href=/posts/sgx/>sgx开发</a></li><li><a href=/drafts/rust%E5%AE%8F%E5%B1%95%E5%BC%80/>rust宏展开</a></li><li><a href=/drafts/rust%E5%AD%A6%E4%B9%A002/>rust学习02</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/rust>rust</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>
 <script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>

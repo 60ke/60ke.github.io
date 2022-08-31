@@ -4,7 +4,7 @@
 <a href=https://60ke.github.io/archives/ title=归档>归档</a>
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#golang默认map不是并发安全的>golang默认map不是并发安全的</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>go并发map</h1></header><date class="post-meta meta-date">2021年10月26日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
 阅读</span></span></div><div class=post-content><h2 id=golang默认map不是并发安全的>golang默认map不是并发安全的</h2><p>(Why are map operations not defined to be atomic?)[https://golang.org/doc/faq#atomic_maps]
-After long discussion it was decided that the typical use of maps did not require safe access from multiple goroutines, and in those cases where it did, the map was probably part of some larger data structure or computation that was already synchronized. Therefore requiring that all map operations grab a mutex would slow down most programs and add safety to few. This was not an easy decision, however, since it means uncontrolled map access can crash the program.</p><p>The language does not preclude atomic map updates. When required, such as when hosting an untrusted program, the implementation could interlock map access.</p><p>Map access is unsafe only when updates are occurring. As long as all goroutines are only reading—looking up elements in the map, including iterating through it using a for range loop—and not changing the map by assigning to elements or doing deletions, it is safe for them to access the map concurrently without synchronization.</p><p>As an aid to correct map use, some implementations of the language contain a special check that automatically reports at run time when a map is modified unsafely by concurrent execution.</p><p>下面的<code>main.go</code>一段map并发的代码:</p><ul><li><code>main.go</code></li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+After long discussion it was decided that the typical use of maps did not require safe access from multiple goroutines, and in those cases where it did, the map was probably part of some larger data structure or computation that was already synchronized. Therefore requiring that all map operations grab a mutex would slow down most programs and add safety to few. This was not an easy decision, however, since it means uncontrolled map access can crash the program.</p><p>The language does not preclude atomic map updates. When required, such as when hosting an untrusted program, the implementation could interlock map access.</p><p>Map access is unsafe only when updates are occurring. As long as all goroutines are only reading—looking up elements in the map, including iterating through it using a for range loop—and not changing the map by assigning to elements or doing deletions, it is safe for them to access the map concurrently without synchronization.</p><p>As an aid to correct map use, some implementations of the language contain a special check that automatically reports at run time when a map is modified unsafely by concurrent execution.</p><p>下面的<code>main.go</code>一段map并发的代码:</p><ul><li><code>main.go</code></li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -42,45 +42,45 @@ After long discussion it was decided that the typical use of maps did not requir
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000;font-weight:700>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> (
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;fmt&#34;</span>
-</span></span><span style=display:flex><span>	<span style=color:#e6db74>&#34;sync&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> (
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span>	<span style=color:#d14>&#34;sync&#34;</span>
 </span></span><span style=display:flex><span>)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>wg</span> <span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>WaitGroup</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>type</span> <span style=color:#a6e22e>M</span> <span style=color:#66d9ef>struct</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>sync</span>.<span style=color:#a6e22e>RWMutex</span>
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>m</span> <span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>int</span>]<span style=color:#66d9ef>int</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> <span style=color:#900;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>var</span> wg sync.WaitGroup
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>type</span> M <span style=color:#000;font-weight:700>struct</span> {
+</span></span><span style=display:flex><span>		sync.RWMutex
+</span></span><span style=display:flex><span>		m <span style=color:#000;font-weight:700>map</span>[<span style=color:#458;font-weight:700>int</span>]<span style=color:#458;font-weight:700>int</span>
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tar</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>M</span>{
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>m</span>: make(<span style=color:#66d9ef>map</span>[<span style=color:#66d9ef>int</span>]<span style=color:#66d9ef>int</span>),
+</span></span><span style=display:flex><span>	tar <span style=color:#000;font-weight:700>:=</span> M{
+</span></span><span style=display:flex><span>		m: <span style=color:#0086b3>make</span>(<span style=color:#000;font-weight:700>map</span>[<span style=color:#458;font-weight:700>int</span>]<span style=color:#458;font-weight:700>int</span>),
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>i</span> <span style=color:#f92672>:=</span> <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>i</span> &lt; <span style=color:#ae81ff>3</span>; <span style=color:#a6e22e>i</span><span style=color:#f92672>++</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Add</span>(<span style=color:#ae81ff>1</span>)
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;maini:&#34;</span>, <span style=color:#a6e22e>i</span>)
-</span></span><span style=display:flex><span>		<span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>() {
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>for</span> i <span style=color:#000;font-weight:700>:=</span> <span style=color:#099>0</span>; i &lt; <span style=color:#099>3</span>; i<span style=color:#000;font-weight:700>++</span> {
+</span></span><span style=display:flex><span>		wg.<span style=color:#900;font-weight:700>Add</span>(<span style=color:#099>1</span>)
+</span></span><span style=display:flex><span>		fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;maini:&#34;</span>, i)
+</span></span><span style=display:flex><span>		<span style=color:#000;font-weight:700>go</span> <span style=color:#000;font-weight:700>func</span>() {
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>			<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Done</span>()
+</span></span><span style=display:flex><span>			<span style=color:#000;font-weight:700>defer</span> wg.<span style=color:#900;font-weight:700>Done</span>()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>Lock</span>()
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;goi:&#34;</span>, <span style=color:#a6e22e>i</span>)
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>m</span>[<span style=color:#a6e22e>i</span>] = <span style=color:#a6e22e>i</span>
-</span></span><span style=display:flex><span>			<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>Unlock</span>()
+</span></span><span style=display:flex><span>			tar.<span style=color:#900;font-weight:700>Lock</span>()
+</span></span><span style=display:flex><span>			fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;goi:&#34;</span>, i)
+</span></span><span style=display:flex><span>			tar.m[i] = i
+</span></span><span style=display:flex><span>			tar.<span style=color:#900;font-weight:700>Unlock</span>()
 </span></span><span style=display:flex><span>		}()
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>var</span> <span style=color:#a6e22e>k</span> <span style=color:#66d9ef>int</span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>for</span> <span style=color:#a6e22e>k</span> = <span style=color:#ae81ff>0</span>; <span style=color:#a6e22e>k</span> &lt; <span style=color:#ae81ff>1</span>; <span style=color:#a6e22e>k</span><span style=color:#f92672>++</span> {
-</span></span><span style=display:flex><span>		<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;k:&#34;</span>, <span style=color:#a6e22e>k</span>)
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>var</span> k <span style=color:#458;font-weight:700>int</span>
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>for</span> k = <span style=color:#099>0</span>; k &lt; <span style=color:#099>1</span>; k<span style=color:#000;font-weight:700>++</span> {
+</span></span><span style=display:flex><span>		fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;k:&#34;</span>, k)
 </span></span><span style=display:flex><span>	}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;maink:&#34;</span>, <span style=color:#a6e22e>k</span>)
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Wait</span>()
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Printf</span>(<span style=color:#e6db74>&#34;%v&#34;</span>, <span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>m</span>)
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;maink:&#34;</span>, k)
+</span></span><span style=display:flex><span>	wg.<span style=color:#900;font-weight:700>Wait</span>()
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Printf</span>(<span style=color:#d14>&#34;%v&#34;</span>, tar.m)
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p>运行<code>go run -race main.go</code>执行代码并对其进行竞争条件检测,获取到如下输出:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></span></code></pre></td></tr></table></div></div><p>运行<code>go run -race main.go</code>执行代码并对其进行竞争条件检测,获取到如下输出:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -104,31 +104,31 @@ After long discussion it was decided that the typical use of maps did not requir
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>maini: <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>maini: <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>maini: 2
-</span></span><span style=display:flex><span><span style=color:#f92672>==================</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-shell data-lang=shell><span style=display:flex><span>maini: <span style=color:#099>0</span>
+</span></span><span style=display:flex><span>maini: <span style=color:#099>1</span>
+</span></span><span style=display:flex><span>maini: <span style=color:teal>2</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>==================</span>
 </span></span><span style=display:flex><span>WARNING: DATA RACE
 </span></span><span style=display:flex><span>Read at 0x00c00013c028 by goroutine 7:
-</span></span><span style=display:flex><span>  main.main.func1<span style=color:#f92672>()</span>
+</span></span><span style=display:flex><span>  main.main.func1<span style=color:#000;font-weight:700>()</span>
 </span></span><span style=display:flex><span>      /Users/k/Desktop/web/main/main.go:25 +0x6c
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>Previous write at 0x00c00013c028 by main goroutine:
-</span></span><span style=display:flex><span>  main.main<span style=color:#f92672>()</span>
+</span></span><span style=display:flex><span>  main.main<span style=color:#000;font-weight:700>()</span>
 </span></span><span style=display:flex><span>      /Users/k/Desktop/web/main/main.go:17 +0x214
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>Goroutine <span style=color:#ae81ff>7</span> <span style=color:#f92672>(</span>running<span style=color:#f92672>)</span> created at:
-</span></span><span style=display:flex><span>  main.main<span style=color:#f92672>()</span>
+</span></span><span style=display:flex><span>Goroutine <span style=color:#099>7</span> <span style=color:#000;font-weight:700>(</span>running<span style=color:#000;font-weight:700>)</span> created at:
+</span></span><span style=display:flex><span>  main.main<span style=color:#000;font-weight:700>()</span>
 </span></span><span style=display:flex><span>      /Users/k/Desktop/web/main/main.go:20 +0x1f4
-</span></span><span style=display:flex><span><span style=color:#f92672>==================</span>
-</span></span><span style=display:flex><span>goi: <span style=color:#ae81ff>2</span>
-</span></span><span style=display:flex><span>goi: <span style=color:#ae81ff>3</span>
-</span></span><span style=display:flex><span>k: <span style=color:#ae81ff>0</span>
-</span></span><span style=display:flex><span>goi: <span style=color:#ae81ff>3</span>
-</span></span><span style=display:flex><span>maink: <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>map<span style=color:#f92672>[</span>2:2 3:3<span style=color:#f92672>]</span>Found <span style=color:#ae81ff>1</span> data race<span style=color:#f92672>(</span>s<span style=color:#f92672>)</span>
-</span></span><span style=display:flex><span>exit status <span style=color:#ae81ff>66</span>
-</span></span></code></pre></td></tr></table></div></div><p>观察代码,我们已经通过<code>sync.RWMutex</code>使结构体<code>M</code>支持读写锁。并在操作<code>tar.m</code>时通过<code>tar.Lock()</code>与<code>tar.UnLock()</code>来确保了数据的安全,但是还是出现了<code>DATA RACE</code>,同时我们可以看到t<code>ar.m</code>的map数据并不是我们期望的<code>[1:1,2:2,3:3]</code>这是因为我们忽略了<code>tar.m[i]</code>中的<code>i</code>值来自<code>main</code>的goroutine,<code>main</code>的goroutine运行要比我们使用go关键字所创造的goroutine运行的快,我们的三次对map的赋值的<code>key</code>分别是 <code>2,3,3</code>所以我们的map只有<code>2,3</code>的<code>key</code>。我们可以通过传递i到goroutine中来解决这个错误:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>==================</span>
+</span></span><span style=display:flex><span>goi: <span style=color:#099>2</span>
+</span></span><span style=display:flex><span>goi: <span style=color:#099>3</span>
+</span></span><span style=display:flex><span>k: <span style=color:#099>0</span>
+</span></span><span style=display:flex><span>goi: <span style=color:#099>3</span>
+</span></span><span style=display:flex><span>maink: <span style=color:#099>1</span>
+</span></span><span style=display:flex><span>map<span style=color:#000;font-weight:700>[</span>2:2 3:3<span style=color:#000;font-weight:700>]</span>Found <span style=color:#099>1</span> data race<span style=color:#000;font-weight:700>(</span>s<span style=color:#000;font-weight:700>)</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>exit</span> status <span style=color:#099>66</span>
+</span></span></code></pre></td></tr></table></div></div><p>观察代码,我们已经通过<code>sync.RWMutex</code>使结构体<code>M</code>支持读写锁。并在操作<code>tar.m</code>时通过<code>tar.Lock()</code>与<code>tar.UnLock()</code>来确保了数据的安全,但是还是出现了<code>DATA RACE</code>,同时我们可以看到t<code>ar.m</code>的map数据并不是我们期望的<code>[1:1,2:2,3:3]</code>这是因为我们忽略了<code>tar.m[i]</code>中的<code>i</code>值来自<code>main</code>的goroutine,<code>main</code>的goroutine运行要比我们使用go关键字所创造的goroutine运行的快,我们的三次对map的赋值的<code>key</code>分别是 <code>2,3,3</code>所以我们的map只有<code>2,3</code>的<code>key</code>。我们可以通过传递i到goroutine中来解决这个错误:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
@@ -137,15 +137,15 @@ After long discussion it was decided that the typical use of maps did not requir
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#66d9ef>go</span> <span style=color:#66d9ef>func</span>(<span style=color:#a6e22e>i</span> <span style=color:#66d9ef>int</span>) {
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000;font-weight:700>go</span> <span style=color:#000;font-weight:700>func</span>(i <span style=color:#458;font-weight:700>int</span>) {
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#66d9ef>defer</span> <span style=color:#a6e22e>wg</span>.<span style=color:#a6e22e>Done</span>()
+</span></span><span style=display:flex><span>	<span style=color:#000;font-weight:700>defer</span> wg.<span style=color:#900;font-weight:700>Done</span>()
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>Lock</span>()
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#e6db74>&#34;goi:&#34;</span>, <span style=color:#a6e22e>i</span>)
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>m</span>[<span style=color:#a6e22e>i</span>] = <span style=color:#a6e22e>i</span>
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>tar</span>.<span style=color:#a6e22e>Unlock</span>()
-</span></span><span style=display:flex><span>}(<span style=color:#a6e22e>i</span>)
+</span></span><span style=display:flex><span>	tar.<span style=color:#900;font-weight:700>Lock</span>()
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(<span style=color:#d14>&#34;goi:&#34;</span>, i)
+</span></span><span style=display:flex><span>	tar.m[i] = i
+</span></span><span style=display:flex><span>	tar.<span style=color:#900;font-weight:700>Unlock</span>()
+</span></span><span style=display:flex><span>}(i)
 </span></span></code></pre></td></tr></table></div></div><p>go1.9中也提供了并发安全带map:(sync.Map)[https://pkg.go.dev/sync#Map]</p></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE/>数据结构之子字符串查找</a></li><li><a href=/drafts/go%E8%B0%83%E7%94%A8RUST/>go调用RUST</a></li><li><a href=/drafts/linux%E5%88%A4%E6%96%AD%E7%A3%81%E7%9B%98%E6%98%AF%E5%90%A6%E4%B8%BA%E5%9B%BA%E6%80%81/>linux判断磁盘是否为固态</a></li><li><a href=/drafts/%E5%8D%95%E8%AF%8D%E6%9C%AC/>单词本</a></li><li><a href=/drafts/%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/>一些问题</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/go>go</a></li><li><a href=/tags/%E5%B9%B6%E5%8F%91>并发</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>

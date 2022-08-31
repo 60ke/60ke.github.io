@@ -4,9 +4,9 @@
 <a href=https://60ke.github.io/archives/ title=归档>归档</a>
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#无参函数调用>无参函数调用</a></li><li><a href=#有参函数调用>有参函数调用</a></li><li><a href=#字符串指针返回>字符串指针返回</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>go调用RUST</h1></header><date class="post-meta meta-date">2021年4月6日</date><div class=post-meta><span>|</span>
 <span class=meta-category><a href=/categories/go>go</a></span></div><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
-阅读</span></span></div><div class=post-content><h2 id=无参函数调用>无参函数调用</h2><p>先写一个rust的lib项目生成动态库</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cargo new --lib embed
-</span></span></code></pre></td></tr></table></div></div><ul><li>Cargo.toml</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+阅读</span></span></div><div class=post-content><h2 id=无参函数调用>无参函数调用</h2><p>先写一个rust的lib项目生成动态库</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>cargo new --lib embed
+</span></span></code></pre></td></tr></table></div></div><ul><li>Cargo.toml</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -19,20 +19,20 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-toml data-lang=toml><span style=display:flex><span>[<span style=color:#a6e22e>package</span>]
-</span></span><span style=display:flex><span><span style=color:#a6e22e>name</span> = <span style=color:#e6db74>&#34;embed&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>version</span> = <span style=color:#e6db74>&#34;0.1.0&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>authors</span> = [<span style=color:#e6db74>&#34;k &lt;2589788697@qq.com&gt;&#34;</span>]
-</span></span><span style=display:flex><span><span style=color:#a6e22e>edition</span> = <span style=color:#e6db74>&#34;2018&#34;</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-toml data-lang=toml><span style=display:flex><span>[package]
+</span></span><span style=display:flex><span>name = <span style=color:#d14>&#34;embed&#34;</span>
+</span></span><span style=display:flex><span>version = <span style=color:#d14>&#34;0.1.0&#34;</span>
+</span></span><span style=display:flex><span>authors = [<span style=color:#d14>&#34;k &lt;2589788697@qq.com&gt;&#34;</span>]
+</span></span><span style=display:flex><span>edition = <span style=color:#d14>&#34;2018&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[<span style=color:#a6e22e>dependencies</span>]
+</span></span><span style=display:flex><span>[dependencies]
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>[<span style=color:#a6e22e>lib</span>]
-</span></span><span style=display:flex><span><span style=color:#a6e22e>name</span> = <span style=color:#e6db74>&#34;embed&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>crate-type</span> = [<span style=color:#e6db74>&#34;dylib&#34;</span>]
-</span></span></code></pre></td></tr></table></div></div><ul><li>lib.rs</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></span><span style=display:flex><span>[lib]
+</span></span><span style=display:flex><span>name = <span style=color:#d14>&#34;embed&#34;</span>
+</span></span><span style=display:flex><span>crate-type = [<span style=color:#d14>&#34;dylib&#34;</span>]
+</span></span></code></pre></td></tr></table></div></div><ul><li>lib.rs</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -51,27 +51,27 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>use</span> std::thread;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>process</span>(){
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> handles:Vec<span style=color:#f92672>&lt;</span>_<span style=color:#f92672>&gt;=</span>(<span style=color:#ae81ff>0</span><span style=color:#f92672>..=</span><span style=color:#ae81ff>10</span>).map(<span style=color:#f92672>|</span>_<span style=color:#f92672>|</span>{
-</span></span><span style=display:flex><span>        thread::spawn(<span style=color:#f92672>||</span>{
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> x <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> _ <span style=color:#66d9ef>in</span> <span style=color:#ae81ff>0</span><span style=color:#f92672>..</span><span style=color:#ae81ff>5000000</span>{
-</span></span><span style=display:flex><span>                x <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            x
-</span></span><span style=display:flex><span>        })
-</span></span><span style=display:flex><span>    }).collect();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> h <span style=color:#66d9ef>in</span> handles{
-</span></span><span style=display:flex><span>        println!(<span style=color:#e6db74>&#34;thread finished with count={}&#34;</span>,h.join().map_err(<span style=color:#f92672>|</span>_<span style=color:#f92672>|</span><span style=color:#e6db74>&#34;could not join a thread&#34;</span>).unwrap());
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>编译
-运行 <code>cargo build --release</code>得到<code>libembed.dylib</code></li></ul><p>将文件按照如下放置</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::thread;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[no_mangle]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>process</span>(){<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>handles:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span>_<span style=color:#000;font-weight:700>&gt;=</span>(<span style=color:#099>0</span><span style=color:#000;font-weight:700>..=</span><span style=color:#099>10</span>).map(<span style=color:#000;font-weight:700>|</span>_<span style=color:#000;font-weight:700>|</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>thread::spawn(<span style=color:#000;font-weight:700>||</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>x<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>0</span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>_<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span><span style=color:#099>0</span><span style=color:#000;font-weight:700>..</span><span style=color:#099>5000000</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span>x<span style=color:#bbb> </span><span style=color:#000;font-weight:700>+=</span><span style=color:#bbb> </span><span style=color:#099>1</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>x<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>})<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}).collect();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>h<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span>handles{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>println!(<span style=color:#d14>&#34;thread finished with count={}&#34;</span>,h.join().map_err(<span style=color:#000;font-weight:700>|</span>_<span style=color:#000;font-weight:700>|</span><span style=color:#d14>&#34;could not join a thread&#34;</span>).unwrap());<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>编译
+运行 <code>cargo build --release</code>得到<code>libembed.dylib</code></li></ul><p>将文件按照如下放置</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
@@ -80,7 +80,7 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>├── Cargo.lock
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>├── Cargo.lock
 </span></span><span style=display:flex><span>├── Cargo.toml
 </span></span><span style=display:flex><span>├── src
 </span></span><span style=display:flex><span>│   ├── a.out
@@ -89,25 +89,25 @@
 </span></span><span style=display:flex><span>│   ├── libembed.dylib
 </span></span><span style=display:flex><span>│   ├── main.c
 </span></span><span style=display:flex><span>│   └── test.go
-</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>process</span>();
-</span></span></code></pre></td></tr></table></div></div><ul><li>main.c</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#458;font-weight:700>void</span> <span style=color:#900;font-weight:700>process</span>();
+</span></span></code></pre></td></tr></table></div></div><ul><li>main.c</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;interface.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(){
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#include</span> <span style=color:#999;font-weight:700;font-style:italic>&#34;interface.h&#34;</span><span style=color:#999;font-weight:700;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#458;font-weight:700>int</span> <span style=color:#900;font-weight:700>main</span>(){
 </span></span><span style=display:flex><span>    process();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>return</span> <span style=color:#099>0</span>;
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></td></tr></table></div></div><ul><li>编译运行C
 <code>gcc main.c -L. -lembed && ./a.out</code>
 PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 <code>-Wl,-rpath=./</code>用于指定程序运行寻找库的路径
-运行结果</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+运行结果</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -118,18 +118,18 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span><span style=display:flex><span>thread finished with count<span style=color:#f92672>=</span><span style=color:#ae81ff>5000000</span>
-</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span><span style=display:flex><span>thread finished with <span style=color:teal>count</span><span style=color:#000;font-weight:700>=</span><span style=color:#099>5000000</span>
+</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -140,18 +140,18 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000;font-weight:700>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>/*
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#cgo LDFLAGS: -L./ -lembed
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include &#34;interface.h&#34;
-</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;C&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>/*
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#cgo LDFLAGS: -L./ -lembed
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#include &#34;interface.h&#34;
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>*/</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#d14>&#34;C&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>process</span>()
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> <span style=color:#900;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>	C.<span style=color:#900;font-weight:700>process</span>()
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p><code>go run test.go</code>结果与C运行一致</p><h2 id=有参函数调用>有参函数调用</h2><ul><li>lib.rs</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></span></code></pre></td></tr></table></div></div><p><code>go run test.go</code>结果与C运行一致</p><h2 id=有参函数调用>有参函数调用</h2><ul><li>lib.rs</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -166,22 +166,22 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#75715e>#[repr(C)]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>struct</span> <span style=color:#a6e22e>Test</span>{
-</span></span><span style=display:flex><span>    a:<span style=color:#66d9ef>u32</span>,
-</span></span><span style=display:flex><span>    b:<span style=color:#66d9ef>u32</span>,
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>extern</span> <span style=color:#e6db74>&#34;C&#34;</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>process</span>(test:<span style=color:#f92672>*</span><span style=color:#66d9ef>const</span> Test){
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>unsafe</span>{
-</span></span><span style=display:flex><span>        println!(<span style=color:#e6db74>&#34;{}&#34;</span>,(<span style=color:#f92672>*</span>test).a);
-</span></span><span style=display:flex><span>        println!(<span style=color:#e6db74>&#34;{}&#34;</span>,(<span style=color:#f92672>*</span>test).b)
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p><code>cargo build --release --out-dir . -Z unstable-options</code></p><ul><li>main.c</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#[repr(C)]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>Test</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>a:<span style=color:#458;font-weight:700>u32</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>b:<span style=color:#458;font-weight:700>u32</span>,<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[no_mangle]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#d14>&#34;C&#34;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>process</span>(test:<span style=color:#000;font-weight:700>*</span><span style=color:#000;font-weight:700>const</span><span style=color:#bbb> </span>Test){<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>unsafe</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>println!(<span style=color:#d14>&#34;{}&#34;</span>,(<span style=color:#000;font-weight:700>*</span>test).a);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>println!(<span style=color:#d14>&#34;{}&#34;</span>,(<span style=color:#000;font-weight:700>*</span>test).b)<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>cargo build --release --out-dir . -Z unstable-options</code></p><ul><li>main.c</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -195,37 +195,37 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>struct</span> Test
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#000;font-weight:700>struct</span> Test
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> a;
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> b;
+</span></span><span style=display:flex><span>    <span style=color:#458;font-weight:700>int</span> a;
+</span></span><span style=display:flex><span>    <span style=color:#458;font-weight:700>int</span> b;
 </span></span><span style=display:flex><span>};
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>extern</span> <span style=color:#66d9ef>void</span> <span style=color:#a6e22e>process</span>(<span style=color:#66d9ef>struct</span> Test <span style=color:#f92672>*</span>test);
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>extern</span> <span style=color:#458;font-weight:700>void</span> <span style=color:#900;font-weight:700>process</span>(<span style=color:#000;font-weight:700>struct</span> Test <span style=color:#000;font-weight:700>*</span>test);
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(){
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>struct</span> Test test <span style=color:#f92672>=</span> {<span style=color:#ae81ff>3</span>,<span style=color:#ae81ff>4</span>};
-</span></span><span style=display:flex><span>    process(<span style=color:#f92672>&amp;</span>test);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></span><span style=display:flex><span><span style=color:#458;font-weight:700>int</span> <span style=color:#900;font-weight:700>main</span>(){
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>struct</span> Test test <span style=color:#000;font-weight:700>=</span> {<span style=color:#099>3</span>,<span style=color:#099>4</span>};
+</span></span><span style=display:flex><span>    process(<span style=color:#000;font-weight:700>&amp;</span>test);
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>return</span> <span style=color:#099>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><p><code>gcc main.c -L. -lembed -Wl,-rpath=./ && ./a.out</code></p><p>output</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span></code></pre></td></tr></table></div></div><p><code>gcc main.c -L. -lembed -Wl,-rpath=./ && ./a.out</code></p><p>output</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#ae81ff>3</span>
-</span></span><span style=display:flex><span><span style=color:#ae81ff>4</span>
-</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#099>3</span>
+</span></span><span style=display:flex><span><span style=color:#099>4</span>
+</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>typedef</span> <span style=color:#66d9ef>struct</span> Test
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#000;font-weight:700>typedef</span> <span style=color:#000;font-weight:700>struct</span> Test
 </span></span><span style=display:flex><span>{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> a;
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>int</span> b;
+</span></span><span style=display:flex><span>    <span style=color:#458;font-weight:700>int</span> a;
+</span></span><span style=display:flex><span>    <span style=color:#458;font-weight:700>int</span> b;
 </span></span><span style=display:flex><span>} Test;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>process</span>(<span style=color:#66d9ef>struct</span> Test <span style=color:#f92672>*</span>test);
-</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></span><span style=display:flex><span><span style=color:#458;font-weight:700>void</span> <span style=color:#900;font-weight:700>process</span>(<span style=color:#000;font-weight:700>struct</span> Test <span style=color:#000;font-weight:700>*</span>test);
+</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -242,24 +242,24 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000;font-weight:700>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>/*
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#cgo LDFLAGS: -L./ -lembed -Wl,-rpath=./
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include &#34;interface.h&#34; //非标准c头文件,所以用引号
-</span></span></span><span style=display:flex><span><span style=color:#75715e>typedef struct Test
-</span></span></span><span style=display:flex><span><span style=color:#75715e>{
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    int a;
-</span></span></span><span style=display:flex><span><span style=color:#75715e>    int b;
-</span></span></span><span style=display:flex><span><span style=color:#75715e>} Test; #可以放但是不建议(建议放入interface.h)
-</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;C&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>/*
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#cgo LDFLAGS: -L./ -lembed -Wl,-rpath=./
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#include &#34;interface.h&#34; //非标准c头文件,所以用引号
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>typedef struct Test
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>{
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>    int a;
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>    int b;
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>} Test; #可以放但是不建议(建议放入interface.h)
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>*/</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#d14>&#34;C&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>test</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>Test</span>{<span style=color:#a6e22e>a</span>: <span style=color:#ae81ff>3</span>, <span style=color:#a6e22e>b</span>: <span style=color:#ae81ff>4</span>}
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>process</span>(<span style=color:#f92672>&amp;</span><span style=color:#a6e22e>test</span>)
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> <span style=color:#900;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>	test <span style=color:#000;font-weight:700>:=</span> C.Test{a: <span style=color:#099>3</span>, b: <span style=color:#099>4</span>}
+</span></span><span style=display:flex><span>	C.<span style=color:#900;font-weight:700>process</span>(<span style=color:#000;font-weight:700>&amp;</span>test)
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><h2 id=字符串指针返回>字符串指针返回</h2><p>很多数据结构在跨语言调用,得在各个语言来回解析,比较麻烦,我们直接以json字符串传递解析可以极大的简化问题的处理</p><ul><li>lib.rs</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></span></code></pre></td></tr></table></div></div><h2 id=字符串指针返回>字符串指针返回</h2><p>很多数据结构在跨语言调用,得在各个语言来回解析,比较麻烦,我们直接以json字符串传递解析可以极大的简化问题的处理</p><ul><li>lib.rs</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -301,49 +301,49 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#66d9ef>use</span> std::thread;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> libc::c_int;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> libc::c_char;
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> std::ffi::{CStr,CString};
-</span></span><span style=display:flex><span><span style=color:#66d9ef>use</span> json;
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>extern</span> <span style=color:#e6db74>&#34;C&#34;</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>process</span>(a:<span style=color:#a6e22e>c_int</span>){
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> handles:Vec<span style=color:#f92672>&lt;</span>_<span style=color:#f92672>&gt;=</span>(<span style=color:#ae81ff>0</span><span style=color:#f92672>..=</span><span style=color:#ae81ff>10</span>).map(<span style=color:#f92672>|</span>_<span style=color:#f92672>|</span>{
-</span></span><span style=display:flex><span>        thread::spawn(<span style=color:#f92672>||</span>{
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> x <span style=color:#f92672>=</span> <span style=color:#ae81ff>0</span>;
-</span></span><span style=display:flex><span>            <span style=color:#66d9ef>for</span> _ <span style=color:#66d9ef>in</span> <span style=color:#ae81ff>0</span><span style=color:#f92672>..</span><span style=color:#ae81ff>5000000</span>{
-</span></span><span style=display:flex><span>                x <span style=color:#f92672>+=</span> <span style=color:#ae81ff>1</span>
-</span></span><span style=display:flex><span>            }
-</span></span><span style=display:flex><span>            x
-</span></span><span style=display:flex><span>        })
-</span></span><span style=display:flex><span>    }).collect();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>for</span> h <span style=color:#66d9ef>in</span> handles{
-</span></span><span style=display:flex><span>        println!(<span style=color:#e6db74>&#34;thread finished with count={}&#34;</span>,h.join().map_err(<span style=color:#f92672>|</span>_<span style=color:#f92672>|</span><span style=color:#e6db74>&#34;could not join a thread&#34;</span>).unwrap());
-</span></span><span style=display:flex><span>    }
-</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;{} have done&#34;</span>,a)
-</span></span><span style=display:flex><span>}
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#[no_mangle]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>pub</span> <span style=color:#66d9ef>extern</span> <span style=color:#e6db74>&#34;C&#34;</span> <span style=color:#66d9ef>fn</span> <span style=color:#a6e22e>json_parse</span>(c_buf:<span style=color:#f92672>*</span><span style=color:#66d9ef>const</span> c_char)-&gt; <span style=color:#f92672>*</span><span style=color:#66d9ef>const</span> c_char{
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> c_str <span style=color:#f92672>=</span> <span style=color:#66d9ef>unsafe</span> { CStr::from_ptr(c_buf) }.to_str().unwrap();
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> parsed <span style=color:#f92672>=</span> json::parse(c_str).unwrap();
-</span></span><span style=display:flex><span>    println!(<span style=color:#e6db74>&#34;{}&#34;</span>,parsed[<span style=color:#e6db74>&#34;a&#34;</span>]);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>let</span> data <span style=color:#f92672>=</span> <span style=color:#e6db74>r#&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        {
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;name&#34;: &#34;John Doe&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;age&#34;: 43,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            &#34;phones&#34;: [
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &#34;+44 1234567&#34;,
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>                &#34;+44 2345678&#34;
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            ]
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>        }&#34;#</span>;
-</span></span><span style=display:flex><span>        CString::new(data).unwrap().into_raw()
-</span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>main.c</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::thread;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>libc::c_int;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>libc::c_char;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::ffi::{CStr,CString};<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>json;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[no_mangle]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#d14>&#34;C&#34;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>process</span>(a:<span style=color:#458;font-weight:700>c_int</span>){<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>handles:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span>_<span style=color:#000;font-weight:700>&gt;=</span>(<span style=color:#099>0</span><span style=color:#000;font-weight:700>..=</span><span style=color:#099>10</span>).map(<span style=color:#000;font-weight:700>|</span>_<span style=color:#000;font-weight:700>|</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>thread::spawn(<span style=color:#000;font-weight:700>||</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>x<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>0</span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>_<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span><span style=color:#099>0</span><span style=color:#000;font-weight:700>..</span><span style=color:#099>5000000</span>{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>                </span>x<span style=color:#bbb> </span><span style=color:#000;font-weight:700>+=</span><span style=color:#bbb> </span><span style=color:#099>1</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>x<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>})<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}).collect();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>h<span style=color:#bbb> </span><span style=color:#000;font-weight:700>in</span><span style=color:#bbb> </span>handles{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>println!(<span style=color:#d14>&#34;thread finished with count={}&#34;</span>,h.join().map_err(<span style=color:#000;font-weight:700>|</span>_<span style=color:#000;font-weight:700>|</span><span style=color:#d14>&#34;could not join a thread&#34;</span>).unwrap());<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{} have done&#34;</span>,a)<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[no_mangle]</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>extern</span><span style=color:#bbb> </span><span style=color:#d14>&#34;C&#34;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>json_parse</span>(c_buf:<span style=color:#000;font-weight:700>*</span><span style=color:#000;font-weight:700>const</span><span style=color:#bbb> </span>c_char)-&gt; <span style=color:#000;font-weight:700>*</span><span style=color:#000;font-weight:700>const</span><span style=color:#bbb> </span>c_char{<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>c_str<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>unsafe</span><span style=color:#bbb> </span>{<span style=color:#bbb> </span>CStr::from_ptr(c_buf)<span style=color:#bbb> </span>}.to_str().unwrap();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>parsed<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>json::parse(c_str).unwrap();<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{}&#34;</span>,parsed[<span style=color:#d14>&#34;a&#34;</span>]);<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>data<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#d14>r#&#34;
+</span></span></span><span style=display:flex><span><span style=color:#d14>        {
+</span></span></span><span style=display:flex><span><span style=color:#d14>            &#34;name&#34;: &#34;John Doe&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            &#34;age&#34;: 43,
+</span></span></span><span style=display:flex><span><span style=color:#d14>            &#34;phones&#34;: [
+</span></span></span><span style=display:flex><span><span style=color:#d14>                &#34;+44 1234567&#34;,
+</span></span></span><span style=display:flex><span><span style=color:#d14>                &#34;+44 2345678&#34;
+</span></span></span><span style=display:flex><span><span style=color:#d14>            ]
+</span></span></span><span style=display:flex><span><span style=color:#d14>        }&#34;#</span>;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>CString::new(data).unwrap().into_raw()<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><ul><li>main.c</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -353,21 +353,21 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&#34;interface.h&#34;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include</span> <span style=color:#75715e>&lt;stdio.h&gt;</span><span style=color:#75715e>
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>int</span> <span style=color:#a6e22e>main</span>(){
-</span></span><span style=display:flex><span>    process(<span style=color:#ae81ff>3</span>);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>str <span style=color:#f92672>=</span> <span style=color:#e6db74>&#34;{</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>a</span><span style=color:#ae81ff>\&#34;</span><span style=color:#e6db74>: 3}&#34;</span>;
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>ret_str <span style=color:#f92672>=</span> json_parse(str);
-</span></span><span style=display:flex><span>    printf(<span style=color:#e6db74>&#34;%s</span><span style=color:#ae81ff>\n</span><span style=color:#e6db74>&#34;</span>,ret_str);
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#ae81ff>0</span>;
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#include</span> <span style=color:#999;font-weight:700;font-style:italic>&#34;interface.h&#34;</span><span style=color:#999;font-weight:700;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#include</span> <span style=color:#999;font-weight:700;font-style:italic>&lt;stdio.h&gt;</span><span style=color:#999;font-weight:700;font-style:italic>
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic></span>
+</span></span><span style=display:flex><span><span style=color:#458;font-weight:700>int</span> <span style=color:#900;font-weight:700>main</span>(){
+</span></span><span style=display:flex><span>    process(<span style=color:#099>3</span>);
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>const</span> <span style=color:#458;font-weight:700>char</span> <span style=color:#000;font-weight:700>*</span>str <span style=color:#000;font-weight:700>=</span> <span style=color:#d14>&#34;{</span><span style=color:#d14>\&#34;</span><span style=color:#d14>a</span><span style=color:#d14>\&#34;</span><span style=color:#d14>: 3}&#34;</span>;
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>const</span> <span style=color:#458;font-weight:700>char</span> <span style=color:#000;font-weight:700>*</span>ret_str <span style=color:#000;font-weight:700>=</span> json_parse(str);
+</span></span><span style=display:flex><span>    printf(<span style=color:#d14>&#34;%s</span><span style=color:#d14>\n</span><span style=color:#d14>&#34;</span>,ret_str);
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>return</span> <span style=color:#099>0</span>;
 </span></span><span style=display:flex><span>}
-</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span></code></pre></td></tr></table></div></div><ul><li>interface.h</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#66d9ef>void</span> <span style=color:#a6e22e>process</span>(<span style=color:#66d9ef>int</span> a);
-</span></span><span style=display:flex><span><span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span> <span style=color:#a6e22e>json_parse</span>(<span style=color:#66d9ef>const</span> <span style=color:#66d9ef>char</span> <span style=color:#f92672>*</span>c_buf);
-</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-c data-lang=c><span style=display:flex><span><span style=color:#458;font-weight:700>void</span> <span style=color:#900;font-weight:700>process</span>(<span style=color:#458;font-weight:700>int</span> a);
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>const</span> <span style=color:#458;font-weight:700>char</span> <span style=color:#000;font-weight:700>*</span> <span style=color:#900;font-weight:700>json_parse</span>(<span style=color:#000;font-weight:700>const</span> <span style=color:#458;font-weight:700>char</span> <span style=color:#000;font-weight:700>*</span>c_buf);
+</span></span></code></pre></td></tr></table></div></div><ul><li>test.go</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -381,19 +381,19 @@ PS:linux下编译<code>gcc main.c -L. -lembed -Wl,-rpath=./</code>
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#f92672>package</span> <span style=color:#a6e22e>main</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-go data-lang=go><span style=display:flex><span><span style=color:#000;font-weight:700>package</span> main
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e>/*
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#cgo LDFLAGS: -L./ -lembed
-</span></span></span><span style=display:flex><span><span style=color:#75715e>#include &#34;interface.h&#34; //非标准c头文件,所以用引号
-</span></span></span><span style=display:flex><span><span style=color:#75715e>*/</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;C&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>import</span> <span style=color:#e6db74>&#34;fmt&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>/*
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#cgo LDFLAGS: -L./ -lembed
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>#include &#34;interface.h&#34; //非标准c头文件,所以用引号
+</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic>*/</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#d14>&#34;C&#34;</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#d14>&#34;fmt&#34;</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>func</span> <span style=color:#a6e22e>main</span>() {
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>process</span>(<span style=color:#a6e22e>C</span>.int(<span style=color:#ae81ff>3</span>))
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>ret_ptr</span> <span style=color:#f92672>:=</span> <span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>json_parse</span>(<span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>CString</span>(<span style=color:#e6db74>`{&#34;a&#34;:3}`</span>))
-</span></span><span style=display:flex><span>	<span style=color:#a6e22e>fmt</span>.<span style=color:#a6e22e>Println</span>(<span style=color:#a6e22e>C</span>.<span style=color:#a6e22e>GoString</span>(<span style=color:#a6e22e>ret_ptr</span>))
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>func</span> <span style=color:#900;font-weight:700>main</span>() {
+</span></span><span style=display:flex><span>	C.<span style=color:#900;font-weight:700>process</span>(C.<span style=color:#0086b3>int</span>(<span style=color:#099>3</span>))
+</span></span><span style=display:flex><span>	ret_ptr <span style=color:#000;font-weight:700>:=</span> C.<span style=color:#900;font-weight:700>json_parse</span>(C.<span style=color:#900;font-weight:700>CString</span>(<span style=color:#d14>`{&#34;a&#34;:3}`</span>))
+</span></span><span style=display:flex><span>	fmt.<span style=color:#900;font-weight:700>Println</span>(C.<span style=color:#900;font-weight:700>GoString</span>(ret_ptr))
 </span></span><span style=display:flex><span>}
 </span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/M1-vscode-lldb/>M1-vscode-lldb</a></li><li><a href=/drafts/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0nosql%E6%95%B0%E6%8D%AE%E5%BA%93/>从零实现nosql数据库</a></li><li><a href=/drafts/new-mac/>new_mac</a></li><li><a href=/drafts/rust%E5%8C%85%E5%AF%BC%E5%85%A5/>rust包导入</a></li><li><a href=/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/>高性能web服务与并发测试</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/rust>rust</a></li><li><a href=/tags/go>go</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>

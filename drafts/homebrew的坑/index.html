@@ -5,14 +5,14 @@
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#1卸载openssl-10>1.卸载openssl 1.0</a></li><li><a href=#2启用openssl>2.启用openssl</a></li><li><a href=#3清理无效的系统变量和软连接>3.清理无效的系统变量和软连接</a></li><li><a href=#4安装python-38>4.安装python 3.8</a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>homebrew的坑</h1></header><date class="post-meta meta-date">2020年3月18日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
 阅读</span></span></div><div class=post-content><p>现在python最新版本是3.8,brew默认安装的python3是3.7。于是乎想给python升级,突然发现brew安装的文件夹<code>/usr/local/Cellar</code>下面有多个python3的文件夹,但是运行<code>brew list</code>的时候只显示一个python3,看起来用<code>brew</code>是没法卸载了。惨的是之前安装的openssl里面也有<code>1.0</code>,<code>1.1</code>两个文件夹。但是卸载1.0的时候也对应的是<code>1.1</code>,而且还没生效。</p><h2 id=1卸载openssl-10>1.卸载openssl 1.0</h2><p>1.删除brew 安装的文件夹 <code>/usr/local/Cellar/openssl</code>
 2.查看有没有软连接<code>ls -al /usr/local/bin/openssl</code>以及<code>ls -al /usr/local/opt/openssl</code>,有则删除</p><h2 id=2启用openssl>2.启用openssl</h2><p><code>brew link openssl</code></p><h2 id=3清理无效的系统变量和软连接>3.清理无效的系统变量和软连接</h2><p>1.先查看环境变量<code>echo $PATH</code>确定哪些无效
-有时候可能一下子找不到,知道系统的环境变量的加载顺序可以用的上：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+有时候可能一下子找不到,知道系统的环境变量的加载顺序可以用的上：</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>/etc/profile
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span>/etc/profile
 </span></span><span style=display:flex><span>/etc/paths 
 </span></span><span style=display:flex><span>/etc/paths.d/
 </span></span><span style=display:flex><span>~/.bash_profile 
@@ -21,7 +21,7 @@
 </span></span><span style=display:flex><span>~/.bashrc
 </span></span></code></pre></td></tr></table></div></div><p>/etc/profile和/etc/paths, /etc/paths.d/是系统级别的,系统启动就会加载；
 2.在系统环境变量里删除无效的软连接
-可以用这个bash删除指定目录下的无效软连接：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+可以用这个bash删除指定目录下的无效软连接：</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -39,24 +39,24 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e>#! /bin/bash
-</span></span></span><span style=display:flex><span><span style=color:#75715e></span>echo <span style=color:#e6db74>&#34;enter scan path: &#34;</span>
-</span></span><span style=display:flex><span>read path
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#! /bin/bash
+</span></span></span><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic></span><span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;enter scan path: &#34;</span>
+</span></span><span style=display:flex><span><span style=color:#0086b3>read</span> path
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> -z $path <span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>then</span>
-</span></span><span style=display:flex><span>    echo <span style=color:#e6db74>&#34;please enter scan path&#34;</span>
-</span></span><span style=display:flex><span>    exit
-</span></span><span style=display:flex><span><span style=color:#66d9ef>fi</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>if</span> <span style=color:#000;font-weight:700>[</span> -z <span style=color:teal>$path</span> <span style=color:#000;font-weight:700>]</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>then</span>
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;please enter scan path&#34;</span>
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>exit</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>fi</span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> file in <span style=color:#66d9ef>$(</span>find $path -type l<span style=color:#66d9ef>)</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>do</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>if</span> <span style=color:#f92672>[</span> ! -e $file <span style=color:#f92672>]</span>
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>then</span>
-</span></span><span style=display:flex><span>        echo <span style=color:#e6db74>&#34;rm </span>$file<span style=color:#e6db74>&#34;</span>
-</span></span><span style=display:flex><span>        rm -f $file
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>fi</span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>done</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>for</span> file in <span style=color:#000;font-weight:700>$(</span>find <span style=color:teal>$path</span> -type l<span style=color:#000;font-weight:700>)</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>do</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>if</span> <span style=color:#000;font-weight:700>[</span> ! -e <span style=color:teal>$file</span> <span style=color:#000;font-weight:700>]</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>then</span>
+</span></span><span style=display:flex><span>        <span style=color:#0086b3>echo</span> <span style=color:#d14>&#34;rm </span><span style=color:teal>$file</span><span style=color:#d14>&#34;</span>
+</span></span><span style=display:flex><span>        rm -f <span style=color:teal>$file</span>
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>fi</span>
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>done</span>
 </span></span></code></pre></td></tr></table></div></div><h2 id=4安装python-38>4.安装python 3.8</h2><p>1.运行brew 安装
 <code>brew install python@3.8</code>,特别的运行<code>pip3 install packages</code>时如果提示权限问题,可以加<code>--user</code>参数。
 2.调整系统变量使<code>python3</code>生效

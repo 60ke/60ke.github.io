@@ -3,7 +3,7 @@
 <a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
 <a href=https://60ke.github.io/archives/ title=归档>归档</a>
 <a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>python多线程没变快？</h1></header><date class="post-meta meta-date">2020年3月18日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
-阅读</span></span></div><div class=post-content><p>先看代码：</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+阅读</span></span></div><div class=post-content><p>先看代码：</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -30,13 +30,13 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>import</span> datetime<span style=color:#f92672>,</span>time
-</span></span><span style=display:flex><span>start_time <span style=color:#f92672>=</span> datetime<span style=color:#f92672>.</span>datetime<span style=color:#f92672>.</span>now()
-</span></span><span style=display:flex><span>print()
-</span></span><span style=display:flex><span><span style=color:#66d9ef>for</span> i <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>10000</span>):
-</span></span><span style=display:flex><span>    <span style=color:#75715e># time.sleep(0.01)</span>
-</span></span><span style=display:flex><span>    print(i)
-</span></span><span style=display:flex><span>print(str(datetime<span style=color:#f92672>.</span>datetime<span style=color:#f92672>.</span>now() <span style=color:#f92672>-</span> start_time))
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>datetime</span><span style=color:#000;font-weight:700>,</span><span style=color:#555>time</span>
+</span></span><span style=display:flex><span>start_time <span style=color:#000;font-weight:700>=</span> datetime<span style=color:#000;font-weight:700>.</span>datetime<span style=color:#000;font-weight:700>.</span>now()
+</span></span><span style=display:flex><span><span style=color:#0086b3>print</span>()
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>for</span> i <span style=color:#000;font-weight:700>in</span> <span style=color:#0086b3>range</span>(<span style=color:#099>10000</span>):
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># time.sleep(0.01)</span>
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>print</span>(i)
+</span></span><span style=display:flex><span><span style=color:#0086b3>print</span>(<span style=color:#0086b3>str</span>(datetime<span style=color:#000;font-weight:700>.</span>datetime<span style=color:#000;font-weight:700>.</span>now() <span style=color:#000;font-weight:700>-</span> start_time))
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
@@ -44,19 +44,19 @@
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#f92672>from</span> multiprocessing.dummy <span style=color:#f92672>import</span> Pool <span style=color:#66d9ef>as</span> ThreadPool
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>from</span> <span style=color:#555>multiprocessing.dummy</span> <span style=color:#000;font-weight:700>import</span> Pool <span style=color:#000;font-weight:700>as</span> ThreadPool
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>main</span>(x):
-</span></span><span style=display:flex><span>    <span style=color:#75715e># time.sleep(0.01)</span>
-</span></span><span style=display:flex><span>    print(x)
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>def</span> <span style=color:#900;font-weight:700>main</span>(x):
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic># time.sleep(0.01)</span>
+</span></span><span style=display:flex><span>    <span style=color:#0086b3>print</span>(x)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>start_time <span style=color:#f92672>=</span> datetime<span style=color:#f92672>.</span>datetime<span style=color:#f92672>.</span>now()
-</span></span><span style=display:flex><span>l <span style=color:#f92672>=</span> [x <span style=color:#66d9ef>for</span> x <span style=color:#f92672>in</span> range(<span style=color:#ae81ff>10000</span>)]
-</span></span><span style=display:flex><span>pool <span style=color:#f92672>=</span> ThreadPool(<span style=color:#ae81ff>1000</span>)
-</span></span><span style=display:flex><span>pool<span style=color:#f92672>.</span>map(main, l)
-</span></span><span style=display:flex><span>pool<span style=color:#f92672>.</span>close()
-</span></span><span style=display:flex><span>pool<span style=color:#f92672>.</span>join()
-</span></span><span style=display:flex><span>print(str(datetime<span style=color:#f92672>.</span>datetime<span style=color:#f92672>.</span>now() <span style=color:#f92672>-</span> start_time))
+</span></span><span style=display:flex><span>start_time <span style=color:#000;font-weight:700>=</span> datetime<span style=color:#000;font-weight:700>.</span>datetime<span style=color:#000;font-weight:700>.</span>now()
+</span></span><span style=display:flex><span>l <span style=color:#000;font-weight:700>=</span> [x <span style=color:#000;font-weight:700>for</span> x <span style=color:#000;font-weight:700>in</span> <span style=color:#0086b3>range</span>(<span style=color:#099>10000</span>)]
+</span></span><span style=display:flex><span>pool <span style=color:#000;font-weight:700>=</span> ThreadPool(<span style=color:#099>1000</span>)
+</span></span><span style=display:flex><span>pool<span style=color:#000;font-weight:700>.</span>map(main, l)
+</span></span><span style=display:flex><span>pool<span style=color:#000;font-weight:700>.</span>close()
+</span></span><span style=display:flex><span>pool<span style=color:#000;font-weight:700>.</span>join()
+</span></span><span style=display:flex><span><span style=color:#0086b3>print</span>(<span style=color:#0086b3>str</span>(datetime<span style=color:#000;font-weight:700>.</span>datetime<span style=color:#000;font-weight:700>.</span>now() <span style=color:#000;font-weight:700>-</span> start_time))
 </span></span></code></pre></td></tr></table></div></div><p>当将time的那段代码注释时,多线程没有单线程跑得快,当取消注释时,多线程跑的快。说明带代码单一的暂停,阻塞时多线程快,当代码没有阻塞时,将一个任务拆分为多线程时,反而会将代码运行的速度变慢。</p></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/mac%E4%B8%8B%E7%9A%84Python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/>mac下的Python2的mysql模块</a></li><li><a href=/drafts/python%E5%AF%B9%E5%AD%97%E5%85%B8%E8%BF%9B%E8%A1%8C%E5%88%92%E5%88%86/>python对字典进行划分</a></li><li><a href=/drafts/Anaconda%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E/>Anaconda使用说明</a></li><li><a href=/drafts/%E8%BD%AC%E8%BD%BD-Python-%E7%88%AC%E8%99%AB%E6%8A%8A%E5%BB%96%E9%9B%AA%E5%B3%B0%E7%9A%84%E6%95%99%E7%A8%8B%E8%BD%AC%E6%8D%A2%E6%88%90-PDF-%E7%94%B5%E5%AD%90%E4%B9%A6/>转载-Python 爬虫：把廖雪峰的教程转换成 PDF 电子书</a></li><li><a href=/drafts/Python%E4%BB%A3%E7%A0%81%E4%B8%ADfuncargs-kwargs/>Python代码中func(*args, **kwargs)</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/python>python</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>

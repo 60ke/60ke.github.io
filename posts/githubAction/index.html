@@ -11,24 +11,24 @@
 <img class=mx-auto alt=image.png src=http://tva1.sinaimg.cn/large/008kbQFaly1h5ou3e2wvqj30n20vwq7w.jpg>
 <img class=mx-auto alt=image.png src=http://tva1.sinaimg.cn/large/008kbQFaly1h5ou7h7uelj31os0pq47b.jpg>
 3.生成新的token<ul><li>设置token名<code>GOACTION</code></li><li>授予repo权限
-<img class=mx-auto alt=image.png src=http://tva1.sinaimg.cn/large/008kbQFaly1h5oub3y51gj31w60z24cn.jpg></li></ul></li></ol><ul><li>github项目<a href=https://github.com/60ke/trustnode_auto_validator>trustnode_auto_validator</a></li></ul><h3 id=编写action的yml文件>编写action的yml文件</h3><p>编写<a href=https://github.com/60ke/trustnode_auto_validator/blob/main/.github/workflows/main.yml>.github/workflows/main.yml</a>文件</p><h4 id=编写触发条件>编写触发条件</h4><p>项目目前有且只有一个<code>main</code>分支,设置<code>action</code>的触发条件为<code>push</code>到<code>main</code>分支后,对应yaml内容如下:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+<img class=mx-auto alt=image.png src=http://tva1.sinaimg.cn/large/008kbQFaly1h5oub3y51gj31w60z24cn.jpg></li></ul></li></ol><ul><li>github项目<a href=https://github.com/60ke/trustnode_auto_validator>trustnode_auto_validator</a></li></ul><h3 id=编写action的yml文件>编写action的yml文件</h3><p>编写<a href=https://github.com/60ke/trustnode_auto_validator/blob/main/.github/workflows/main.yml>.github/workflows/main.yml</a>文件</p><h4 id=编写触发条件>编写触发条件</h4><p>项目目前有且只有一个<code>main</code>分支,设置<code>action</code>的触发条件为<code>push</code>到<code>main</code>分支后,对应yaml内容如下:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#75715e># 触发条件：在 push 到 main 分支后</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>on</span>:
-</span></span><span style=display:flex><span>  <span style=color:#f92672>push</span>:
-</span></span><span style=display:flex><span>    <span style=color:#f92672>branches</span>:
-</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>main</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=设置jobs和运行环境>设置jobs和运行环境</h4><p>设置jobs名字为:buildAndDeploy(这个可以根据自己的喜好起),通过<code>runs-on</code>设置运行环境为:<code>ubuntu-latest</code></p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#998;font-style:italic># 触发条件：在 push 到 main 分支后</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:navy>on</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:navy>push</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>branches</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span>- main<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=设置jobs和运行环境>设置jobs和运行环境</h4><p>设置jobs名字为:buildAndDeploy(这个可以根据自己的喜好起),通过<code>runs-on</code>设置运行环境为:<code>ubuntu-latest</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>jobs</span>:
-</span></span><span style=display:flex><span>  <span style=color:#f92672>buildAndDeploy</span>:
-</span></span><span style=display:flex><span>    <span style=color:#f92672>runs-on</span>:  <span style=color:#ae81ff>ubuntu-latest</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=设置go交叉编译>设置go交叉编译</h4><p>针对 arm64、amd64 和 Linux、Darwin的组合进行交叉编译：</p><ul><li>使用<a href=https://github.com/marketplace/actions/checkout>checkout@v3</a>获取代码</li><li><a href=https://github.com/marketplace/actions/setup-go-environment>setup-go@v3</a> 设置 golang 环境，并在 with 字句中指定了go版本需大于<code>1.16.0</code></li><li>make 这里使用了 Matrix 定义的变量，循环构建每个组合；
-对应yaml内容如下:</li></ul><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:navy>jobs</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:navy>buildAndDeploy</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>runs-on</span>:<span style=color:#bbb>  </span>ubuntu-latest<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=设置go交叉编译>设置go交叉编译</h4><p>针对 arm64、amd64 和 Linux、Darwin的组合进行交叉编译：</p><ul><li>使用<a href=https://github.com/marketplace/actions/checkout>checkout@v3</a>获取代码</li><li><a href=https://github.com/marketplace/actions/setup-go-environment>setup-go@v3</a> 设置 golang 环境，并在 with 字句中指定了go版本需大于<code>1.16.0</code></li><li>make 这里使用了 Matrix 定义的变量，循环构建每个组合；
+对应yaml内容如下:</li></ul><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -53,32 +53,32 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span>    <span style=color:#75715e># 交叉构建,多平台交叉编译</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>strategy</span>:
-</span></span><span style=display:flex><span>      <span style=color:#f92672>matrix</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>include</span>:
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>amd64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>linux</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>amd64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>darwin</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>arm64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>linux</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>arm64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>darwin</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 使用checkout</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>steps</span>:
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@v3</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Set up Go</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/setup-go@v3</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>with</span>: 
-</span></span><span style=display:flex><span>        <span style=color:#f92672>go-version</span>: <span style=color:#e6db74>&#39;&gt;=1.16.0&#39;</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>run</span>: <span style=color:#ae81ff>go version</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>make</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: <span style=color:#ae81ff>make</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>env</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>GOOS</span>: <span style=color:#ae81ff>${{ matrix.goos }}</span>
-</span></span><span style=display:flex><span>        <span style=color:#f92672>GOARCH</span>: <span style=color:#ae81ff>${{ matrix.goarch }} </span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=自动发布编译后的二进制>自动发布编译后的二进制</h4><p>使用<a href=https://github.com/actions/upload-release-asset>upload-release-asset</a>进行二进制发布:</p><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic># 交叉构建,多平台交叉编译</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>strategy</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>matrix</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>include</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>amd64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>linux<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>amd64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>darwin<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>arm64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>linux<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>arm64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>darwin<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic># 使用checkout</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>steps</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>uses</span>:<span style=color:#bbb> </span>actions/checkout@v3<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Set up Go<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>uses</span>:<span style=color:#bbb> </span>actions/setup-go@v3<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>with</span>:<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>go-version</span>:<span style=color:#bbb> </span><span style=color:#d14>&#39;&gt;=1.16.0&#39;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>run</span>:<span style=color:#bbb> </span>go version<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>make<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>run</span>:<span style=color:#bbb> </span>make<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>env</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>GOOS</span>:<span style=color:#bbb> </span>${{ matrix.goos }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>GOARCH</span>:<span style=color:#bbb> </span>${{ matrix.goarch }} <span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=自动发布编译后的二进制>自动发布编译后的二进制</h4><p>使用<a href=https://github.com/actions/upload-release-asset>upload-release-asset</a>进行二进制发布:</p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -91,20 +91,20 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Packaging...</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: <span style=color:#ae81ff>tar czf nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz nodeUpgrade</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Uploading assets...</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e>#   if: ${{ !env.ACT }}</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>id</span>: <span style=color:#ae81ff>upload-release-asset </span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/upload-release-asset@v1</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>env</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>GITHUB_TOKEN</span>: <span style=color:#ae81ff>${{ secrets.GOACTION }}</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>with</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>upload_url</span>: <span style=color:#ae81ff>${{ github.event.release.upload_url }}</span>
-</span></span><span style=display:flex><span>        <span style=color:#f92672>asset_path</span>: <span style=color:#ae81ff>./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span>
-</span></span><span style=display:flex><span>        <span style=color:#f92672>asset_name</span>: <span style=color:#ae81ff>nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span>
-</span></span><span style=display:flex><span>        <span style=color:#f92672>asset_content_type</span>: <span style=color:#ae81ff>application/gzip</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=完整的yaml文件>完整的yaml文件</h4><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Packaging...<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>run</span>:<span style=color:#bbb> </span>tar czf nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz nodeUpgrade<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Uploading assets...<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic>#   if: ${{ !env.ACT }}</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>id</span>:<span style=color:#bbb> </span>upload-release-asset <span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>uses</span>:<span style=color:#bbb> </span>actions/upload-release-asset@v1<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>env</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>GITHUB_TOKEN</span>:<span style=color:#bbb> </span>${{ secrets.GOACTION }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>with</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>upload_url</span>:<span style=color:#bbb> </span>${{ github.event.release.upload_url }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>asset_path</span>:<span style=color:#bbb> </span>./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>asset_name</span>:<span style=color:#bbb> </span>nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>asset_content_type</span>:<span style=color:#bbb> </span>application/gzip<span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><h4 id=完整的yaml文件>完整的yaml文件</h4><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -168,71 +168,71 @@
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>name</span>: <span style=color:#ae81ff>Publish Go Binary</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># 触发条件：在 push 到 main 分支后</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>on</span>:
-</span></span><span style=display:flex><span>  <span style=color:#f92672>push</span>:
-</span></span><span style=display:flex><span>    <span style=color:#f92672>branches</span>:
-</span></span><span style=display:flex><span>      - <span style=color:#ae81ff>main</span>
-</span></span><span style=display:flex><span><span style=color:#f92672>env</span>:
-</span></span><span style=display:flex><span>  <span style=color:#f92672>GITHUB_TOKEN</span>: <span style=color:#ae81ff>${{ secrets.GOACTION }}      </span>
-</span></span><span style=display:flex><span><span style=color:#f92672>jobs</span>:
-</span></span><span style=display:flex><span>  <span style=color:#f92672>buildAndDeploy</span>:
-</span></span><span style=display:flex><span>    <span style=color:#f92672>runs-on</span>:  <span style=color:#ae81ff>ubuntu-latest</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>env</span>:
-</span></span><span style=display:flex><span>      <span style=color:#f92672>GITHUB_TOKEN</span>: <span style=color:#ae81ff>${{ secrets.GITHUB_TOKEN }}</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 交叉构建,多平台交叉编译</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>strategy</span>:
-</span></span><span style=display:flex><span>      <span style=color:#f92672>matrix</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>include</span>:
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>amd64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>linux</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>amd64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>darwin</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>arm64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>linux</span>
-</span></span><span style=display:flex><span>          - <span style=color:#f92672>goarch</span>: <span style=color:#ae81ff>arm64</span>
-</span></span><span style=display:flex><span>            <span style=color:#f92672>goos</span>: <span style=color:#ae81ff>darwin</span>
-</span></span><span style=display:flex><span>    <span style=color:#75715e># 使用checkout</span>
-</span></span><span style=display:flex><span>    <span style=color:#f92672>steps</span>:
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/checkout@v3</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Set up Go</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>uses</span>: <span style=color:#ae81ff>actions/setup-go@v3</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>with</span>: 
-</span></span><span style=display:flex><span>        <span style=color:#f92672>go-version</span>: <span style=color:#e6db74>&#39;&gt;=1.16.0&#39;</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>run</span>: <span style=color:#ae81ff>go version</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>make</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: <span style=color:#ae81ff>make</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>env</span>:
-</span></span><span style=display:flex><span>        <span style=color:#f92672>GOOS</span>: <span style=color:#ae81ff>${{ matrix.goos }}</span>
-</span></span><span style=display:flex><span>        <span style=color:#f92672>GOARCH</span>: <span style=color:#ae81ff>${{ matrix.goarch }}            </span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Packaging...</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: <span style=color:#ae81ff>tar czf nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz nodeUpgrade</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Get version</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>id</span>: <span style=color:#ae81ff>version</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>run</span>: <span style=color:#ae81ff>echo &#34;::set-output name=version::$(git rev-parse --short HEAD)&#34;</span>
-</span></span><span style=display:flex><span>    - <span style=color:#f92672>name</span>: <span style=color:#ae81ff>Gets latest created release info</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>uses</span>: <span style=color:#e6db74>&#34;marvinpinto/action-automatic-releases@latest&#34;</span>
-</span></span><span style=display:flex><span>      <span style=color:#f92672>with</span>:
-</span></span><span style=display:flex><span>          <span style=color:#f92672>repo_token</span>: <span style=color:#e6db74>&#34;${{ secrets.GITHUB_TOKEN }}&#34;</span>
-</span></span><span style=display:flex><span>          <span style=color:#f92672>automatic_release_tag</span>:  <span style=color:#ae81ff>${{ steps.version.outputs.version }}</span>
-</span></span><span style=display:flex><span>          <span style=color:#f92672>prerelease</span>: <span style=color:#66d9ef>true</span>
-</span></span><span style=display:flex><span>          <span style=color:#f92672>title</span>: <span style=color:#e6db74>&#34;Development Build&#34;</span>
-</span></span><span style=display:flex><span>          <span style=color:#f92672>files</span>: |<span style=color:#e6db74>
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>            </span>            <span style=color:#ae81ff>./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz  </span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#     - name: Uploading assets...</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#       # if: ${{ !env.ACT }}</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#       # id: upload-release-asset </span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#       uses: actions/upload-release-asset@v1</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#       env:</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#         GITHUB_TOKEN: ${{ secrets.GOACTION }}</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#       with:</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#         upload_url: ${{ steps.latest_release_info.outputs.upload_url }}</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#         asset_path: ./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#         asset_name: nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span>
-</span></span><span style=display:flex><span><span style=color:#75715e>#         asset_content_type: application/gzip</span>
-</span></span></code></pre></td></tr></table></div></div><p>Reference:
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:navy>name</span>:<span style=color:#bbb> </span>Publish Go Binary<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic># 触发条件：在 push 到 main 分支后</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:navy>on</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:navy>push</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>branches</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span>- main<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:navy>env</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:navy>GITHUB_TOKEN</span>:<span style=color:#bbb> </span>${{ secrets.GOACTION }}      <span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:navy>jobs</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>  </span><span style=color:navy>buildAndDeploy</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>runs-on</span>:<span style=color:#bbb>  </span>ubuntu-latest<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>env</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>GITHUB_TOKEN</span>:<span style=color:#bbb> </span>${{ secrets.GITHUB_TOKEN }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic># 交叉构建,多平台交叉编译</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>strategy</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>matrix</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>include</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>amd64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>linux<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>amd64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>darwin<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>arm64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>linux<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span>- <span style=color:navy>goarch</span>:<span style=color:#bbb> </span>arm64<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span><span style=color:navy>goos</span>:<span style=color:#bbb> </span>darwin<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#998;font-style:italic># 使用checkout</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:navy>steps</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>uses</span>:<span style=color:#bbb> </span>actions/checkout@v3<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Set up Go<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>uses</span>:<span style=color:#bbb> </span>actions/setup-go@v3<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>with</span>:<span style=color:#bbb> 
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>go-version</span>:<span style=color:#bbb> </span><span style=color:#d14>&#39;&gt;=1.16.0&#39;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>run</span>:<span style=color:#bbb> </span>go version<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>make<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>run</span>:<span style=color:#bbb> </span>make<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>env</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>GOOS</span>:<span style=color:#bbb> </span>${{ matrix.goos }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:navy>GOARCH</span>:<span style=color:#bbb> </span>${{ matrix.goarch }}            <span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Packaging...<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>run</span>:<span style=color:#bbb> </span>tar czf nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz nodeUpgrade<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Get version<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>id</span>:<span style=color:#bbb> </span>version<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>run</span>:<span style=color:#bbb> </span>echo &#34;::set-output name=version::$(git rev-parse --short HEAD)&#34;<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>- <span style=color:navy>name</span>:<span style=color:#bbb> </span>Gets latest created release info<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>uses</span>:<span style=color:#bbb> </span><span style=color:#d14>&#34;marvinpinto/action-automatic-releases@latest&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>      </span><span style=color:navy>with</span>:<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span><span style=color:navy>repo_token</span>:<span style=color:#bbb> </span><span style=color:#d14>&#34;${{ secrets.GITHUB_TOKEN }}&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span><span style=color:navy>automatic_release_tag</span>:<span style=color:#bbb>  </span>${{ steps.version.outputs.version }}<span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span><span style=color:navy>prerelease</span>:<span style=color:#bbb> </span><span style=color:#000;font-weight:700>true</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span><span style=color:navy>title</span>:<span style=color:#bbb> </span><span style=color:#d14>&#34;Development Build&#34;</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb>          </span><span style=color:navy>files</span>:<span style=color:#bbb> </span>|<span style=color:#d14>
+</span></span></span><span style=display:flex><span><span style=color:#d14>            </span><span style=color:#bbb>            </span>./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz  <span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#     - name: Uploading assets...</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#       # if: ${{ !env.ACT }}</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#       # id: upload-release-asset </span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#       uses: actions/upload-release-asset@v1</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#       env:</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#         GITHUB_TOKEN: ${{ secrets.GOACTION }}</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#       with:</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#         upload_url: ${{ steps.latest_release_info.outputs.upload_url }}</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#         asset_path: ./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#         asset_name: nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz</span><span style=color:#bbb>
+</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>#         asset_content_type: application/gzip</span><span style=color:#bbb>
+</span></span></span></code></pre></td></tr></table></div></div><p>Reference:
 <a href=https://cloud.tencent.com/developer/article/1884133>https://cloud.tencent.com/developer/article/1884133</a></p></div><div class=post-archive><ul class=post-copyright><li><strong>原文作者：</strong><a rel=author href=https://60ke.github.io>LookForAdmin</a></li><li style=word-break:break-all><strong>原文链接：</strong><a href=https://60ke.github.io/posts/githubAction/>https://60ke.github.io/posts/githubAction/</a></li><li><strong>版权声明：</strong>本作品采用<a rel=license href=https://creativecommons.org/licenses/by-nc-nd/4.0/>知识共享署名-非商业性使用-禁止演绎 4.0 国际许可协议</a>进行许可，非商业转载请注明出处（作者，原文链接），商业转载请联系作者获得授权。</li></ul></div><br><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/>go泛型实践</a></li><li><a href=/drafts/go%E5%B9%B6%E5%8F%91map/>go并发map</a></li><li><a href=/drafts/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%AD%90%E5%AD%97%E7%AC%A6%E4%B8%B2%E6%9F%A5%E6%89%BE/>数据结构之子字符串查找</a></li><li><a href=/drafts/go%E8%B0%83%E7%94%A8RUST/>go调用RUST</a></li><li><a href=/posts/quorum%E9%9A%90%E7%A7%81%E4%BA%A4%E6%98%93%E7%9A%84%E7%BB%93%E6%9E%84%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E4%B8%8EBlockMaze%E7%9A%84%E6%AF%94%E8%BE%83/>Quorum隐私交易的结构流程分析及与BlockMaze的比较</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/go>go</a></li><li><a href=/tags/%E8%87%AA%E5%8A%A8%E5%8C%96>自动化</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 <a id=rocket href=#top></a>
 <script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>

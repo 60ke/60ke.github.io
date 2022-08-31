@@ -96,7 +96,7 @@ ssl_certificate_key /etc/nginx/ssl/barretlee.com.key;
 ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 ssl_ciphers &ldquo;EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS !MEDIUM&rdquo;;</p><h1 id=add-perfect-forward-secrecy>Add perfect forward secrecy</h1><p>ssl_prefer_server_ciphers on;
 add_header Strict-Transport-Security &ldquo;max-age=31536000; includeSubdomains&rdquo;;
-会发现,网页 URL 地址框左边已经多出了一个小绿锁。当然,部署好了之后可以去这个网站看看测评分数,如果分数是 A+,说明你的 HTTPS 的各项配置都还不错,速度也很快。</p><h2 id=使用ca签名过的证书和私钥导出p12格式个人证书>使用CA签名过的证书和私钥导出P12格式个人证书</h2><p><code>openssl pkcs12 -export -inkey clientkey.pem -in client.crt -out client.p12</code></p><h1 id=启动flask>启动flask</h1><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
+会发现,网页 URL 地址框左边已经多出了一个小绿锁。当然,部署好了之后可以去这个网站看看测评分数,如果分数是 A+,说明你的 HTTPS 的各项配置都还不错,速度也很快。</p><h2 id=使用ca签名过的证书和私钥导出p12格式个人证书>使用CA签名过的证书和私钥导出P12格式个人证书</h2><p><code>openssl pkcs12 -export -inkey clientkey.pem -in client.crt -out client.p12</code></p><h1 id=启动flask>启动flask</h1><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
@@ -108,30 +108,30 @@ add_header Strict-Transport-Security &ldquo;max-age=31536000; includeSubdomains&
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>from</span> flask <span style=color:#f92672>import</span> Flask
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000;font-weight:700>from</span> <span style=color:#555>flask</span> <span style=color:#000;font-weight:700>import</span> Flask
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>app <span style=color:#f92672>=</span> Flask(__name__)
+</span></span><span style=display:flex><span>app <span style=color:#000;font-weight:700>=</span> Flask(__name__)
 </span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#a6e22e>@app</span><span style=color:#f92672>.</span>route(<span style=color:#e6db74>&#39;/&#39;</span>,methods<span style=color:#f92672>=</span>[<span style=color:#e6db74>&#39;POST&#39;</span>,<span style=color:#e6db74>&#39;GET&#39;</span>])
-</span></span><span style=display:flex><span><span style=color:#66d9ef>def</span> <span style=color:#a6e22e>hello</span>():
-</span></span><span style=display:flex><span>    <span style=color:#66d9ef>return</span> <span style=color:#e6db74>&#39;hello world&#39;</span>
+</span></span><span style=display:flex><span><span style=color:#3c5d5d;font-weight:700>@app</span><span style=color:#000;font-weight:700>.</span>route(<span style=color:#d14>&#39;/&#39;</span>,methods<span style=color:#000;font-weight:700>=</span>[<span style=color:#d14>&#39;POST&#39;</span>,<span style=color:#d14>&#39;GET&#39;</span>])
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>def</span> <span style=color:#900;font-weight:700>hello</span>():
+</span></span><span style=display:flex><span>    <span style=color:#000;font-weight:700>return</span> <span style=color:#d14>&#39;hello world&#39;</span>
 </span></span><span style=display:flex><span>    
-</span></span><span style=display:flex><span><span style=color:#66d9ef>if</span> __name__ <span style=color:#f92672>==</span> <span style=color:#e6db74>&#39;__main__&#39;</span>:
-</span></span><span style=display:flex><span>    <span style=color:#75715e>#app.run(host=&#39;0.0.0.0&#39;,ssl_context=&#39;adhoc&#39;)</span>
-</span></span><span style=display:flex><span>    app<span style=color:#f92672>.</span>run(host<span style=color:#f92672>=</span><span style=color:#e6db74>&#39;0.0.0.0&#39;</span>, ssl_context<span style=color:#f92672>=</span>(
-</span></span><span style=display:flex><span>        <span style=color:#e6db74>&#34;server.crt&#34;</span>, <span style=color:#e6db74>&#34;server.key&#34;</span>))
-</span></span></code></pre></td></tr></table></div></div><h1 id=requests测试>requests测试</h1><div class=highlight><div style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
+</span></span><span style=display:flex><span><span style=color:#000;font-weight:700>if</span> __name__ <span style=color:#000;font-weight:700>==</span> <span style=color:#d14>&#39;__main__&#39;</span>:
+</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic>#app.run(host=&#39;0.0.0.0&#39;,ssl_context=&#39;adhoc&#39;)</span>
+</span></span><span style=display:flex><span>    app<span style=color:#000;font-weight:700>.</span>run(host<span style=color:#000;font-weight:700>=</span><span style=color:#d14>&#39;0.0.0.0&#39;</span>, ssl_context<span style=color:#000;font-weight:700>=</span>(
+</span></span><span style=display:flex><span>        <span style=color:#d14>&#34;server.crt&#34;</span>, <span style=color:#d14>&#34;server.key&#34;</span>))
+</span></span></code></pre></td></tr></table></div></div><h1 id=requests测试>requests测试</h1><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
 </span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#f92672>import</span> requests
-</span></span><span style=display:flex><span>rep <span style=color:#f92672>=</span> requests<span style=color:#f92672>.</span>get(<span style=color:#e6db74>&#39;https://127.0.0.1:5000/&#39;</span>,
-</span></span><span style=display:flex><span>                   cert<span style=color:#f92672>=</span>(<span style=color:#e6db74>&#39;/Users/k/Desktop/scp/flask/client/client-cert.pem&#39;</span>, <span style=color:#e6db74>&#39;/Users/k/Desktop/scp/flask/client/client-key.pem&#39;</span>), verify<span style=color:#f92672>=</span><span style=color:#66d9ef>False</span>)
-</span></span><span style=display:flex><span>print(rep<span style=color:#f92672>.</span>text)
-</span></span><span style=display:flex><span><span style=color:#75715e># rep = requests.get(&#39;https://127.0.0.1:5000/&#39;,verify=False)</span>
-</span></span><span style=display:flex><span><span style=color:#75715e># print(rep.text)</span>
+</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-python data-lang=python><span style=display:flex><span><span style=color:#000;font-weight:700>import</span> <span style=color:#555>requests</span>
+</span></span><span style=display:flex><span>rep <span style=color:#000;font-weight:700>=</span> requests<span style=color:#000;font-weight:700>.</span>get(<span style=color:#d14>&#39;https://127.0.0.1:5000/&#39;</span>,
+</span></span><span style=display:flex><span>                   cert<span style=color:#000;font-weight:700>=</span>(<span style=color:#d14>&#39;/Users/k/Desktop/scp/flask/client/client-cert.pem&#39;</span>, <span style=color:#d14>&#39;/Users/k/Desktop/scp/flask/client/client-key.pem&#39;</span>), verify<span style=color:#000;font-weight:700>=</span><span style=color:#000;font-weight:700>False</span>)
+</span></span><span style=display:flex><span><span style=color:#0086b3>print</span>(rep<span style=color:#000;font-weight:700>.</span>text)
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># rep = requests.get(&#39;https://127.0.0.1:5000/&#39;,verify=False)</span>
+</span></span><span style=display:flex><span><span style=color:#998;font-style:italic># print(rep.text)</span>
 </span></span></code></pre></td></tr></table></div></div><p>源自：
 <a href=https://www.cnblogs.com/liyulong1982/p/6106129.html>https://www.cnblogs.com/liyulong1982/p/6106129.html</a>
 <a href=https://blog.csdn.net/yannanxiu/article/details/70670225>https://blog.csdn.net/yannanxiu/article/details/70670225</a>
