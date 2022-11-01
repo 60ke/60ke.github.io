@@ -1,1 +1,49 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>开发 on LookForAdmin的博客</title><link>https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/</link><description>Recent content in 开发 on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 08 Oct 2021 11:25:01 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml"/><item><title>一些问题</title><link>https://60ke.github.io/drafts/%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Fri, 08 Oct 2021 11:25:01 +0000</pubDate><guid>https://60ke.github.io/drafts/%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description>linux ps -ef看不到当前进程解惑 如下脚本: cpu_usage.sh 1 2 3 4 while true; do grep &amp;#39;cpu &amp;#39; /proc/stat | awk &amp;#39;{usage=($2+$4)*100/($2+$4+$5)} END {print int(usage)}&amp;#39; sleep 3 done 然后添加x权限运行 chmod +x cpu_usage.sh ./cpu_usage.sh 此时我们运行ps -ef |grep cpu_usage.sh看不到相关进程。但是我们使用bash ./cpu_usage.sh可以看到相关进程。亦或者我们在cpu_usage.sh中加入she</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>开发 on LookForAdmin</title><link>https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/</link><description>Recent content in 开发 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 08 Oct 2021 11:25:01 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/index.xml" rel="self" type="application/rss+xml"/><item><title>一些问题</title><link>https://60ke.github.io/drafts/%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Fri, 08 Oct 2021 11:25:01 +0000</pubDate><guid>https://60ke.github.io/drafts/%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description>&lt;h2 id="linux-ps--ef看不到当前进程解惑">linux ps -ef看不到当前进程解惑&lt;/h2>
+&lt;p>如下脚本:
+cpu_usage.sh&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="k">while&lt;/span> true&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> grep &lt;span class="s1">&amp;#39;cpu &amp;#39;&lt;/span> /proc/stat &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{usage=($2+$4)*100/($2+$4+$5)} END {print int(usage)}&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sleep &lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后添加&lt;code>x&lt;/code>权限运行&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">chmod +x cpu_usage.sh
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">./cpu_usage.sh
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>此时我们运行&lt;code>ps -ef |grep cpu_usage.sh&lt;/code>看不到相关进程。但是我们使用&lt;code>bash ./cpu_usage.sh&lt;/code>可以看到相关进程。亦或者我们在&lt;code>cpu_usage.sh&lt;/code>中加入shebang([英: ʃɪˈbæŋ])也能在&lt;code>ps&lt;/code>命令中看到其名字相关的进程。那么我们不加shebang的进程去哪了？我们稍微改动一下脚本,再来观察
+cpu_usageV1.sh&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="k">while&lt;/span> true&lt;span class="p">;&lt;/span> &lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> grep &lt;span class="s1">&amp;#39;cpu &amp;#39;&lt;/span> /proc/stat &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{usage=($2+$4)*100/($2+$4+$5)} END {print int(usage)}&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$$&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> sleep &lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="nv">$$&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>此时直接运行脚本并grep相关进程号我们可以看到,与其相关的进程有一个名为&lt;code>bash&lt;/code>和名为&lt;code>sleep 3&lt;/code>的进程,这说明当前的脚本在没有加入shebang的情况下,以名为&lt;code>bash&lt;/code>和&lt;code>sleep&lt;/code>运行了&lt;/p></description></item></channel></rss>

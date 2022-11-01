@@ -1,4 +1,296 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>python爬虫 on LookForAdmin的博客</title><link>https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/</link><description>Recent content in python爬虫 on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 01 Aug 2018 10:54:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/index.xml" rel="self" type="application/rss+xml"/><item><title>requests中遇到的一些问题</title><link>https://60ke.github.io/drafts/requests%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 01 Aug 2018 10:54:00 +0000</pubDate><guid>https://60ke.github.io/drafts/requests%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description>今天使用Python的requests模拟posts时总是,无法获取到正确的结果,后来使用postman的时候,在发送请求的时候在body中奖数据类型由默认的Text改为json可以成功,但是使用postman生成的python代码,并加入了正确的cookie还是不能获得正常的返</description></item><item><title>微博搜索爬虫</title><link>https://60ke.github.io/drafts/%E5%BE%AE%E5%8D%9A%E6%90%9C%E7%B4%A2%E7%88%AC%E8%99%AB/</link><pubDate>Thu, 05 Jul 2018 08:18:46 +0000</pubDate><guid>https://60ke.github.io/drafts/%E5%BE%AE%E5%8D%9A%E6%90%9C%E7%B4%A2%E7%88%AC%E8%99%AB/</guid><description>爬虫包括了登录,验证码验证模块 代码放到github上了微博搜索爬虫</description></item><item><title>scrapy之FormRequest模拟post请求</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8BFormRequest%E6%A8%A1%E6%8B%9Fpost%E8%AF%B7%E6%B1%82/</link><pubDate>Tue, 02 Jan 2018 07:36:19 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8BFormRequest%E6%A8%A1%E6%8B%9Fpost%E8%AF%B7%E6%B1%82/</guid><description>先放代码吧,以后闲了再完善 def start_requests(self): url = &amp;quot;http://www.hebzx.gov.cn/specialnews.aspx?meetingtype=009001&amp;quot; yield scrapy.Request(url,callback=self.parse0) def parse0(self,response): formdata = {&amp;quot;__EVENTTARGET&amp;quot;:&amp;quot;AspNetPager1&amp;quot;,&amp;quot;__EVENTARGUMENT&amp;quot;:&amp;quot;2&amp;quot;} return scrapy.FormRequest.from_response( response, formdata=formdata, callback=self.parse1 ) def parse1(self,response): print(&amp;quot;1111111111111&amp;quot;) print(response.text)</description></item><item><title>scrapy保存数据为多个json</title><link>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</link><pubDate>Wed, 23 Aug 2017 06:26:33 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</guid><description>定义pipline： # -*- coding: utf-8 -*- # Define your item pipelines here # # Don't forget to add your pipeline to the ITEM_PIPELINES setting # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html # class VmwarePipeline(object): # def process_item(self, item, spider): # return item import json import codecs class VmwarePipeline(object): def process_item(self, item, spider): self.file = codecs.open('%s.json'%item['vid'], 'w', encoding='utf-8') line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot; self.file.write(line) return item def spider_closed(self, spider): self.file.close() PS：scrapy中spiders的解析不能执行的问题 目前为止遇到的情况有两种 解析函数本身存在问题,解析错误导致不能继续传递 解析的</description></item><item><title>scrapy之获取ubuntu安全公告,并将cve存储为json</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</link><pubDate>Tue, 22 Aug 2017 03:33:00 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</guid><description>创建ubuntu项目 scrapy startproject ubuntu 创建spider模板 cd ubuntu scrapy genspider Ubuntu https://usn.ubuntu.com cat ubuntu/ubuntu/spiders/Ubuntu.py # -*- coding: utf-8 -*- import scrapy class UbuntuSpider(scrapy.Spider): name = 'Ubuntu' allowed_domains = ['https://usn.ubuntu.com'] start_urls = ['http://https://usn.ubuntu.com/'] def parse(self, response): pass ~ 编写spider # -*- coding: utf-8 -*- import scrapy from bs4 import BeautifulSoup import re import requests from ubuntu.items import UbuntuItem class UbuntuSpider(scrapy.Spider): name = 'Ubuntu' allowed_domains = ['usn.ubuntu.com'] def start_requests(self): url = &amp;quot;https://usn.ubuntu.com/usn/&amp;quot; content = requests.get(url).text soup = BeautifulSoup(content,&amp;quot;html.parser&amp;quot;) page = soup.find(attrs={&amp;quot;class&amp;quot;:&amp;quot;right&amp;quot;}).text.strip() max_page = re.findall(&amp;quot;Showing page 1 of (.+?) &amp;quot;,page)[0] start_urls = [] for page in range(int(max_page)): page +=1 url = 'https://usn.ubuntu.com/usn/?page=%s'%page yield scrapy.Request(url,callback=self.parse0) def parse0(self, response): # 获取公告中usn的cv</description></item><item><title>scrapy-xpath用法</title><link>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</link><pubDate>Tue, 22 Aug 2017 02:04:10 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</guid><description>&lt;p>转载自http://www.cnblogs.com/huhuuu/p/3701017.html　　
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>python爬虫 on LookForAdmin</title><link>https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/</link><description>Recent content in python爬虫 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 01 Aug 2018 10:54:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/index.xml" rel="self" type="application/rss+xml"/><item><title>requests中遇到的一些问题</title><link>https://60ke.github.io/drafts/requests%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 01 Aug 2018 10:54:00 +0000</pubDate><guid>https://60ke.github.io/drafts/requests%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98/</guid><description>&lt;p>今天使用Python的requests模拟posts时总是,无法获取到正确的结果,后来使用postman的时候,在发送请求的时候在body中奖数据类型由默认的Text改为json可以成功,但是使用postman生成的python代码,并加入了正确的cookie还是不能获得正常的返回结果。检查代码,在headers中已经添加了&lt;code>'content-type': &amp;quot;application/json&amp;quot;&lt;/code>,但是根据代码返回的异常判断还是发送的数据有问题,最后的解决办法是,在post数据的时候,直接&lt;code>data=json.dumps(data)&lt;/code>,之后代码正常,这样可以判断出,服务端直接接受的json在python中其实为形如dict的字符串。
+最后放上代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">requests&lt;/span>&lt;span class="o">,&lt;/span>&lt;span class="nn">json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">url&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;http://172.31.1.31/api/realtime_news&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">data&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">json&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">dumps&lt;/span>&lt;span class="p">({&lt;/span>&lt;span class="s2">&amp;#34;begin&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;2017-01-01 00:00:00&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;end&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;size&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;10&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;offset&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;0&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;data&amp;#34;&lt;/span>&lt;span class="p">:{&lt;/span>&lt;span class="s2">&amp;#34;keyword&amp;#34;&lt;/span>&lt;span class="p">:[],&lt;/span>&lt;span class="s2">&amp;#34;keyword_any&amp;#34;&lt;/span>&lt;span class="p">:[],&lt;/span>&lt;span class="s2">&amp;#34;keyword_not&amp;#34;&lt;/span>&lt;span class="p">:[],&lt;/span>&lt;span class="s2">&amp;#34;emotion&amp;#34;&lt;/span>&lt;span class="p">:[&lt;/span>&lt;span class="s2">&amp;#34;负面&amp;#34;&lt;/span>&lt;span class="p">],&lt;/span>&lt;span class="s2">&amp;#34;media_type&amp;#34;&lt;/span>&lt;span class="p">:[&lt;/span>&lt;span class="s2">&amp;#34;print_media&amp;#34;&lt;/span>&lt;span class="p">],&lt;/span>&lt;span class="s2">&amp;#34;location&amp;#34;&lt;/span>&lt;span class="p">:[]}})&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">cookies&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="s2">&amp;#34;token&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;dcd709fe-956e-11e8-9eda-001a4a16015c&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;user_id&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;12&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;username1&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="s2">&amp;#34;liushike&amp;#34;&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">headers&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="s2">&amp;#34;Accept&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;application/json, text/javascript, */*; q=0.01&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;Content-Type&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;application/json&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;Connection&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;keep-alive&amp;#34;&lt;/span>&lt;span class="p">,}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">type&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">json&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">loads&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">requests&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">post&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">headers&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">headers&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">cookies&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">cookies&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">text&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="requests的params参数构造">&lt;code>requests&lt;/code>的params参数构造&lt;/h3>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">params&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;devid&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;99000939663350&amp;#39;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">response&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">requests&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">post&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;https://r.cnews.qq.com/getSubNewsChlidInterest&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">headers&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">headers&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">params&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">params&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">等同于&lt;/span>&lt;span class="err">：&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">urllib.parse&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">urlencode&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">params&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;devid&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s1">&amp;#39;99000939663350&amp;#39;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">tar&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">urlencode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">params&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">tar&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1">&amp;#39;devid=99000939663350&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#进而构造出 https://r.cnews.qq.com/getSubNewsChlidInterest?devid=99000939663350&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">requests&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">post&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;https://r.cnews.qq.com/getSubNewsChlidInterest?devid=99000939663350&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">headers&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">headers&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">data&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>微博搜索爬虫</title><link>https://60ke.github.io/drafts/%E5%BE%AE%E5%8D%9A%E6%90%9C%E7%B4%A2%E7%88%AC%E8%99%AB/</link><pubDate>Thu, 05 Jul 2018 08:18:46 +0000</pubDate><guid>https://60ke.github.io/drafts/%E5%BE%AE%E5%8D%9A%E6%90%9C%E7%B4%A2%E7%88%AC%E8%99%AB/</guid><description>&lt;p>爬虫包括了登录,验证码验证模块
+代码放到github上了&lt;a class="link" href="https://github.com/60ke/WeiboSearch" target="_blank" rel="noopener"
+>微博搜索爬虫&lt;/a>&lt;/p></description></item><item><title>scrapy之FormRequest模拟post请求</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8Bformrequest%E6%A8%A1%E6%8B%9Fpost%E8%AF%B7%E6%B1%82/</link><pubDate>Tue, 02 Jan 2018 07:36:19 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8Bformrequest%E6%A8%A1%E6%8B%9Fpost%E8%AF%B7%E6%B1%82/</guid><description>&lt;p>先放代码吧,以后闲了再完善&lt;/p>
+&lt;hr>
+&lt;pre>&lt;code>def start_requests(self):
+url = &amp;quot;http://www.hebzx.gov.cn/specialnews.aspx?meetingtype=009001&amp;quot;
+yield scrapy.Request(url,callback=self.parse0)
+def parse0(self,response):
+formdata = {&amp;quot;__EVENTTARGET&amp;quot;:&amp;quot;AspNetPager1&amp;quot;,&amp;quot;__EVENTARGUMENT&amp;quot;:&amp;quot;2&amp;quot;}
+return scrapy.FormRequest.from_response(
+response,
+formdata=formdata,
+callback=self.parse1
+)
+def parse1(self,response):
+print(&amp;quot;1111111111111&amp;quot;)
+print(response.text)&lt;/code>&lt;/pre></description></item><item><title>scrapy保存数据为多个json</title><link>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</link><pubDate>Wed, 23 Aug 2017 06:26:33 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</guid><description>&lt;h2 id="定义pipline">定义pipline：&lt;/h2>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+# class VmwarePipeline(object):
+# def process_item(self, item, spider):
+# return item
+import json
+import codecs
+class VmwarePipeline(object):
+def process_item(self, item, spider):
+self.file = codecs.open('%s.json'%item['vid'], 'w', encoding='utf-8')
+line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot;
+self.file.write(line)
+return item
+def spider_closed(self, spider):
+self.file.close()
+&lt;/code>&lt;/pre>
+&lt;h2 id="psscrapy中spiders的解析不能执行的问题">PS：scrapy中spiders的解析不能执行的问题&lt;/h2>
+&lt;p>目前为止遇到的情况有两种&lt;/p>
+&lt;ol>
+&lt;li>解析函数本身存在问题,解析错误导致不能继续传递&lt;/li>
+&lt;li>解析的网址不在定义的&lt;code>allowed_domains&lt;/code>中（这个比较坑,因为scrapy对于是否在&lt;code>allowed_domains&lt;/code>的判断不够准确,没有必要的话最好不写这个&lt;code>allowed_domains&lt;/code>）&lt;/li>
+&lt;/ol></description></item><item><title>scrapy之获取ubuntu安全公告,并将cve存储为json</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</link><pubDate>Tue, 22 Aug 2017 03:33:00 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</guid><description>&lt;h2 id="创建ubuntu项目">创建ubuntu项目&lt;/h2>
+&lt;pre>&lt;code>scrapy startproject ubuntu
+&lt;/code>&lt;/pre>
+&lt;h2 id="创建spider模板">创建spider模板&lt;/h2>
+&lt;pre>&lt;code>cd ubuntu
+scrapy genspider Ubuntu https://usn.ubuntu.com
+cat ubuntu/ubuntu/spiders/Ubuntu.py
+# -*- coding: utf-8 -*-
+import scrapy
+class UbuntuSpider(scrapy.Spider):
+name = 'Ubuntu'
+allowed_domains = ['https://usn.ubuntu.com']
+start_urls = ['http://https://usn.ubuntu.com/']
+def parse(self, response):
+pass
+~
+&lt;/code>&lt;/pre>
+&lt;h2 id="编写spider">编写spider&lt;/h2>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+import scrapy
+from bs4 import BeautifulSoup
+import re
+import requests
+from ubuntu.items import UbuntuItem
+class UbuntuSpider(scrapy.Spider):
+name = 'Ubuntu'
+allowed_domains = ['usn.ubuntu.com']
+def start_requests(self):
+url = &amp;quot;https://usn.ubuntu.com/usn/&amp;quot;
+content = requests.get(url).text
+soup = BeautifulSoup(content,&amp;quot;html.parser&amp;quot;)
+page = soup.find(attrs={&amp;quot;class&amp;quot;:&amp;quot;right&amp;quot;}).text.strip()
+max_page = re.findall(&amp;quot;Showing page 1 of (.+?) &amp;quot;,page)[0]
+start_urls = []
+for page in range(int(max_page)):
+page +=1
+url = 'https://usn.ubuntu.com/usn/?page=%s'%page
+yield scrapy.Request(url,callback=self.parse0)
+def parse0(self, response):
+# 获取公告中usn的cve_url
+cves = response.xpath(&amp;quot;//@href&amp;quot;).extract()
+for cve in cves:
+if cve.startswith(&amp;quot;http://people.ubuntu.com/~ubuntu-security/cve/&amp;quot;):
+item = UbuntuItem()
+item['cve'] = cve
+yield item
+&lt;/code>&lt;/pre>
+&lt;p>需要注意的地方：&lt;/p>
+&lt;ol>
+&lt;li>通常需要重写start_requests()函数&lt;/li>
+&lt;li>导入模块语句&lt;code>from ubuntu.items import UbuntuItem&lt;/code>&lt;/li>
+&lt;li>定义item&lt;code>item = UbuntuItem()&lt;/code>注意后面的括号&lt;/li>
+&lt;/ol>
+&lt;h2 id="存储为json">存储为json&lt;/h2>
+&lt;p>1.定义item&lt;/p>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define here the models for your scraped items
+#
+# See documentation in:
+# http://doc.scrapy.org/en/latest/topics/items.html
+import scrapy
+class UbuntuItem(scrapy.Item):
+# define the fields for your item here like:
+# name = scrapy.Field()
+cve = scrapy.Field()
+&lt;/code>&lt;/pre>
+&lt;p>2.定义piplines&lt;/p>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import json
+import codecs
+# class UbuntuPipeline(object):
+# def process_item(self, item, spider):
+# return item
+class UbuntuPipeline(object):
+def __init__(self):
+self.file = codecs.open('cve.json', 'w', encoding='utf-8')
+def process_item(self, item, spider):
+line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot;
+self.file.write(line)
+return item
+def spider_closed(self, spider):
+self.file.close()
+&lt;/code>&lt;/pre>
+&lt;p>3.spider中保存item的语句（见上面）&lt;/p>
+&lt;p>4.settings设置&lt;/p>
+&lt;pre>&lt;code>ITEM_PIPELINES = {
+'ubuntu.pipelines.UbuntuPipeline': 300,
+}
+&lt;/code>&lt;/pre>
+&lt;h1 id="ps写包含代码的文章的时候不要用ctrluctrlo来创建列表会造成ctrlk的代码显示不正常">ps:写包含代码的文章的时候,不要用&lt;code>ctrl+u&lt;/code>,&lt;code>ctrl+o&lt;/code>来创建列表,会造成&lt;code>ctrl+k&lt;/code>的代码显示不正常&lt;/h1></description></item><item><title>scrapy-xpath用法</title><link>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</link><pubDate>Tue, 22 Aug 2017 02:04:10 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</guid><description>&lt;p>转载自http://www.cnblogs.com/huhuuu/p/3701017.html　　
 Scrapy是基于python的开源爬虫框架,使用起来也比较方便。具体的官网档：http://doc.scrapy.org/en/latest/&lt;/p>
 &lt;p>　　之前以为了解python就可以直接爬网站了,原来还要了解HTML,XML的基本协议,在了解基础以后,在了解下xpath的基础上,再使用正则表达式(python下的re包提供支持)提取一定格式的信息（比如说url）,就比较容易处理网页了。&lt;/p>
-&lt;p>　　xpath是Scrapy下快速提取特定信息（如title,head,href等）的一个接口。&lt;/p></description></item><item><title>python爬虫之——网页解析</title><link>https://60ke.github.io/drafts/python%E7%88%AC%E8%99%AB%E4%B9%8B%E7%BD%91%E9%A1%B5%E8%A7%A3%E6%9E%90/</link><pubDate>Thu, 17 Aug 2017 10:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E7%88%AC%E8%99%AB%E4%B9%8B%E7%BD%91%E9%A1%B5%E8%A7%A3%E6%9E%90/</guid><description>常用的正则 首先导入第三方包 import re 常用的正则函数： re.findall() re.findall()这个函数之前用的已经比较多了,除了以前提到的re.findall(&amp;quot;&amp;quot;,target)在“”中放入（.+?）来匹配要查找到内容,还可以结合python中 r+“”的特性,来进行正则查找,同时</description></item><item><title>爬虫入门到进阶-1--保存一张图片</title><link>https://60ke.github.io/drafts/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8%E5%88%B0%E8%BF%9B%E9%98%B6-1--%E4%BF%9D%E5%AD%98%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%89%87/</link><pubDate>Mon, 26 Jun 2017 16:18:39 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8%E5%88%B0%E8%BF%9B%E9%98%B6-1--%E4%BF%9D%E5%AD%98%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%89%87/</guid><description/></item></channel></rss>
+&lt;p>　　xpath是Scrapy下快速提取特定信息（如title,head,href等）的一个接口。&lt;/p>
+&lt;p>几个简单的例子：&lt;/p>
+&lt;p>　　/html/head/title: 选择HTML文档&lt;!-- raw HTML omitted -->元素下面的&lt;!-- raw HTML omitted --> 标签。
+　　/html/head/title/text(): 选择前面提到的&lt;!-- raw HTML omitted --> 元素下面的文本内容
+　　//td: 选择所有 &lt;!-- raw HTML omitted --> 元素
+　　//div[@class=&amp;ldquo;mine&amp;rdquo;]: 选择所有包含 class=&amp;ldquo;mine&amp;rdquo; 属性的div 标签元素&lt;/p>
+&lt;p>　　基本的路径意义：&lt;/p>
+&lt;p>　　&lt;/p>
+&lt;p>表达式 描述
+nodename 选取此节点的所有子节点。
+/ 从根节点选取。
+// 从匹配选择的当前节点选择文档中的节点,而不考虑它们的位置。
+. 选取当前节点。
+.. 选取当前节点的父节点。
+@ 选取属性。
+　　&lt;/p>
+&lt;p>　　具体的使用实例：&lt;/p>
+&lt;p>　　比如对http://www.dmoz.org/Computers/Programming/Languages/Python/Books/ 网站提取特定的信息&lt;/p>
+&lt;p>　　1）、先在第一层tutorial文件夹下,在cmd中输入： scrapy shell &lt;a class="link" href="http://www.dmoz.org/Computers/Programming/Languages/Python/Books/" target="_blank" rel="noopener"
+>http://www.dmoz.org/Computers/Programming/Languages/Python/Books/&lt;/a>&lt;/p>
+&lt;p>　　2）、现在比如我们需要抓取该网页的tittle,由于前面的shell命令已经实例化了一个selector的对象sel, 就输入 sel.xpath(&amp;rsquo;//title&amp;rsquo;) 获取了网页的标题。&lt;/p>
+&lt;p>　　3）、比如我们想要知道该网页下的www.****.com形式的链接,可以使用xpath 结合正则表达式re提取信息,输入 sel.xpath(&amp;rsquo;//@href&amp;rsquo;).re(&amp;ldquo;www.[0-9a-zA-Z]+.com&amp;rdquo;)&lt;/p></description></item><item><title>python爬虫之——网页解析</title><link>https://60ke.github.io/drafts/python%E7%88%AC%E8%99%AB%E4%B9%8B%E7%BD%91%E9%A1%B5%E8%A7%A3%E6%9E%90/</link><pubDate>Thu, 17 Aug 2017 10:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E7%88%AC%E8%99%AB%E4%B9%8B%E7%BD%91%E9%A1%B5%E8%A7%A3%E6%9E%90/</guid><description>&lt;h1 id="常用的正则">常用的正则&lt;/h1>
+&lt;p>首先导入第三方包&lt;/p>
+&lt;pre>&lt;code>import re
+&lt;/code>&lt;/pre>
+&lt;p>常用的正则函数：&lt;/p>
+&lt;h2 id="refindall">re.findall()&lt;/h2>
+&lt;p>re.findall()这个函数之前用的已经比较多了,除了以前提到的re.findall(&amp;quot;&amp;quot;,target)在“”中放入（.+?）来匹配要查找到内容,还可以结合python中 r+“”的特性,来进行正则查找,同时还可以使用多个（）来查找多个,之后再加上“”.jion(list)来实现list转字符串,然后又可以利用str.replace(&amp;quot;&amp;quot;,&amp;quot;&amp;quot;)来实现字符串的替换,talk is cheap,show you code&lt;/p>
+&lt;pre>&lt;code>import requests
+import re
+url = &amp;quot;http:// \&amp;quot;www.baidu.com http://www.baidu.com http://www.baidu.com http://www.baidu.com http://www.baidu.com&amp;quot;
+target_r = re.findall(r&amp;quot;http:(.+?) \&amp;quot;&amp;quot;,url)
+target = &amp;quot;&amp;quot;.join(re.findall(&amp;quot;http:(.+?) \&amp;quot;&amp;quot;,url)).replace(&amp;quot;//&amp;quot;,&amp;quot;haha&amp;quot;)
+print(target_r)
+print(target)
+&lt;/code>&lt;/pre>
+&lt;p>输出的结果：
+[&amp;rsquo;//&amp;rsquo;]
+haha&lt;/p>
+&lt;h2 id="recompile">re.compile()&lt;/h2>
+&lt;pre>&lt;code>import re
+cveid = &amp;quot;CVE-2015-3456&amp;quot;
+pat = re.compile('CVE-(\d+)-\d+')
+m = pat.search(cveid)
+year = m.group(1)
+print(pat)
+print(m)
+print(year)
+&lt;/code>&lt;/pre>
+&lt;p>输出结果：&lt;/p>
+&lt;pre>&lt;code>re.compile('CVE-(\\d+)-\\d+')
+&amp;lt;_sre.SRE_Match object; span=(0, 13), match='CVE-2015-3456'&amp;gt;
+2015
+&lt;/code>&lt;/pre>
+&lt;h2 id="beautifulsoup">beautifulsoup&lt;/h2>
+&lt;p>beautifulsoup 以我最近写的代码为例&lt;/p>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+import os
+import re
+import requests
+from bs4 import BeautifulSoup
+import json
+url = &amp;quot;http://www.huawei.com/cn/psirt/security-advisories/huawei-sa-20160706-01-openssl-cn&amp;quot;
+page = requests.get(url=str(url)).text
+html = requests.get(url=str(url)).content
+soup = BeautifulSoup(page,&amp;quot;html.parser&amp;quot;)
+content = soup.find(attrs={'class':'col-sm-9 psiet-detail'})
+published_datetime = content.find(attrs={'id':'indexmain_0_liInieialReleaseDate'}).text
+a = re.findall(r'(\d+-\d+-\d+)',published_datetime)[0]
+last_modified_datetime = content.find(attrs={'id':'indexmain_0_liLastReleaseDate'}).text
+b = re.findall(r'(\d+-\d+-\d+)',last_modified_datetime)[0]
+name = content.find(attrs={'class':'bor-btom'}).text.strip()
+cvss_score = content.find(attrs={'class': 'psirt-list-out'}).find_all(attrs={&amp;quot;class&amp;quot;: &amp;quot;psirt-set-out&amp;quot;})[3].find(attrs={&amp;quot;class&amp;quot;:&amp;quot;moreinfo&amp;quot;}).text
+tab = soup.findAll('table')[0]
+vulnerable_software_list = []
+for tr in tab.findAll('tr'):
+#print((tr.text))
+vulnerable_software_list.append(tr.text)
+print(vulnerable_software_list)
+&lt;/code>&lt;/pre>
+&lt;p>输出结果&lt;/p>
+&lt;pre>&lt;code>['\n\n产品名称\n\n\n版本号\n\n\n修复版本号\n\n', '\n\n9032\n\n\nV100R001C00\n\n\nV100R001C00SPC101\n\n', '\n\n\xa0Agile Controller-Campus\n\n\nV100R001C00\n\n\nUpgrade to V100R002C10SPC400\n\n', '\n\nV100R002C00\n\n', '\n\nV100R002C10\n\n\nV100R002C10SPC400\n\n', '\n\nAnyOffice\n\n\nV200R002C20\n\n\nUpgrade to V200R006C00\n\n', '\n\nV200R003C00\n\n', '\n\nV200R005C00\n\n', '\n\n\xa0AR510\n\n\nV200R005C30\n\n\nUpgrade to V200R008C20\n\n', '\n\n\xa0BH620\n\n\nV100R001C00\n\n\nV100R001C00SPC106\xa0 \n\n', '\n\n\xa0BH620 V2\n\n\nV100R002C00\n\n\nV100R002C00SPC301B010\n\n', '\n\n\xa0CH221\n\n\nV100R001C00\n\n\nV100R001C00SPC266\n\n', '\n\nCH225 V3\n\n\nV100R001C00\n\n\nV100R001C00SPC102\n\n', '\n\nE5372s\n\n\nE5372s-32TCPU-V200R001B290D23SP00C00\n\n\nE5372s-32TCPU-V200R001B290D25SP00C00 \n\n', '\n\nE5377Bs\n\n\nE5377Bs-605TCPU-V200R001B305D09SP00C00\n\n\nE5377Bs-605TCPU-V200R001B313D13SP00C00\n\n', '\n\nE5786s\n\n\nE5786s-32aTCPU-V200R001B313D15SP00C00\n\n\nE5786s-32aTCPU-V200R001B313D17SP00C00\n\n', '\n\nE5878s\n\n\nE5878s-32TCPU-V200R001B305D11SP00C00\n\n\nE5878s-32TCPU-V200R001B313D13SP00C00 \n\n', '\n\nE6000 Chassis\n\n\nV100R001C00\n\n\nV100R001C00SPC501B010\n\n', '\n\nE9000 Chassis\n\n\nV100R001C00\n\n\nV100R001C00SPC296\n\n', '\n\nEEM\n\n\nV200R007C00\n\n\nUpgrade to V200R008C10\n\n', '\n\nV200R007C10\n\n', '\n\nV200R007C20\n\n', '\n\nV200R008C00\n\n', '\n\neLog\n\n\nV200R005C00\n\n\nV200R005C00SPC101\n\n', '\n\neSDK Platform \n\n\nV100R005C30\n\n\nUpgrade to V100R005C60\n\n', '\n\neSight Network\n\n\nV300R003C20\n\n\nV300R003C20SPC106\n\n', '\n\nV300R005C00\n\n\nV300R005C00SPC302\n\n', '\n\neSpace IVS\n\n\neSpace IVS V100R001C02SPC100\n\n\nUpgrade to eSpace VCN3000 V100R001C01SPC132\n\n', '\n\nEudemon8000E-X8\n\n\nV300R001C01\n\n\nV300R001C01SPCA00\n\n', '\n\nV500R001C00\n\n\nUpgrade to V500R002C00SPC100\n\n', '\n\nFireHunter6000\n\n\nV100R001C20\n\n\nV100R001C20SPC101\n\n', '\n\nFusionAccess\n\n\nV100R003C00\n\n\nUpgrade to V100R006C00\n\n', '\n\nV100R005C10\n\n', '\n\nV100R005C20\n\n', '\n\nV100R005C30\n\n', '\n\nFusionInsight HD\n\n\nV100R002C50\n\n\nUpgrade to V100R002C60SPC200\n\n', '\n\nFusionInsight\n\n\nFusionInsight V100R002C30\n\n\nUpgrade to FusionInsight HD V100R002C60SPC200\n\n', '\n\nFusionManager\n\n\nFusionManager V100R003C10\n\n\nUpgrade to FusionSphere OpenStack V100R006C00RC3B036\n\n', '\n\nFusionManager V100R005C00\n\n', '\n\nFusionManager V100R005C10SPC700\n\n', '\n\nFusionManager V100R006C00\n\n', '\n\nFusionStorage DSware\n\n\nFusionStorage DSware V100R003C02\n\n\nUpgrade to FusionStorage V100R003C30U1SPC001\n\n', '\n\nFusionStorage DSware V100R003C30\n\n\nUpgrade to FusionStorage V100R003C30U1SPC001\n\n', '\n\nFusionStorage\n\n\nV100R003C00\n\n\nUpgrade to V100R003C30U1SPC001\n\n', '\n\nG710-C00\n\n\nV100R001C92B118\n\n\nV100R001C92B135\n\n', '\n\nHG253s V2-20\n\n\nV100R001C205B027\n\n\nV100R001C205B052\n\n', '\n\nHG255s-10\n\n\nV100R001C163B013\n\n\nV100R001C163B026\n\n', '\n\xa0\n HiSTBAndroid\n\n\nV600R001C00SPC060\n\n\xa0\n V600R001C00CP0013\n\n', '\n\niBMC\n\n\nV100R002C10\n\n\nUpgrade to \xa0V200R002C10\n\n', '\n\nV100R002C30\n\n', '\n\nIVS\n\n\nIVS V100R002C10\n\n\nUpgrade to eSpace VCN3000 V100R002C10SPC108\n\n', '\n\nLogCenter\n\n\nV100R001C10\n\n\nUpgrade to V100R001C20SPC102\n\n', '\n\nV100R001C20\n\n\nV100R001C20SPC102\n\n', '\n\nMT992-10\n\n\nMV100R001C01B002\n\n\nV100R001C01B019\n\n', '\n\nOceanStor 18500\n\n\nV100R001C10\n\n\nUpgrade to V100R001C30SPC201\n\n', '\n\nOceanStor 18800 V3\n\n\nV300R003C00\n\n\nUpgrade to V300R003C10SPC100\n\n', '\n\nOceanStor 2860 V3\n\n\nOceanStor 2860 V3 V300R001C00T\n\n\nUpgrade to OceanStor 2800 V300R003C20\n\n', '\n\nOceanStor 5600 V3\n\n\nV300R001C00\n\n\nUpgrade to \xa0V300R003C10SPC100\n\n', '\n\nOceanStor 5600 V3\n\n\nV300R003C00\n\n\nUpgrade to V300R003C10SPC100\n\n', '\n\nOceanStor 5600 V3\n\n\nV300R003C10\n\n\nV300R003C10SPC100\n\n', '\n\nOceanStor 5800 V3\n\n\nV300R002C00\n\n\nUpgrade to V300R003C10SPC100\n\n', '\n\nOceanStor 9000\n\n\nO\xa0 V100R001C01\n\n\nUpgrade to V300R005C00SPC170\n\n', '\n\nV100R001C30\n\n\nOV300R005C00SPC170\n\n', '\n\nOceanStor 9000E\n\n\nOceanStor 9000E V100R001C01\n\n\nUpgrade to OceanStor 9000 V300R005C00SPC170\n\n', '\n\nOceanStor 9000E V100R002C00\n\n', '\n\nOceanStor 9000E V100R002C19\n\n', '\n\nOceanStor Backup \xa0Software\n\n\nV100R002C00\n\n\nV100R002C00LHWS01SPC100\n\n', '\n\nOceanStor BCManager\n\n\nV100R005C00\n\n\nUpgrade to V200R001C00\n\n', '\n\nOceanStor CSE\n\n\nOceanStor CSE V100R002C00LSFM01B010\n\n\nUpgrade to OceanStor Onebox V100R002C00LSFM01SPC108\n\n', '\n\nOceanStor HVS85T\n\n\nOceanStor HVS85T V100R001C30\n\n\nOceanStor 18500 V100R001C30SPC201\n\n', '\n\nOceanStor HVS85T\n\n\nOceanStor HVS85T V100R001C30\n\n\nOceanStor 18500 V100R001C30SPC201\n\n', '\n\nOceanStor N8500\n\n\nV200R001C09\n\n\nV200R001C09SPC506\n\n', '\n\nV200R001C91\n\n\nV200R001C91SPC902\n\n', '\n\nPolicy Center\n\n\nPolicy Center V100R003C00\n\n\nUpgrade to Agile Controller-Campus V100R002C10SPC400\xa0 \n\n', '\n\nPolicy Center V100R003C10\n\n', '\n\nPublic Cloud Solution\n\n\nPublic Cloud Solution OpsTools 1.0.3\n\n\nPublic Cloud Solution 1.0.9\n\n', '\n\nPublic Cloud Solution V100R001C00\n\n', '\n\nRH1288 V3\n\n\nV100R003C00SPC100\n\n\nV100R003C00SPC613\n\n', '\n\nRH2285H V2\n\n\nV100R002C00\n\n\nV100R002C00SPC505\n\n', '\n\nRH5885 V2\n\n\nV100R001C00\n\n\nUpgrade to V100R001C02SPC302\n\n', '\n\nRH5885 V3\n\n\nV100R003C00\n\n\nUpgrade to V100R003C10SPC102\n\n', '\n\nV100R003C01\n\n\nUpgrade to V100R003C10SPC102\n\n', '\n\nRH8100 V3\n\n\nV100R003C00\n\n\nV100R003C00SPC207\n\n', '\n\nSoftVCN\n\n\nV100R002C20\n\n\nV100R002C20SPC100\n\n', '\n\npeedport Hybrid\n\n\nV100R001C01B021\n\n\nUpgrade to V100R001C03B012\n\n', '\n\nUSG9560\n\n\nUSG9560 V300R001C20\n\n\nUpgrade to USG9500 V500R001C30\n\n', '\n\nUSG9560 V300R002C00\n\n\nUpgrade to USG9500 V500R001C30\xa0 \n\n', '\n\nVCM\n\n\nV100R001C10\n\n\nV100R001C10SPC006\n\n', '\n\nVCM5010\n\n\nVCM5010 V100R002C20\n\n\nUpgrade to VCM5020 V100R002C20\n\n', '\n\nXH320\n\n\nXH320 V100R001C00\n\n\nUpgrade to Tecal X6000 V100R001C02\n\n', '\n\nXH620\n\n\nXH620 V100R001C00\n\n\nUpgrade to XH620 V3 V100R003C00\n\n']
+&lt;/code>&lt;/pre>
+&lt;h2 id="补充">补充&lt;/h2>
+&lt;p>以前用BeautifulSoup一直用的&amp;quot;html.parser&amp;quot;的解析器,今天补充一下其他的
+&lt;a class="link" href="http://bbs.csdn.net/topics/392161042?list=lz" target="_blank" rel="noopener"
+>http://bbs.csdn.net/topics/392161042?list=lz&lt;/a>&lt;/p></description></item><item><title>爬虫入门到进阶-1--保存一张图片</title><link>https://60ke.github.io/drafts/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8%E5%88%B0%E8%BF%9B%E9%98%B6-1--%E4%BF%9D%E5%AD%98%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%89%87/</link><pubDate>Mon, 26 Jun 2017 16:18:39 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%88%AC%E8%99%AB%E5%85%A5%E9%97%A8%E5%88%B0%E8%BF%9B%E9%98%B6-1--%E4%BF%9D%E5%AD%98%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%89%87/</guid><description>&lt;h1 id="---coding-utf-8-----可以避免一些编码问题">-&lt;em>- coding: utf-8 -&lt;/em>- //可以避免一些编码问题&lt;/h1>
+&lt;pre>&lt;code>import urllib.request //python3自带的模块,用来做网页的解析
+url = &amp;quot;http://gaopin-preview.bj.bcebos.com/133208713368.jpg&amp;quot; //定义要爬取的网址
+response = urllib.request.urlopen(url) //用urllib.request.urlopen打开网页并将其传递给response
+with open('1.jpg','wb') as f: //以二进制方式打开一个名为1.jpg的文件,并将其作为f变量（对象）
+f.write(response.read()) //读取response并将其写入到f中 &lt;/code>&lt;/pre></description></item></channel></rss>

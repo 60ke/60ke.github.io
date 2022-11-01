@@ -1,1 +1,37 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>other on LookForAdmin的博客</title><link>https://60ke.github.io/tags/other/</link><description>Recent content in other on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 09 Sep 2020 11:27:58 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/other/index.xml" rel="self" type="application/rss+xml"/><item><title>杂记</title><link>https://60ke.github.io/drafts/%E6%9D%82%E8%AE%B0/</link><pubDate>Wed, 09 Sep 2020 11:27:58 +0000</pubDate><guid>https://60ke.github.io/drafts/%E6%9D%82%E8%AE%B0/</guid><description>hexo deploay error 运行hexo d时出现type erro的错误: 解决办法: 放弃使用nodejs 14,转而使用nodejs 12 mac 多版本node共存: 参考自: https://www.cnblogs.com/hanxiaobei/p/13122144.html 1、首先安装n模块 npm install -g n 2、升级node.js到最新稳定版 sudo n stable 3、切换使用版本（如果本地没有会自动获取并进行安装） sudo n 8.17.0 4、切换使用版本</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>other on LookForAdmin</title><link>https://60ke.github.io/tags/other/</link><description>Recent content in other on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 09 Sep 2020 11:27:58 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/other/index.xml" rel="self" type="application/rss+xml"/><item><title>杂记</title><link>https://60ke.github.io/drafts/%E6%9D%82%E8%AE%B0/</link><pubDate>Wed, 09 Sep 2020 11:27:58 +0000</pubDate><guid>https://60ke.github.io/drafts/%E6%9D%82%E8%AE%B0/</guid><description>&lt;h2 id="hexo-deploay-error">hexo deploay error&lt;/h2>
+&lt;p>运行&lt;code>hexo d&lt;/code>时出现type erro的错误:
+解决办法:
+放弃使用nodejs 14,转而使用nodejs 12
+mac 多版本node共存:
+参考自: &lt;a class="link" href="https://www.cnblogs.com/hanxiaobei/p/13122144.html" target="_blank" rel="noopener"
+>https://www.cnblogs.com/hanxiaobei/p/13122144.html&lt;/a>
+1、首先安装n模块&lt;/p>
+&lt;pre>&lt;code>npm install -g n
+2、升级node.js到最新稳定版
+sudo n stable
+3、切换使用版本（如果本地没有会自动获取并进行安装）
+sudo n 8.17.0
+4、切换使用版本可进行自助选择目前本地安装的版本
+sudo n
+5、删除指定版本
+sudo n rm 0.0.0
+&lt;/code>&lt;/pre>
+&lt;h2 id="git-pull解决冲突">git pull解决冲突&lt;/h2>
+&lt;p>从其它&lt;code>git clone&lt;/code>了一个项目,本地又对其进行了修改,这时运行&lt;code>git pull&lt;/code>时将不会成功拉取更新&lt;/p>
+&lt;h3 id="解决">解决&lt;/h3>
+&lt;p>可以先执行&lt;code>git stash&lt;/code> 将本地修改保存起来。 这样本地就干净了。
+然后 &lt;code>git pull&lt;/code>
+然后应用stash。 执行 &lt;code>git stash apply 0&lt;/code>。
+解决本地的冲突就好了。&lt;/p>
+&lt;h3 id="原理">原理&lt;/h3>
+&lt;pre>&lt;code>git stash 命令是储藏命令。
+1. 可以用来储藏工作的中间状态,
+2. 也可以将储藏好的中间状态应用到现有的工作中。
+主要的命令有
+1. git stash
+当本地有修改的时候,只要运行git stash 就可以将本地的更改储藏起来。
+2. git stash list
+可以用来查看储藏起来的状态。如下
+stash@{0}: WIP on master: ece766d package struct
+3. git stash apply
+可以用来应用储藏的状态。比如 git stash apply 0 就会应用储藏id为0 的中间状态。&lt;/code>&lt;/pre></description></item></channel></rss>

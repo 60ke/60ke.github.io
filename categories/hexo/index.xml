@@ -1,1 +1,38 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hexo on LookForAdmin的博客</title><link>https://60ke.github.io/categories/hexo/</link><description>Recent content in hexo on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 22 Sep 2020 10:54:03 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/hexo/index.xml" rel="self" type="application/rss+xml"/><item><title>hexo更改post模板</title><link>https://60ke.github.io/drafts/hexo%E6%9B%B4%E6%94%B9post%E6%A8%A1%E6%9D%BF/</link><pubDate>Tue, 22 Sep 2020 10:54:03 +0000</pubDate><guid>https://60ke.github.io/drafts/hexo%E6%9B%B4%E6%94%B9post%E6%A8%A1%E6%9D%BF/</guid><description>运行hexo new post时,现在的模板是 1 2 3 4 5 --- title: {{ title }} date: {{ date }} tags: --- 默认无分类 在scaffolds更改post.md --- title: {{ title }} date: {{ date }} tags: categories: --- 就好了</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>hexo on LookForAdmin</title><link>https://60ke.github.io/categories/hexo/</link><description>Recent content in hexo on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 22 Sep 2020 10:54:03 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/hexo/index.xml" rel="self" type="application/rss+xml"/><item><title>hexo更改post模板</title><link>https://60ke.github.io/drafts/hexo%E6%9B%B4%E6%94%B9post%E6%A8%A1%E6%9D%BF/</link><pubDate>Tue, 22 Sep 2020 10:54:03 +0000</pubDate><guid>https://60ke.github.io/drafts/hexo%E6%9B%B4%E6%94%B9post%E6%A8%A1%E6%9D%BF/</guid><description>&lt;p>运行&lt;code>hexo new post&lt;/code>时,现在的模板是&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="err">---&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">title:&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="err">{&lt;/span> &lt;span class="err">title&lt;/span> &lt;span class="p">}&lt;/span>&lt;span class="err">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">date:&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="err">{&lt;/span> &lt;span class="err">date&lt;/span> &lt;span class="p">}&lt;/span>&lt;span class="err">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">tags:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">---&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>默认无分类
+在&lt;code>scaffolds&lt;/code>更改&lt;code>post.md&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">---
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">title: {{ title }}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">date: {{ date }}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">tags:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">categories:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">---
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>就好了&lt;/p></description></item></channel></rss>

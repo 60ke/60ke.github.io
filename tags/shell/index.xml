@@ -1,1 +1,165 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>shell on LookForAdmin的博客</title><link>https://60ke.github.io/tags/shell/</link><description>Recent content in shell on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 27 Sep 2021 15:44:36 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/shell/index.xml" rel="self" type="application/rss+xml"/><item><title>linux笔记</title><link>https://60ke.github.io/drafts/linux%E7%AC%94%E8%AE%B0/</link><pubDate>Mon, 27 Sep 2021 15:44:36 +0000</pubDate><guid>https://60ke.github.io/drafts/linux%E7%AC%94%E8%AE%B0/</guid><description>zsh tmux 1 2 3 4 5 6 alias ta=&amp;#39;tmux attach -t&amp;#39; alias tad=&amp;#39;tmux attach -d -t&amp;#39; alias ts=&amp;#39;tmux new-session -s&amp;#39; alias tl=&amp;#39;tmux list-sessions&amp;#39; alias tksv=&amp;#39;tmux kill-server&amp;#39; alias tkss=&amp;#39;tmux kill-session -t&amp;#39; spacevim \y 复制到系统粘贴板 spc f v d 打开配置文件 spc b n 切换到下一个buffer set -a set -a 全称为:allexport set -a指从设置开始标记所有新的和修改过的用于输出的变量 Take away: Yes, set +a unsets set -a but variables do not become un exported because of that. Each variable then needs to be un exported or unset. set +</description></item><item><title>终端录屏</title><link>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</link><pubDate>Thu, 29 Apr 2021 10:09:56 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</guid><description>今天突然看到一个书签http://showterm.io,showterm是一个终端录屏工具但是现在,感觉用的人不多了,除了showterm以外还有ttygif,terminalizer,asciinema ttygif C开发的录屏工具,mac下使用brew install ttygif即可安装 录制 ttyrec + 自定</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>shell on LookForAdmin</title><link>https://60ke.github.io/tags/shell/</link><description>Recent content in shell on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 27 Sep 2021 15:44:36 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/shell/index.xml" rel="self" type="application/rss+xml"/><item><title>linux笔记</title><link>https://60ke.github.io/drafts/linux%E7%AC%94%E8%AE%B0/</link><pubDate>Mon, 27 Sep 2021 15:44:36 +0000</pubDate><guid>https://60ke.github.io/drafts/linux%E7%AC%94%E8%AE%B0/</guid><description>&lt;h1 id="zsh-tmux">zsh tmux&lt;/h1>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">ta&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux attach -t&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">tad&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux attach -d -t&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">ts&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux new-session -s&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">tl&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux list-sessions&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">tksv&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux kill-server&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">alias&lt;/span> &lt;span class="nv">tkss&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;tmux kill-session -t&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>spacevim&lt;/p>
+&lt;p>\y 复制到系统粘贴板
+spc f v d 打开配置文件
+spc b n 切换到下一个buffer&lt;/p>
+&lt;h1 id="set--a">set -a&lt;/h1>
+&lt;p>set -a 全称为:allexport &lt;code>set -a&lt;/code>指从设置开始标记所有新的和修改过的用于输出的变量 Take away: Yes, set +a unsets set -a but variables do not become un exported because of that. Each variable then needs to be un exported or unset.
+&lt;code>set +a&lt;/code>可取消&lt;code>set -a&lt;/code>的设置
+&lt;code>. env.sh&lt;/code> is short for &lt;code>source env.sh&lt;/code>&lt;/p>
+&lt;p>以上是关于&lt;code>set -a&lt;/code>的解释,但是仅从字面上的解释,还是不知道其作用。
+其实&lt;code>set -a&lt;/code>本质为从当前标记将shell变量导出至环境变量,下面用代码来说明其具体作用。
+首先运行&lt;code>set&lt;/code>命令,可查看当前shell变量
+&lt;img src="https://gitee.com/worileqing/upic/raw/master/uPic/yUpf0z.png"
+loading="lazy"
+alt="yUpf0z"
+>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">set |grep TEST
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">env |grep TEST
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TEST=123
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">set |grep TEST
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">env |grep TEST
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">set -a
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TEST=123
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">env |grep TEST
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>运行上述代码即可验证&lt;/p>
+&lt;h1 id="git-add-and-commit-in-one-command">Git add and commit in one command&lt;/h1>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">git config --global alias.add-commit &lt;span class="s1">&amp;#39;!git add -A &amp;amp;&amp;amp; git commit&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">git commit -am &lt;span class="s2">&amp;#34;message&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h1 id="shell-特殊变量列表">shell 特殊变量列表&lt;/h1>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>变量&lt;/th>
+&lt;th>含义&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>$0&lt;/td>
+&lt;td>当前脚本的文件名&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$n&lt;/td>
+&lt;td>传递给脚本或函数的参数。n 是一个数字,表示第几个参数。例如,第一个参数是$1,第二个参数是$2。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$#&lt;/td>
+&lt;td>传递给脚本或函数的参数个数。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$*&lt;/td>
+&lt;td>传递给脚本或函数的所有参数。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$@&lt;/td>
+&lt;td>传递给脚本或函数的所有参数。被双引号(&amp;quot; &amp;ldquo;)包含时,与 $* 稍有不同,下面将会讲到。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$?&lt;/td>
+&lt;td>上个命令的退出状态,或函数的返回值。&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>$$&lt;/td>
+&lt;td>当前Shell进程ID。对于 Shell 脚本,就是这些脚本所在的进程ID。&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h1 id="kill--0">kill -0&lt;/h1>
+&lt;p>&lt;code>kill -0 pid&lt;/code> 不发送任何信号,但是系统会进行错误检查。
+所以经常用来检查一个进程是否存在,存在返回0；不存在返回1&lt;/p>
+&lt;p>代码示例:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="nv">pid&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> -z &lt;span class="nv">$1&lt;/span> &lt;span class="o">]&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;ERROR: Process ID not specified.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Usage: &lt;/span>&lt;span class="k">$(&lt;/span>basename &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$0&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>&lt;span class="s2"> &amp;lt;PID&amp;gt;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exit&lt;/span> &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># check if process exists&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">kill&lt;/span> -0 &lt;span class="nv">$pid&lt;/span> &amp;gt; /dev/null 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">pid_exist&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="nv">$?&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>终端录屏</title><link>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</link><pubDate>Thu, 29 Apr 2021 10:09:56 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</guid><description>&lt;p>今天突然看到一个书签&lt;code>http://showterm.io&lt;/code>,&lt;code>showterm&lt;/code>是一个终端录屏工具但是现在,感觉用的人不多了,除了&lt;code>showterm&lt;/code>以外还有&lt;a class="link" href="https://github.com/icholy/ttygif" target="_blank" rel="noopener"
+>ttygif&lt;/a>,&lt;a class="link" href="https://github.com/faressoft/terminalizer" target="_blank" rel="noopener"
+>terminalizer&lt;/a>,&lt;a class="link" href="https://github.com/asciinema/asciinema" target="_blank" rel="noopener"
+>asciinema&lt;/a>&lt;/p>
+&lt;h2 id="ttygif">ttygif&lt;/h2>
+&lt;p>&lt;code>C&lt;/code>开发的录屏工具,mac下使用&lt;code>brew install ttygif&lt;/code>即可安装&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>录制&lt;/p>
+&lt;p>ttyrec + 自定义的录制名&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>保存
+ttygif + &lt;code>自定义的录制名&lt;/code> (-s 可设定倍速)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果示意
+&lt;img src="https://i.loli.net/2021/04/29/tQY7A2rhTNfmMqX.gif"
+loading="lazy"
+alt="tQY7A2rhTNfmMqX"
+>
+本来有个13M的比较全的录屏但是gitee只支持1M文件的非登录可见,同时需要注意的是录屏录取的是整个终端,而不是当前的标签页(录屏过程切换其它标签,则切换后的标签的显示内容也会被录下)&lt;/p>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

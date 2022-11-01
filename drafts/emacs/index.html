@@ -1,713 +1,687 @@
-<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>emacs | LookForAdmin的博客</title><meta property="og:title" content="emacs - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2021-09-29T15:06:54+08:00"><meta property="article:modified_time" content="2021-09-29T15:06:54+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="emacs"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/emacs/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
-<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
-<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
-<a href=https://60ke.github.io/archives/ title=归档>归档</a>
-<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents><ul><li><a href=#关于emacs的一些疑问>关于emacs的一些疑问</a></li><li><a href=#what-english-abbreviations-are-setq-car-and-cdr-in-lisphttpswwwquoracomwhat-english-abbreviations-are-setq-car-and-cdr-in-lisp><a href=https://www.quora.com/What-English-abbreviations-are-setq-car-and-cdr-in-LISP>What English abbreviations are &ldquo;setq&rdquo;, &ldquo;car&rdquo;, and &ldquo;cdr&rdquo; in LISP?</a></a></li><li><a href=#curiosity-what-does-progn-stands-forhttpsemacsstackexchangecomquestions5829curiosity-what-does-progn-stands-for><a href=https://emacs.stackexchange.com/questions/5829/curiosity-what-does-progn-stands-for>Curiosity: What does progn stands for?</a></a></li></ul><ul><li><a href=#15分钟学会emacs-lisp-v02a>15分钟学会Emacs Lisp (v0.2a)</a></li><li><a href=#spacemacs-rocks-第二季httpbookemacs-chinaorg><a href=http://book.emacs-china.org/>Spacemacs Rocks 第二季</a></a></li></ul></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>emacs</h1></header><date class="post-meta meta-date">2021年9月29日</date><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
-阅读</span></span></div><div class=post-content><h1 id=emacs-介绍>emacs 介绍</h1><h2 id=关于emacs的一些疑问>关于emacs的一些疑问</h2><h2 id=what-english-abbreviations-are-setq-car-and-cdr-in-lisphttpswwwquoracomwhat-english-abbreviations-are-setq-car-and-cdr-in-lisp><a href=https://www.quora.com/What-English-abbreviations-are-setq-car-and-cdr-in-LISP>What English abbreviations are &ldquo;setq&rdquo;, &ldquo;car&rdquo;, and &ldquo;cdr&rdquo; in LISP?</a></h2><p>author:<a href=https://www.quora.com/profile/Rich-Alderson>Rich-Alderson</a></p><blockquote><p>EDIT: I misremembered the computer model number, which Panicz Godek points out. It was the IBM 704, rather than the related 709.</p></blockquote><blockquote><p>What English abbreviations are “setq”, “car”, and “cdr” in LISP?</p></blockquote><blockquote><p>This question takes us back to the 1950s and the architecture of the IBM 704 computer on which LISP was first implemented.</p></blockquote><blockquote><p>First, let’s look at the special form SETQ, which assigns a value to an atom. Originally, there was only the special form SET, which evaluates the first argument to get the atom to which to assign the value of the evaluated second argument: (SET (A) B). Because this was such a common idiom, a new special form SETQ, meaning “set-quote”, was created: (SETQ A B) gives the same result as the previous form.</p></blockquote><blockquote><p>Now, on to the 704. You need to learn some different terminology here. Storage words were called registers; they are not what are we call registers today, which were specialized and had unique names: The accumulator or AC, the multiply-quotient or MQ, and the indexes. Memory referred to tape or disk.</p></blockquote><blockquote><p>Words were 36 bits long; addresses were 15 bits, allowing a whopping 32K of storage. Each word was divided into 4 parts: The address and the decrement were each 15 bits long, the index and tag were each 3 bits long. Thus, a word could hold 2 addresses and 2 other quantities.</p></blockquote><blockquote><p>In the original LISP, all 4 parts of the word were usable, and the functions which referenced these were named for these parts: The Content-of-the-Address-part-of the-Register was CAR, the Content-of-the-Decrement-part-of-the-Register or CDR, and similarly for CIR and CTR. These latter 2 were quickly dropped as not having any real use, so we were left with just CAR and CDR.</p></blockquote><blockquote><p>I refer you to Herbert Stoyan’s paper in the proceedings of the 1984 ACM Conference on Lisp and Functional Programming entitled “Early LISP History (1956-1959)”, which I had the pleasure of hearing in person (Austin, Texas, August 1984): Early LISP history (1956 - 1959)</p></blockquote><h2 id=curiosity-what-does-progn-stands-forhttpsemacsstackexchangecomquestions5829curiosity-what-does-progn-stands-for><a href=https://emacs.stackexchange.com/questions/5829/curiosity-what-does-progn-stands-for>Curiosity: What does progn stands for?</a></h2><ul><li><p>progn is a special form borrowed from CL-like Lisp dialects. In their implementations it&rsquo;s composed from multiple progs, expressions that are evaluated and a number that specifies which expression value is returned. prog1 for instance evaluates all expressions and returns the value of the first, prog2 evaluates all expressions and returns the value of the second, progn evaluates all expressions and returns the n&rsquo;th, or rather, the last expression&rsquo;s value.</p></li><li><p>progn in Emacs Lisp is the equivalent of Clojure&rsquo;s do which is used as means to bundle multiple expressions into a single one. You&rsquo;ll need to use it for Clojure&rsquo;s if conditional for instance.</p></li></ul><h1 id=lisp-学习httpslearnxinyminutescomdocszh-cnelisp-cn><a href=https://learnxinyminutes.com/docs/zh-cn/elisp-cn/>lisp 学习</a></h1><h2 id=15分钟学会emacs-lisp-v02a>15分钟学会Emacs Lisp (v0.2a)</h2><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  1
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  2
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  3
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  4
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  5
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  6
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  7
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  8
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">  9
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 10
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 11
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 12
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 13
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 14
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 15
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 16
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 17
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 18
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 19
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 20
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 21
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 22
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 23
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 24
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 25
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 26
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 27
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 28
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 29
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 30
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 31
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 32
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 33
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 34
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 35
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 36
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 37
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 38
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 39
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 40
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 41
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 42
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 43
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 44
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 45
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 46
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 47
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 48
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 49
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 50
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 51
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 52
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 53
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 54
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 55
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 56
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 57
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 58
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 59
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 60
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 61
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 62
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 63
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 64
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 65
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 66
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 67
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 68
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 69
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 70
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 71
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 72
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 73
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 74
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 75
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 76
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 77
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 78
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 79
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 80
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 81
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 82
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 83
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 84
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 85
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 86
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 87
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 88
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 89
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 90
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 91
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 92
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 93
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 94
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 95
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 96
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 97
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 98
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 99
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">100
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">101
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">102
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">103
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">104
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">105
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">106
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">107
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">108
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">109
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">110
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">111
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">112
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">113
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">114
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">115
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">116
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">117
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">118
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">119
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">120
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">121
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">122
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">123
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">124
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">125
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">126
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">127
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">128
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">129
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">130
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">131
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">132
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">133
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">134
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">135
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">136
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">137
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">138
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">139
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">140
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">141
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">142
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">143
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">144
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">145
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">146
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">147
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">148
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">149
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">150
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">151
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">152
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">153
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">154
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">155
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">156
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">157
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">158
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">159
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">160
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">161
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">162
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">163
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">164
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">165
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">166
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">167
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">168
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">169
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">170
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">171
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">172
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">173
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">174
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">175
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">176
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">177
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">178
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">179
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">180
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">181
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">182
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">183
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">184
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">185
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">186
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">187
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">188
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">189
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">190
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">191
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">192
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">193
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">194
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">195
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">196
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">197
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">198
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">199
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">200
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">201
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">202
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">203
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">204
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">205
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">206
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">207
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">208
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">209
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">210
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">211
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">212
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">213
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">214
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">215
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">216
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">217
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">218
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">219
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">220
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">221
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">222
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">223
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">224
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">225
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">226
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">227
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">228
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">229
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">230
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">231
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">232
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">233
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">234
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">235
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">236
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">237
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">238
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">239
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">240
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">241
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">242
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">243
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">244
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">245
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">246
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">247
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">248
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">249
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">250
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">251
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">252
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">253
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">254
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">255
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">256
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">257
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">258
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">259
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">260
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">261
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">262
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">263
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">264
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">265
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">266
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">267
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">268
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">269
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">270
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">271
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">272
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">273
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">274
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">275
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">276
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">277
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">278
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">279
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">280
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">281
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">282
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">283
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">284
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">285
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">286
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">287
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">288
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">289
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">290
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">291
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">292
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">293
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">294
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">295
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">296
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">297
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">298
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">299
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">300
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">301
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">302
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">303
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">304
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">305
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">306
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">307
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">308
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">309
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">310
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">311
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">312
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">313
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">314
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">315
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">316
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">317
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">318
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">319
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">320
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">321
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">322
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">323
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">324
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">325
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">326
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">327
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">328
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">329
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">330
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">331
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">332
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-lisp data-lang=lisp><span style=display:flex><span><span style=color:#998;font-style:italic>;; 15分钟学会Emacs Lisp (v0.2a)</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;（作者：bzg,https://github.com/bzg </span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;  译者：lichenbo,http://douban.com/people/lichenbo）</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 请先阅读Peter Norvig的一篇好文:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; http://norvig.com/21-days.html</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; （译者注：中文版请见http://blog.youxu.info/21-days/）</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 之后安装GNU Emacs 24.3:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; Debian: apt-get install emacs (视具体发行版而定)</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; MacOSX: http://emacsformacosx.com/emacs-builds/Emacs-24.3-universal-10.6.8.dmg</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; Windows: http://ftp.gnu.org/gnu/windows/emacs/emacs-24.3-bin-i386.zip</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 更多信息可以在这里找到:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; http://www.gnu.org/software/emacs/#Obtaining</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 很重要的警告:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 按照这个教程来学习并不会对你的电脑有任何损坏</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 除非你自己在学习的过程中愤怒地把它砸了</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 如果出现了这种情况,我不会承担任何责任</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; </span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 打开emacs</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 按&#39;q&#39;消除欢迎界面</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在请注意窗口底部的那一个灰色长条</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; &#34;*scratch*&#34; 是你现在编辑界面的名字。</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这个编辑界面叫做一个&#34;buffer&#34;。</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 每当你打开Emacs时,都会默认打开这个scratch buffer</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 此时你并没有在编辑任何文件,而是在编辑一个buffer</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 之后你可以将这个buffer保存到一个文件中。</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; </span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 之后的&#34;Lisp interaction&#34; 则是表明我们可以用的某组命令</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; </span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; Emacs在每个buffer中都有一组内置的命令</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 而当你激活某种特定的模式时,就可以使用相应的命令</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这里我们使用`lisp-interaction-mode&#39;,</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这样我们就可以使用内置的Emacs Lisp（以下简称Elisp）命令了。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 分号是注释开始的标志</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; Elisp 是由符号表达式构成的 (即&#34;s-表达式&#34;或&#34;s式&#34;):</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>+</span> <span style=color:#099>2</span> <span style=color:#099>2</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这个s式的意思是 &#34;对2进行加2操作&#34;.</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; s式周围有括号,而且也可以嵌套:</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>+</span> <span style=color:#099>2</span> (<span style=color:#900;font-weight:700>+</span> <span style=color:#099>1</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 一个s式可以包含原子符号或者其他s式</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 在上面的例子中,1和2是原子符号</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; (+ 2 (+ 1 1)) 和 (+ 1 1) 是s式.</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 在 `lisp-interaction-mode&#39; 中你可以计算s式.</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 把光标移到闭括号后,之后按下ctrl+j（以后简写为&#39;C-j&#39;）</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>+</span> <span style=color:#099>3</span> (<span style=color:#900;font-weight:700>+</span> <span style=color:#099>1</span> <span style=color:#099>2</span>))
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;           ^ 光标放到这里</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 按下`C-j&#39; 就会输出 6</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-j&#39; 会在buffer中插入当前运算的结果</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 而`C-xC-e&#39; 则会在emacs最底部显示结果,也就是被称作&#34;minibuffer&#34;的区域</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 为了避免把我们的buffer填满无用的结果,我们以后会一直用`C-xC-e&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `setq&#39; 可以将一个值赋给一个变量</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>setq</span> <span style=color:teal>my-name</span> <span style=color:#d14>&#34;Bastien&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 &#34;Bastien&#34; (在 mini-buffer 中显示)</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `insert&#39; 会在光标处插入字符串:</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>insert</span> <span style=color:#d14>&#34;Hello!&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 &#34;Hello!&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 在这里我们只传给了insert一个参数&#34;Hello!&#34;, 但是</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 我们也可以传给它更多的参数,比如2个：</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>insert</span> <span style=color:#d14>&#34;Hello&#34;</span> <span style=color:#d14>&#34; world!&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 &#34;Hello world!&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你也可以用变量名来代替字符串</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>insert</span> <span style=color:#d14>&#34;Hello, I am &#34;</span> <span style=color:teal>my-name</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 &#34;Hello, I am Bastien&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你可以把s式嵌入函数中</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>hello</span> () (<span style=color:teal>insert</span> <span style=color:#d14>&#34;Hello, I am &#34;</span> <span style=color:teal>my-name</span>))
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 hello</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在执行这个函数</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>hello</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 Hello, I am Bastien</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 函数中空括号的意思是我们不需要接受任何参数</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 但是我们不能一直总是用my-name这个变量</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 所以我们现在使我们的函数接受一个叫做&#34;name&#34;的参数 </span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>hello</span> (<span style=color:teal>name</span>) (<span style=color:teal>insert</span> <span style=color:#d14>&#34;Hello &#34;</span> <span style=color:teal>name</span>))
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 hello</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在我们调用这个函数,并且将&#34;you&#34;作为参数传递</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>hello</span> <span style=color:#d14>&#34;you&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 输出 &#34;Hello you&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 成功！</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在我们可以休息一下</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 下面我们在新的窗口中新建一个名为 &#34;*test*&#34; 的buffer:</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 这时屏幕上会显示两个窗口,而光标此时位于*test* buffer内</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 用鼠标单击上面的buffer就会使光标移回。</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 或者你可以使用 `C-xo&#39; 使得光标跳到另一个窗口中</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你可以用 `progn&#39;命令将s式结合起来:</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>progn</span>
-</span></span><span style=display:flex><span>  (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>hello</span> <span style=color:#d14>&#34;you&#34;</span>))
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `C-xC-e&#39; 此时屏幕分为两个窗口,并且在*test* buffer中显示&#34;Hello you&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在为了简洁,我们需要在每个s式后面都使用`C-xC-e&#39;来执行,后面就不再说明了</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 记得可以用过鼠标或者`C-xo&#39;回到*scratch*这个buffer。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 清除当前buffer也是常用操作之一：</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>progn</span>
-</span></span><span style=display:flex><span>  (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>hello</span> <span style=color:#d14>&#34;there&#34;</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 也可以回到其他的窗口中</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>progn</span>
-</span></span><span style=display:flex><span>  (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>hello</span> <span style=color:#d14>&#34;you&#34;</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你可以用 `let&#39; 将一个值和一个局部变量绑定:</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>let</span> ((<span style=color:teal>local-name</span> <span style=color:#d14>&#34;you&#34;</span>))
-</span></span><span style=display:flex><span>  (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>hello</span> <span style=color:teal>local-name</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这里我们就不需要使用 `progn&#39; 了, 因为 `let&#39; 也可以将很多s式组合起来。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 格式化字符串的方法：</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>format</span> <span style=color:#d14>&#34;Hello %s!\n&#34;</span> <span style=color:#d14>&#34;visitor&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; %s 是字符串占位符,这里被&#34;visitor&#34;替代.</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; \n 是换行符。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在我们用格式化的方法再重写一下我们的函数:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>hello</span> (<span style=color:teal>name</span>)
-</span></span><span style=display:flex><span>  (<span style=color:teal>insert</span> (<span style=color:#900;font-weight:700>format</span> <span style=color:#d14>&#34;Hello %s!\n&#34;</span> <span style=color:teal>name</span>)))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>hello</span> <span style=color:#d14>&#34;you&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 我们再用`let&#39;新建另一个函数:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>greeting</span> (<span style=color:teal>name</span>)
-</span></span><span style=display:flex><span>  (<span style=color:#000;font-weight:700>let</span> ((<span style=color:teal>your-name</span> <span style=color:#d14>&#34;Bastien&#34;</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>insert</span> (<span style=color:#900;font-weight:700>format</span> <span style=color:#d14>&#34;Hello %s!\n\nI am %s.&#34;</span>
-</span></span><span style=display:flex><span>                    <span style=color:teal>name</span>       <span style=color:#998;font-style:italic>; the argument of the function</span>
-</span></span><span style=display:flex><span>                    <span style=color:teal>your-name</span>  <span style=color:#998;font-style:italic>; the let-bound variable &#34;Bastien&#34;</span>
-</span></span><span style=display:flex><span>                    ))))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 之后执行:</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>greeting</span> <span style=color:#d14>&#34;you&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 有些函数可以和用户交互:</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>read-from-minibuffer</span> <span style=color:#d14>&#34;Enter your name: &#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这个函数会返回在执行时用户输入的信息</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在我们让`greeting&#39;函数显示你的名字:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>greeting</span> (<span style=color:teal>from-name</span>)
-</span></span><span style=display:flex><span>  (<span style=color:#000;font-weight:700>let</span> ((<span style=color:teal>your-name</span> (<span style=color:teal>read-from-minibuffer</span> <span style=color:#d14>&#34;Enter your name: &#34;</span>)))
-</span></span><span style=display:flex><span>    (<span style=color:teal>insert</span> (<span style=color:#900;font-weight:700>format</span> <span style=color:#d14>&#34;Hello!\n\nI am %s and you are %s.&#34;</span>
-</span></span><span style=display:flex><span>                    <span style=color:teal>from-name</span> <span style=color:#998;font-style:italic>; the argument of the function</span>
-</span></span><span style=display:flex><span>                    <span style=color:teal>your-name</span> <span style=color:#998;font-style:italic>; the let-bound var, entered at prompt</span>
-</span></span><span style=display:flex><span>                    ))))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>greeting</span> <span style=color:#d14>&#34;Bastien&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 我们让结果在另一个窗口中显示:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>greeting</span> (<span style=color:teal>from-name</span>)
-</span></span><span style=display:flex><span>  (<span style=color:#000;font-weight:700>let</span> ((<span style=color:teal>your-name</span> (<span style=color:teal>read-from-minibuffer</span> <span style=color:#d14>&#34;Enter your name: &#34;</span>)))
-</span></span><span style=display:flex><span>    (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>insert</span> (<span style=color:#900;font-weight:700>format</span> <span style=color:#d14>&#34;Hello %s!\n\nI am %s.&#34;</span> <span style=color:teal>your-name</span> <span style=color:teal>from-name</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>other-window</span> <span style=color:#099>1</span>)))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 测试一下：</span>
-</span></span><span style=display:flex><span>(<span style=color:teal>greeting</span> <span style=color:#d14>&#34;Bastien&#34;</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 第二节结束,休息一下吧。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 我们将一些名字存到列表中：</span>
-</span></span><span style=display:flex><span>(<span style=color:#000;font-weight:700>setq</span> <span style=color:teal>list-of-names</span> <span style=color:#000;font-weight:700>&#39;</span>(<span style=color:#d14>&#34;Sarah&#34;</span> <span style=color:#d14>&#34;Chloe&#34;</span> <span style=color:#d14>&#34;Mathilde&#34;</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 用 `car&#39;来取得第一个名字：</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>car</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 用 `cdr&#39;取得剩下的名字:</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>cdr</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 用 `push&#39;把名字添加到列表的开头:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>push</span> <span style=color:#d14>&#34;Stephanie&#34;</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 注意: `car&#39; 和 `cdr&#39; 并不修改列表本身, 但是 `push&#39; 却会对列表本身进行操作.</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这个区别是很重要的: 有些函数没有任何副作用（比如`car&#39;）</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 但还有一些却是有的 (比如 `push&#39;).</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 我们来对`list-of-names&#39;列表中的每一个元素都使用hello函数:</span>
-</span></span><span style=display:flex><span>(<span style=color:#900;font-weight:700>mapcar</span> <span style=color:#990073>&#39;hello</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 将 `greeting&#39; 改进,使的我们能够对`list-of-names&#39;中的所有名字执行:</span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>greeting</span> ()
-</span></span><span style=display:flex><span>    (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>    (<span style=color:#900;font-weight:700>mapcar</span> <span style=color:#990073>&#39;hello</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>greeting</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 记得我们之前定义的 `hello&#39; 函数吗？ 这个函数接受一个参数,名字。</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `mapcar&#39; 调用 `hello&#39;, 并将`list-of-names&#39;作为参数先后传给`hello&#39;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 现在我们对显示的buffer中的内容进行一些更改：</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>replace-hello-by-bonjour</span> ()
-</span></span><span style=display:flex><span>    (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>goto-char</span> (<span style=color:teal>point-min</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>while</span> (<span style=color:teal>search-forward</span> <span style=color:#d14>&#34;Hello&#34;</span>)
-</span></span><span style=display:flex><span>      (<span style=color:teal>replace-match</span> <span style=color:#d14>&#34;Bonjour&#34;</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; (goto-char (point-min)) 将光标移到buffer的开始</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; (search-forward &#34;Hello&#34;) 查找字符串&#34;Hello&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; (while x y) 当x返回某个值时执行y这个s式</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 当x返回`nil&#39; (空), 退出循环</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>replace-hello-by-bonjour</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你会看到所有在*test* buffer中出现的&#34;Hello&#34;字样都被换成了&#34;Bonjour&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 你也会得到以下错误提示: &#34;Search failed: Hello&#34;.</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 如果要避免这个错误, 你需要告诉 `search-forward&#39; 这个命令是否在</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; buffer的某个地方停止查找, 并且在什么都没找到时是否应该不给出错误提示</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; (search-forward &#34;Hello&#34; nil t) 可以达到这个要求:</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `nil&#39; 参数的意思是 : 查找并不限于某个范围内</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `t&#39; 参数的意思是: 当什么都没找到时,不给出错误提示</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 在下面的函数中,我们用到了s式,并且不给出任何错误提示:</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>hello-to-bonjour</span> ()
-</span></span><span style=display:flex><span>    (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>erase-buffer</span>)
-</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic>;; 为`list-of-names&#39;中的每个名字调用hello</span>
-</span></span><span style=display:flex><span>    (<span style=color:#900;font-weight:700>mapcar</span> <span style=color:#990073>&#39;hello</span> <span style=color:teal>list-of-names</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>goto-char</span> (<span style=color:teal>point-min</span>))
-</span></span><span style=display:flex><span>    <span style=color:#998;font-style:italic>;; 将&#34;Hello&#34; 替换为&#34;Bonjour&#34;</span>
-</span></span><span style=display:flex><span>    (<span style=color:teal>while</span> (<span style=color:teal>search-forward</span> <span style=color:#d14>&#34;Hello&#34;</span> <span style=color:teal>nil</span> <span style=color:teal>t</span>)
-</span></span><span style=display:flex><span>      (<span style=color:teal>replace-match</span> <span style=color:#d14>&#34;Bonjour&#34;</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>hello-to-bonjour</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 给这些名字加粗:</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:#0086b3>defun</span> <span style=color:teal>boldify-names</span> ()
-</span></span><span style=display:flex><span>    (<span style=color:teal>switch-to-buffer-other-window</span> <span style=color:#d14>&#34;*test*&#34;</span>)
-</span></span><span style=display:flex><span>    (<span style=color:teal>goto-char</span> (<span style=color:teal>point-min</span>))
-</span></span><span style=display:flex><span>    (<span style=color:teal>while</span> (<span style=color:teal>re-search-forward</span> <span style=color:#d14>&#34;Bonjour \\(.+\\)!&#34;</span> <span style=color:teal>nil</span> <span style=color:teal>t</span>)
-</span></span><span style=display:flex><span>      (<span style=color:teal>add-text-properties</span> (<span style=color:teal>match-beginning</span> <span style=color:#099>1</span>)
-</span></span><span style=display:flex><span>                           (<span style=color:teal>match-end</span> <span style=color:#099>1</span>)
-</span></span><span style=display:flex><span>                           (<span style=color:#458;font-weight:700>list</span> <span style=color:#990073>&#39;face</span> <span style=color:#990073>&#39;bold</span>)))
-</span></span><span style=display:flex><span>    (<span style=color:teal>other-window</span> <span style=color:#099>1</span>))
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 这个函数使用了 `re-search-forward&#39;:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 和查找一个字符串不同,你用这个命令可以查找一个模式,即正则表达式</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 正则表达式 &#34;Bonjour \\(.+\\)!&#34; 的意思是:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 字符串 &#34;Bonjour &#34;, 之后跟着</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 一组           |  \\( ... \\) 结构</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 任意字符       |  . 的含义</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 有可能重复的   |  + 的含义</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 之后跟着 &#34;!&#34; 这个字符串</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 准备好了？试试看。</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span>(<span style=color:teal>boldify-names</span>)
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; `add-text-properties&#39; 可以添加文字属性, 比如文字样式</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 好的,我们成功了！</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 如果你想对一个变量或者函数有更多的了解：</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; C-h v 变量 回车</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; C-h f 函数 回车</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 阅读Emacs Lisp官方文档:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; C-h i m elisp 回车</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;;</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 在线阅读Emacs Lisp文档:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; 感谢以下同学的建议和反馈:</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - Wes Hardaker</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - notbob</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - Kevin Montuori</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - Arne Babenhauserheide</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - Alan Schmitt</span>
-</span></span><span style=display:flex><span><span style=color:#998;font-style:italic>;; - spacegoing</span>
-</span></span></code></pre></td></tr></table></div></div><h2 id=spacemacs-rocks-第二季httpbookemacs-chinaorg><a href=http://book.emacs-china.org/>Spacemacs Rocks 第二季</a></h2></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/drafts/linux%E7%AC%94%E8%AE%B0/>linux笔记</a></li><li><a href=/drafts/go%E8%AF%AD%E8%A8%80%E5%9C%A3%E7%BB%8F8-5-goroutine%E8%A7%A3%E6%83%91/>go语言圣经8.5--goroutine解惑</a></li><li><a href=/posts/antlr4/>write a antlr4 visitor with golang</a></li><li><a href=/drafts/python%E8%A7%A3%E9%87%8A%E5%99%A8%E5%88%9D%E6%8E%A2/>python解释器初探</a></li><li><a href=/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/>终端录屏</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/lisp>lisp</a></li><li><a href=/tags/emacs>emacs</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<a id=rocket href=#top></a>
-<script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>
-<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
-<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
-<input type=hidden name=sitesearch value=https://60ke.github.io>
-<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/Ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/ title=Ubuntu黑屏无法登录>Ubuntu黑屏无法登录</a></li><li><a href=https://60ke.github.io/posts/githubAction/ title=Github使用Action自动编译发布go项目>Github使用Action自动编译发布go项目</a></li><li><a href=https://60ke.github.io/posts/quorum%E9%9A%90%E7%A7%81%E4%BA%A4%E6%98%93%E7%9A%84%E7%BB%93%E6%9E%84%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E4%B8%8EBlockMaze%E7%9A%84%E6%AF%94%E8%BE%83/ title=Quorum隐私交易的结构流程分析及与BlockMaze的比较>Quorum隐私交易的结构流程分析及与BlockMaze的比较</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (3)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li><li><a href=https://60ke.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96/>自动化 (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
-<a href=https://60ke.github.io/tags/c/>c</a>
-<a href=https://60ke.github.io/tags/emacs/>emacs</a>
-<a href=https://60ke.github.io/tags/english/>english</a>
-<a href=https://60ke.github.io/tags/go/>go</a>
-<a href=https://60ke.github.io/tags/golang/>golang</a>
-<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
-<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
-<a href=https://60ke.github.io/tags/ios/>ios</a>
-<a href=https://60ke.github.io/tags/linux/>linux</a>
-<a href=https://60ke.github.io/tags/lisp/>lisp</a>
-<a href=https://60ke.github.io/tags/mac/>mac</a>
-<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
-<a href=https://60ke.github.io/tags/mysql/>mysql</a>
-<a href=https://60ke.github.io/tags/other/>other</a>
-<a href=https://60ke.github.io/tags/others/>others</a>
-<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
-<a href=https://60ke.github.io/tags/python/>python</a>
-<a href=https://60ke.github.io/tags/rust/>rust</a>
-<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
-<a href=https://60ke.github.io/tags/sgx/>sgx</a>
-<a href=https://60ke.github.io/tags/shell/>shell</a>
-<a href=https://60ke.github.io/tags/sublime/>sublime</a>
-<a href=https://60ke.github.io/tags/vscode/>vscode</a>
-<a href=https://60ke.github.io/tags/wasm/>wasm</a>
-<a href=https://60ke.github.io/tags/xpath/>xpath</a>
-<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
-<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
-<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
-<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
-<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
-<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
-<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
-<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
-<a href=https://60ke.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/>自动化</a>
-<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
-<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
-<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="emacs 介绍 关于emacs的一些疑问 What English abbreviations are &amp;ldquo;setq&amp;rdquo;, &amp;ldquo;car&amp;rdquo;, and &amp;ldquo;cdr&amp;rdquo; in LISP? author:Rich-Alderson
+EDIT: I misremembered the computer model number, which Panicz Godek points out. It was the IBM 704, rather than the related 709.
+What English abbreviations are “setq”, “car”, and “cdr” in LISP?
+This question takes us back to the 1950s and the architecture of the IBM 704 computer on which LISP was first implemented.
+First, let’s look at the special form SETQ, which assigns a value to an atom."><title>emacs</title><link rel=canonical href=https://60ke.github.io/drafts/emacs/><link rel=stylesheet href=/scss/style.min.8191399262444ab68b72a18c97392f5349be20a1615d77445be51e974c144cff.css><meta property="og:title" content="emacs"><meta property="og:description" content="emacs 介绍 关于emacs的一些疑问 What English abbreviations are &amp;ldquo;setq&amp;rdquo;, &amp;ldquo;car&amp;rdquo;, and &amp;ldquo;cdr&amp;rdquo; in LISP? author:Rich-Alderson
+EDIT: I misremembered the computer model number, which Panicz Godek points out. It was the IBM 704, rather than the related 709.
+What English abbreviations are “setq”, “car”, and “cdr” in LISP?
+This question takes us back to the 1950s and the architecture of the IBM 704 computer on which LISP was first implemented.
+First, let’s look at the special form SETQ, which assigns a value to an atom."><meta property="og:url" content="https://60ke.github.io/drafts/emacs/"><meta property="og:site_name" content="LookForAdmin"><meta property="og:type" content="article"><meta property="article:section" content="Drafts"><meta property="article:tag" content="lisp"><meta property="article:tag" content="emacs"><meta property="article:published_time" content="2021-09-29T15:06:54+00:00"><meta property="article:modified_time" content="2021-09-29T15:06:54+00:00"><meta name=twitter:title content="emacs"><meta name=twitter:description content="emacs 介绍 关于emacs的一些疑问 What English abbreviations are &amp;ldquo;setq&amp;rdquo;, &amp;ldquo;car&amp;rdquo;, and &amp;ldquo;cdr&amp;rdquo; in LISP? author:Rich-Alderson
+EDIT: I misremembered the computer model number, which Panicz Godek points out. It was the IBM 704, rather than the related 709.
+What English abbreviations are “setq”, “car”, and “cdr” in LISP?
+This question takes us back to the 1950s and the architecture of the IBM 704 computer on which LISP was first implemented.
+First, let’s look at the special form SETQ, which assigns a value to an atom."><link rel="shortcut icon" href=/img/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/Avatar.jpeg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a>
+<span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>LookForAdmin</a></h1><h2 class=site-description>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2></div></header><ol class=social-menu><li><a href=https://github.com/60ke target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/posts target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg><span>Home</span></a></li><li><a href=/drafts><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M9.828 9.172a4 4 0 100 5.656A10 10 0 0012 12a10 10 0 012.172-2.828 4 4 0 110 5.656A10 10 0 0112 12 10 10 0 009.828 9.172"/></svg><span>草稿箱</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg><span>about</span></a></li><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>Archives</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg><span>Search</span></a></li><div class=menu-bottom-section><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><span>暗色模式</span></li></div></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#关于emacs的一些疑问>关于emacs的一些疑问</a></li><li><a href=#what-english-abbreviations-are-setq-car-and-cdr-in-lisphttpswwwquoracomwhat-english-abbreviations-are-setq-car-and-cdr-in-lisp><a href=https://www.quora.com/What-English-abbreviations-are-setq-car-and-cdr-in-LISP>What English abbreviations are &ldquo;setq&rdquo;, &ldquo;car&rdquo;, and &ldquo;cdr&rdquo; in LISP?</a></a></li><li><a href=#curiosity-what-does-progn-stands-forhttpsemacsstackexchangecomquestions5829curiosity-what-does-progn-stands-for><a href=https://emacs.stackexchange.com/questions/5829/curiosity-what-does-progn-stands-for>Curiosity: What does progn stands for?</a></a></li></ol><ol><li><a href=#15分钟学会emacs-lisp-v02a>15分钟学会Emacs Lisp (v0.2a)</a></li><li><a href=#spacemacs-rocks-第二季httpbookemacs-chinaorg><a href=http://book.emacs-china.org/>Spacemacs Rocks 第二季</a></a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><div class=article-title-wrapper><h2 class=article-title><a href=/drafts/emacs/>emacs</a></h2></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Sep 29, 2021</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 8 分钟</time></div></footer></div></header><section class=article-content><h1 id=emacs-介绍>emacs 介绍</h1><h2 id=关于emacs的一些疑问>关于emacs的一些疑问</h2><h2 id=what-english-abbreviations-are-setq-car-and-cdr-in-lisphttpswwwquoracomwhat-english-abbreviations-are-setq-car-and-cdr-in-lisp><a class=link href=https://www.quora.com/What-English-abbreviations-are-setq-car-and-cdr-in-LISP target=_blank rel=noopener>What English abbreviations are &ldquo;setq&rdquo;, &ldquo;car&rdquo;, and &ldquo;cdr&rdquo; in LISP?</a></h2><p>author:<a class=link href=https://www.quora.com/profile/Rich-Alderson target=_blank rel=noopener>Rich-Alderson</a></p><blockquote><p>EDIT: I misremembered the computer model number, which Panicz Godek points out. It was the IBM 704, rather than the related 709.</p></blockquote><blockquote><p>What English abbreviations are “setq”, “car”, and “cdr” in LISP?</p></blockquote><blockquote><p>This question takes us back to the 1950s and the architecture of the IBM 704 computer on which LISP was first implemented.</p></blockquote><blockquote><p>First, let’s look at the special form SETQ, which assigns a value to an atom. Originally, there was only the special form SET, which evaluates the first argument to get the atom to which to assign the value of the evaluated second argument: (SET (A) B). Because this was such a common idiom, a new special form SETQ, meaning “set-quote”, was created: (SETQ A B) gives the same result as the previous form.</p></blockquote><blockquote><p>Now, on to the 704. You need to learn some different terminology here. Storage words were called registers; they are not what are we call registers today, which were specialized and had unique names: The accumulator or AC, the multiply-quotient or MQ, and the indexes. Memory referred to tape or disk.</p></blockquote><blockquote><p>Words were 36 bits long; addresses were 15 bits, allowing a whopping 32K of storage. Each word was divided into 4 parts: The address and the decrement were each 15 bits long, the index and tag were each 3 bits long. Thus, a word could hold 2 addresses and 2 other quantities.</p></blockquote><blockquote><p>In the original LISP, all 4 parts of the word were usable, and the functions which referenced these were named for these parts: The Content-of-the-Address-part-of the-Register was CAR, the Content-of-the-Decrement-part-of-the-Register or CDR, and similarly for CIR and CTR. These latter 2 were quickly dropped as not having any real use, so we were left with just CAR and CDR.</p></blockquote><blockquote><p>I refer you to Herbert Stoyan’s paper in the proceedings of the 1984 ACM Conference on Lisp and Functional Programming entitled “Early LISP History (1956-1959)”, which I had the pleasure of hearing in person (Austin, Texas, August 1984): Early LISP history (1956 - 1959)</p></blockquote><h2 id=curiosity-what-does-progn-stands-forhttpsemacsstackexchangecomquestions5829curiosity-what-does-progn-stands-for><a class=link href=https://emacs.stackexchange.com/questions/5829/curiosity-what-does-progn-stands-for target=_blank rel=noopener>Curiosity: What does progn stands for?</a></h2><ul><li><p>progn is a special form borrowed from CL-like Lisp dialects. In their implementations it&rsquo;s composed from multiple progs, expressions that are evaluated and a number that specifies which expression value is returned. prog1 for instance evaluates all expressions and returns the value of the first, prog2 evaluates all expressions and returns the value of the second, progn evaluates all expressions and returns the n&rsquo;th, or rather, the last expression&rsquo;s value.</p></li><li><p>progn in Emacs Lisp is the equivalent of Clojure&rsquo;s do which is used as means to bundle multiple expressions into a single one. You&rsquo;ll need to use it for Clojure&rsquo;s if conditional for instance.</p></li></ul><h1 id=lisp-学习httpslearnxinyminutescomdocszh-cnelisp-cn><a class=link href=https://learnxinyminutes.com/docs/zh-cn/elisp-cn/ target=_blank rel=noopener>lisp 学习</a></h1><h2 id=15分钟学会emacs-lisp-v02a>15分钟学会Emacs Lisp (v0.2a)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span><span class=lnt>213
+</span><span class=lnt>214
+</span><span class=lnt>215
+</span><span class=lnt>216
+</span><span class=lnt>217
+</span><span class=lnt>218
+</span><span class=lnt>219
+</span><span class=lnt>220
+</span><span class=lnt>221
+</span><span class=lnt>222
+</span><span class=lnt>223
+</span><span class=lnt>224
+</span><span class=lnt>225
+</span><span class=lnt>226
+</span><span class=lnt>227
+</span><span class=lnt>228
+</span><span class=lnt>229
+</span><span class=lnt>230
+</span><span class=lnt>231
+</span><span class=lnt>232
+</span><span class=lnt>233
+</span><span class=lnt>234
+</span><span class=lnt>235
+</span><span class=lnt>236
+</span><span class=lnt>237
+</span><span class=lnt>238
+</span><span class=lnt>239
+</span><span class=lnt>240
+</span><span class=lnt>241
+</span><span class=lnt>242
+</span><span class=lnt>243
+</span><span class=lnt>244
+</span><span class=lnt>245
+</span><span class=lnt>246
+</span><span class=lnt>247
+</span><span class=lnt>248
+</span><span class=lnt>249
+</span><span class=lnt>250
+</span><span class=lnt>251
+</span><span class=lnt>252
+</span><span class=lnt>253
+</span><span class=lnt>254
+</span><span class=lnt>255
+</span><span class=lnt>256
+</span><span class=lnt>257
+</span><span class=lnt>258
+</span><span class=lnt>259
+</span><span class=lnt>260
+</span><span class=lnt>261
+</span><span class=lnt>262
+</span><span class=lnt>263
+</span><span class=lnt>264
+</span><span class=lnt>265
+</span><span class=lnt>266
+</span><span class=lnt>267
+</span><span class=lnt>268
+</span><span class=lnt>269
+</span><span class=lnt>270
+</span><span class=lnt>271
+</span><span class=lnt>272
+</span><span class=lnt>273
+</span><span class=lnt>274
+</span><span class=lnt>275
+</span><span class=lnt>276
+</span><span class=lnt>277
+</span><span class=lnt>278
+</span><span class=lnt>279
+</span><span class=lnt>280
+</span><span class=lnt>281
+</span><span class=lnt>282
+</span><span class=lnt>283
+</span><span class=lnt>284
+</span><span class=lnt>285
+</span><span class=lnt>286
+</span><span class=lnt>287
+</span><span class=lnt>288
+</span><span class=lnt>289
+</span><span class=lnt>290
+</span><span class=lnt>291
+</span><span class=lnt>292
+</span><span class=lnt>293
+</span><span class=lnt>294
+</span><span class=lnt>295
+</span><span class=lnt>296
+</span><span class=lnt>297
+</span><span class=lnt>298
+</span><span class=lnt>299
+</span><span class=lnt>300
+</span><span class=lnt>301
+</span><span class=lnt>302
+</span><span class=lnt>303
+</span><span class=lnt>304
+</span><span class=lnt>305
+</span><span class=lnt>306
+</span><span class=lnt>307
+</span><span class=lnt>308
+</span><span class=lnt>309
+</span><span class=lnt>310
+</span><span class=lnt>311
+</span><span class=lnt>312
+</span><span class=lnt>313
+</span><span class=lnt>314
+</span><span class=lnt>315
+</span><span class=lnt>316
+</span><span class=lnt>317
+</span><span class=lnt>318
+</span><span class=lnt>319
+</span><span class=lnt>320
+</span><span class=lnt>321
+</span><span class=lnt>322
+</span><span class=lnt>323
+</span><span class=lnt>324
+</span><span class=lnt>325
+</span><span class=lnt>326
+</span><span class=lnt>327
+</span><span class=lnt>328
+</span><span class=lnt>329
+</span><span class=lnt>330
+</span><span class=lnt>331
+</span><span class=lnt>332
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-lisp data-lang=lisp><span class=line><span class=cl><span class=c1>;; 15分钟学会Emacs Lisp (v0.2a)</span>
+</span></span><span class=line><span class=cl><span class=c1>;;（作者：bzg,https://github.com/bzg </span>
+</span></span><span class=line><span class=cl><span class=c1>;;  译者：lichenbo,http://douban.com/people/lichenbo）</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 请先阅读Peter Norvig的一篇好文:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; http://norvig.com/21-days.html</span>
+</span></span><span class=line><span class=cl><span class=c1>;; （译者注：中文版请见http://blog.youxu.info/21-days/）</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 之后安装GNU Emacs 24.3:</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; Debian: apt-get install emacs (视具体发行版而定)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; MacOSX: http://emacsformacosx.com/emacs-builds/Emacs-24.3-universal-10.6.8.dmg</span>
+</span></span><span class=line><span class=cl><span class=c1>;; Windows: http://ftp.gnu.org/gnu/windows/emacs/emacs-24.3-bin-i386.zip</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 更多信息可以在这里找到:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; http://www.gnu.org/software/emacs/#Obtaining</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 很重要的警告:</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 按照这个教程来学习并不会对你的电脑有任何损坏</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 除非你自己在学习的过程中愤怒地把它砸了</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 如果出现了这种情况,我不会承担任何责任</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; </span>
+</span></span><span class=line><span class=cl><span class=c1>;; 打开emacs</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 按&#39;q&#39;消除欢迎界面</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在请注意窗口底部的那一个灰色长条</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; &#34;*scratch*&#34; 是你现在编辑界面的名字。</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 这个编辑界面叫做一个&#34;buffer&#34;。</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 每当你打开Emacs时,都会默认打开这个scratch buffer</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 此时你并没有在编辑任何文件,而是在编辑一个buffer</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 之后你可以将这个buffer保存到一个文件中。</span>
+</span></span><span class=line><span class=cl><span class=c1>;; </span>
+</span></span><span class=line><span class=cl><span class=c1>;; 之后的&#34;Lisp interaction&#34; 则是表明我们可以用的某组命令</span>
+</span></span><span class=line><span class=cl><span class=c1>;; </span>
+</span></span><span class=line><span class=cl><span class=c1>;; Emacs在每个buffer中都有一组内置的命令</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 而当你激活某种特定的模式时,就可以使用相应的命令</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 这里我们使用`lisp-interaction-mode&#39;,</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 这样我们就可以使用内置的Emacs Lisp（以下简称Elisp）命令了。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 分号是注释开始的标志</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; Elisp 是由符号表达式构成的 (即&#34;s-表达式&#34;或&#34;s式&#34;):</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>+</span> <span class=mi>2</span> <span class=mi>2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 这个s式的意思是 &#34;对2进行加2操作&#34;.</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; s式周围有括号,而且也可以嵌套:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>+</span> <span class=mi>2</span> <span class=p>(</span><span class=nf>+</span> <span class=mi>1</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 一个s式可以包含原子符号或者其他s式</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 在上面的例子中,1和2是原子符号</span>
+</span></span><span class=line><span class=cl><span class=c1>;; (+ 2 (+ 1 1)) 和 (+ 1 1) 是s式.</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 在 `lisp-interaction-mode&#39; 中你可以计算s式.</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 把光标移到闭括号后,之后按下ctrl+j（以后简写为&#39;C-j&#39;）</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>+</span> <span class=mi>3</span> <span class=p>(</span><span class=nf>+</span> <span class=mi>1</span> <span class=mi>2</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=c1>;;           ^ 光标放到这里</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 按下`C-j&#39; 就会输出 6</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-j&#39; 会在buffer中插入当前运算的结果</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 而`C-xC-e&#39; 则会在emacs最底部显示结果,也就是被称作&#34;minibuffer&#34;的区域</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 为了避免把我们的buffer填满无用的结果,我们以后会一直用`C-xC-e&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; `setq&#39; 可以将一个值赋给一个变量</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>setq</span> <span class=nv>my-name</span> <span class=s>&#34;Bastien&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 &#34;Bastien&#34; (在 mini-buffer 中显示)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; `insert&#39; 会在光标处插入字符串:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>insert</span> <span class=s>&#34;Hello!&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 &#34;Hello!&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 在这里我们只传给了insert一个参数&#34;Hello!&#34;, 但是</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 我们也可以传给它更多的参数,比如2个：</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>insert</span> <span class=s>&#34;Hello&#34;</span> <span class=s>&#34; world!&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 &#34;Hello world!&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你也可以用变量名来代替字符串</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>insert</span> <span class=s>&#34;Hello, I am &#34;</span> <span class=nv>my-name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 &#34;Hello, I am Bastien&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你可以把s式嵌入函数中</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>hello</span> <span class=p>()</span> <span class=p>(</span><span class=nv>insert</span> <span class=s>&#34;Hello, I am &#34;</span> <span class=nv>my-name</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 hello</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在执行这个函数</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>hello</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 Hello, I am Bastien</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 函数中空括号的意思是我们不需要接受任何参数</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 但是我们不能一直总是用my-name这个变量</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 所以我们现在使我们的函数接受一个叫做&#34;name&#34;的参数 </span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>hello</span> <span class=p>(</span><span class=nv>name</span><span class=p>)</span> <span class=p>(</span><span class=nv>insert</span> <span class=s>&#34;Hello &#34;</span> <span class=nv>name</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 hello</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在我们调用这个函数,并且将&#34;you&#34;作为参数传递</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>hello</span> <span class=s>&#34;you&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 输出 &#34;Hello you&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 成功！</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在我们可以休息一下</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 下面我们在新的窗口中新建一个名为 &#34;*test*&#34; 的buffer:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 这时屏幕上会显示两个窗口,而光标此时位于*test* buffer内</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 用鼠标单击上面的buffer就会使光标移回。</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 或者你可以使用 `C-xo&#39; 使得光标跳到另一个窗口中</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你可以用 `progn&#39;命令将s式结合起来:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>progn</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>hello</span> <span class=s>&#34;you&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `C-xC-e&#39; 此时屏幕分为两个窗口,并且在*test* buffer中显示&#34;Hello you&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在为了简洁,我们需要在每个s式后面都使用`C-xC-e&#39;来执行,后面就不再说明了</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 记得可以用过鼠标或者`C-xo&#39;回到*scratch*这个buffer。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 清除当前buffer也是常用操作之一：</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>progn</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>hello</span> <span class=s>&#34;there&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 也可以回到其他的窗口中</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>progn</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>hello</span> <span class=s>&#34;you&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你可以用 `let&#39; 将一个值和一个局部变量绑定:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>let</span> <span class=p>((</span><span class=nv>local-name</span> <span class=s>&#34;you&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>hello</span> <span class=nv>local-name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 这里我们就不需要使用 `progn&#39; 了, 因为 `let&#39; 也可以将很多s式组合起来。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 格式化字符串的方法：</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>format</span> <span class=s>&#34;Hello %s!\n&#34;</span> <span class=s>&#34;visitor&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; %s 是字符串占位符,这里被&#34;visitor&#34;替代.</span>
+</span></span><span class=line><span class=cl><span class=c1>;; \n 是换行符。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在我们用格式化的方法再重写一下我们的函数:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>hello</span> <span class=p>(</span><span class=nv>name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=nv>insert</span> <span class=p>(</span><span class=nf>format</span> <span class=s>&#34;Hello %s!\n&#34;</span> <span class=nv>name</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>hello</span> <span class=s>&#34;you&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 我们再用`let&#39;新建另一个函数:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>greeting</span> <span class=p>(</span><span class=nv>name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=k>let</span> <span class=p>((</span><span class=nv>your-name</span> <span class=s>&#34;Bastien&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>insert</span> <span class=p>(</span><span class=nf>format</span> <span class=s>&#34;Hello %s!\n\nI am %s.&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=nv>name</span>       <span class=c1>; the argument of the function</span>
+</span></span><span class=line><span class=cl>                    <span class=nv>your-name</span>  <span class=c1>; the let-bound variable &#34;Bastien&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=p>))))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 之后执行:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>greeting</span> <span class=s>&#34;you&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 有些函数可以和用户交互:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>read-from-minibuffer</span> <span class=s>&#34;Enter your name: &#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 这个函数会返回在执行时用户输入的信息</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在我们让`greeting&#39;函数显示你的名字:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>greeting</span> <span class=p>(</span><span class=nv>from-name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=k>let</span> <span class=p>((</span><span class=nv>your-name</span> <span class=p>(</span><span class=nv>read-from-minibuffer</span> <span class=s>&#34;Enter your name: &#34;</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>insert</span> <span class=p>(</span><span class=nf>format</span> <span class=s>&#34;Hello!\n\nI am %s and you are %s.&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=nv>from-name</span> <span class=c1>; the argument of the function</span>
+</span></span><span class=line><span class=cl>                    <span class=nv>your-name</span> <span class=c1>; the let-bound var, entered at prompt</span>
+</span></span><span class=line><span class=cl>                    <span class=p>))))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>greeting</span> <span class=s>&#34;Bastien&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 我们让结果在另一个窗口中显示:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>greeting</span> <span class=p>(</span><span class=nv>from-name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>(</span><span class=k>let</span> <span class=p>((</span><span class=nv>your-name</span> <span class=p>(</span><span class=nv>read-from-minibuffer</span> <span class=s>&#34;Enter your name: &#34;</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>insert</span> <span class=p>(</span><span class=nf>format</span> <span class=s>&#34;Hello %s!\n\nI am %s.&#34;</span> <span class=nv>your-name</span> <span class=nv>from-name</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 测试一下：</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>greeting</span> <span class=s>&#34;Bastien&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 第二节结束,休息一下吧。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 我们将一些名字存到列表中：</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=k>setq</span> <span class=nv>list-of-names</span> <span class=o>&#39;</span><span class=p>(</span><span class=s>&#34;Sarah&#34;</span> <span class=s>&#34;Chloe&#34;</span> <span class=s>&#34;Mathilde&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 用 `car&#39;来取得第一个名字：</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>car</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 用 `cdr&#39;取得剩下的名字:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>cdr</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 用 `push&#39;把名字添加到列表的开头:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>push</span> <span class=s>&#34;Stephanie&#34;</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 注意: `car&#39; 和 `cdr&#39; 并不修改列表本身, 但是 `push&#39; 却会对列表本身进行操作.</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 这个区别是很重要的: 有些函数没有任何副作用（比如`car&#39;）</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 但还有一些却是有的 (比如 `push&#39;).</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 我们来对`list-of-names&#39;列表中的每一个元素都使用hello函数:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nf>mapcar</span> <span class=ss>&#39;hello</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 将 `greeting&#39; 改进,使的我们能够对`list-of-names&#39;中的所有名字执行:</span>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>greeting</span> <span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nf>mapcar</span> <span class=ss>&#39;hello</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>greeting</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 记得我们之前定义的 `hello&#39; 函数吗？ 这个函数接受一个参数,名字。</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `mapcar&#39; 调用 `hello&#39;, 并将`list-of-names&#39;作为参数先后传给`hello&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 现在我们对显示的buffer中的内容进行一些更改：</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>replace-hello-by-bonjour</span> <span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>goto-char</span> <span class=p>(</span><span class=nv>point-min</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>while</span> <span class=p>(</span><span class=nv>search-forward</span> <span class=s>&#34;Hello&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=p>(</span><span class=nv>replace-match</span> <span class=s>&#34;Bonjour&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; (goto-char (point-min)) 将光标移到buffer的开始</span>
+</span></span><span class=line><span class=cl><span class=c1>;; (search-forward &#34;Hello&#34;) 查找字符串&#34;Hello&#34;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; (while x y) 当x返回某个值时执行y这个s式</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 当x返回`nil&#39; (空), 退出循环</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>replace-hello-by-bonjour</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你会看到所有在*test* buffer中出现的&#34;Hello&#34;字样都被换成了&#34;Bonjour&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 你也会得到以下错误提示: &#34;Search failed: Hello&#34;.</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 如果要避免这个错误, 你需要告诉 `search-forward&#39; 这个命令是否在</span>
+</span></span><span class=line><span class=cl><span class=c1>;; buffer的某个地方停止查找, 并且在什么都没找到时是否应该不给出错误提示</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; (search-forward &#34;Hello&#34; nil t) 可以达到这个要求:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; `nil&#39; 参数的意思是 : 查找并不限于某个范围内</span>
+</span></span><span class=line><span class=cl><span class=c1>;; `t&#39; 参数的意思是: 当什么都没找到时,不给出错误提示</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 在下面的函数中,我们用到了s式,并且不给出任何错误提示:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>hello-to-bonjour</span> <span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>erase-buffer</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1>;; 为`list-of-names&#39;中的每个名字调用hello</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nf>mapcar</span> <span class=ss>&#39;hello</span> <span class=nv>list-of-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>goto-char</span> <span class=p>(</span><span class=nv>point-min</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=c1>;; 将&#34;Hello&#34; 替换为&#34;Bonjour&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>while</span> <span class=p>(</span><span class=nv>search-forward</span> <span class=s>&#34;Hello&#34;</span> <span class=no>nil</span> <span class=no>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=p>(</span><span class=nv>replace-match</span> <span class=s>&#34;Bonjour&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>hello-to-bonjour</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 给这些名字加粗:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nb>defun</span> <span class=nv>boldify-names</span> <span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>switch-to-buffer-other-window</span> <span class=s>&#34;*test*&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>goto-char</span> <span class=p>(</span><span class=nv>point-min</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>while</span> <span class=p>(</span><span class=nv>re-search-forward</span> <span class=s>&#34;Bonjour \\(.+\\)!&#34;</span> <span class=no>nil</span> <span class=no>t</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=p>(</span><span class=nv>add-text-properties</span> <span class=p>(</span><span class=nv>match-beginning</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                           <span class=p>(</span><span class=nv>match-end</span> <span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                           <span class=p>(</span><span class=nc>list</span> <span class=ss>&#39;face</span> <span class=ss>&#39;bold</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>    <span class=p>(</span><span class=nv>other-window</span> <span class=mi>1</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 这个函数使用了 `re-search-forward&#39;:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 和查找一个字符串不同,你用这个命令可以查找一个模式,即正则表达式</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 正则表达式 &#34;Bonjour \\(.+\\)!&#34; 的意思是:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 字符串 &#34;Bonjour &#34;, 之后跟着</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 一组           |  \\( ... \\) 结构</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 任意字符       |  . 的含义</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 有可能重复的   |  + 的含义</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 之后跟着 &#34;!&#34; 这个字符串</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 准备好了？试试看。</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>(</span><span class=nv>boldify-names</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; `add-text-properties&#39; 可以添加文字属性, 比如文字样式</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 好的,我们成功了！</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 如果你想对一个变量或者函数有更多的了解：</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; C-h v 变量 回车</span>
+</span></span><span class=line><span class=cl><span class=c1>;; C-h f 函数 回车</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 阅读Emacs Lisp官方文档:</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; C-h i m elisp 回车</span>
+</span></span><span class=line><span class=cl><span class=c1>;;</span>
+</span></span><span class=line><span class=cl><span class=c1>;; 在线阅读Emacs Lisp文档:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; https://www.gnu.org/software/emacs/manual/html_node/eintr/index.html</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>;; 感谢以下同学的建议和反馈:</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - Wes Hardaker</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - notbob</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - Kevin Montuori</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - Arne Babenhauserheide</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - Alan Schmitt</span>
+</span></span><span class=line><span class=cl><span class=c1>;; - spacegoing</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=spacemacs-rocks-第二季httpbookemacs-chinaorg><a class=link href=http://book.emacs-china.org/ target=_blank rel=noopener>Spacemacs Rocks 第二季</a></h2></section><footer class=article-footer><section class=article-tags><a href=/tags/lisp/>lisp</a>
+<a href=/tags/emacs/>emacs</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2020 -
+2022 LookForAdmin</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.16.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

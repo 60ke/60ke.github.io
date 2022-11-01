@@ -1,1 +1,24 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>shell on LookForAdmin的博客</title><link>https://60ke.github.io/categories/shell/</link><description>Recent content in shell on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 29 Apr 2021 10:09:56 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/shell/index.xml" rel="self" type="application/rss+xml"/><item><title>终端录屏</title><link>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</link><pubDate>Thu, 29 Apr 2021 10:09:56 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</guid><description>今天突然看到一个书签http://showterm.io,showterm是一个终端录屏工具但是现在,感觉用的人不多了,除了showterm以外还有ttygif,terminalizer,asciinema ttygif C开发的录屏工具,mac下使用brew install ttygif即可安装 录制 ttyrec + 自定</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>shell on LookForAdmin</title><link>https://60ke.github.io/categories/shell/</link><description>Recent content in shell on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 29 Apr 2021 10:09:56 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/shell/index.xml" rel="self" type="application/rss+xml"/><item><title>终端录屏</title><link>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</link><pubDate>Thu, 29 Apr 2021 10:09:56 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BB%88%E7%AB%AF%E5%BD%95%E5%B1%8F/</guid><description>&lt;p>今天突然看到一个书签&lt;code>http://showterm.io&lt;/code>,&lt;code>showterm&lt;/code>是一个终端录屏工具但是现在,感觉用的人不多了,除了&lt;code>showterm&lt;/code>以外还有&lt;a class="link" href="https://github.com/icholy/ttygif" target="_blank" rel="noopener"
+>ttygif&lt;/a>,&lt;a class="link" href="https://github.com/faressoft/terminalizer" target="_blank" rel="noopener"
+>terminalizer&lt;/a>,&lt;a class="link" href="https://github.com/asciinema/asciinema" target="_blank" rel="noopener"
+>asciinema&lt;/a>&lt;/p>
+&lt;h2 id="ttygif">ttygif&lt;/h2>
+&lt;p>&lt;code>C&lt;/code>开发的录屏工具,mac下使用&lt;code>brew install ttygif&lt;/code>即可安装&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>录制&lt;/p>
+&lt;p>ttyrec + 自定义的录制名&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>保存
+ttygif + &lt;code>自定义的录制名&lt;/code> (-s 可设定倍速)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>效果示意
+&lt;img src="https://i.loli.net/2021/04/29/tQY7A2rhTNfmMqX.gif"
+loading="lazy"
+alt="tQY7A2rhTNfmMqX"
+>
+本来有个13M的比较全的录屏但是gitee只支持1M文件的非登录可见,同时需要注意的是录屏录取的是整个终端,而不是当前的标签页(录屏过程切换其它标签,则切换后的标签的显示内容也会被录下)&lt;/p>
+&lt;/li>
+&lt;/ul></description></item></channel></rss>

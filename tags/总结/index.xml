@@ -1,1 +1,10 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>总结 on LookForAdmin的博客</title><link>https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/</link><description>Recent content in 总结 on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 21 Apr 2017 13:32:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/index.xml" rel="self" type="application/rss+xml"/><item><title>煎蛋爬虫分析比较总结</title><link>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</link><pubDate>Fri, 21 Apr 2017 13:32:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</guid><description>小甲鱼的爬虫 直接提取出用户正常访问页面的page 模块化结构代码易读性更高 模块化的代码利用率更高,可重复利用 目标：在精通Python之前每天坚持至少写一个爬虫,难度要越来越高</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>总结 on LookForAdmin</title><link>https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/</link><description>Recent content in 总结 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 21 Apr 2017 13:32:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/index.xml" rel="self" type="application/rss+xml"/><item><title>煎蛋爬虫分析比较总结</title><link>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</link><pubDate>Fri, 21 Apr 2017 13:32:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</guid><description>&lt;p>小甲鱼的爬虫&lt;/p>
+&lt;ol>
+&lt;li>直接提取出用户正常访问页面的page
+&lt;img src="https://ws1.sinaimg.cn/large/6cf740f6ly1feumgqfv6vj20a701qjra.jpg"
+loading="lazy"
+>&lt;/li>
+&lt;li>模块化结构代码易读性更高&lt;/li>
+&lt;li>模块化的代码利用率更高,可重复利用&lt;/li>
+&lt;/ol>
+&lt;p>目标：在精通Python之前每天坚持至少写一个爬虫,难度要越来越高&lt;/p></description></item></channel></rss>

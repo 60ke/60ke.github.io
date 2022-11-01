@@ -1,1 +1,121 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>go汇编 on LookForAdmin的博客</title><link>https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/</link><description>Recent content in go汇编 on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Dec 2021 11:15:06 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>go汇编</title><link>https://60ke.github.io/drafts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/drafts/go%E6%B1%87%E7%BC%96/</guid><description>go汇编传送门: 首先创建一个pkg.go文件,内容如下： 1 2 package pkg var Id = 9527 用以下命令查看的Go语言程序对应的伪汇编代码： 1 2 3 4 5 go tool compile -S pkg.go # 或 go build -gcflags=-S pkg.go # -N关闭内联汇编 go build -gcflags=&amp;#34;-S -N&amp;#34; pkg.go 其中gcflags,为go compile flags。关于gcflags的使用帮助可以使用go help build查看。运行</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>go汇编 on LookForAdmin</title><link>https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/</link><description>Recent content in go汇编 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 13 Dec 2021 11:15:06 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>go汇编</title><link>https://60ke.github.io/drafts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/drafts/go%E6%B1%87%E7%BC%96/</guid><description>&lt;p>&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
+>go汇编传送门:&lt;/a>&lt;/p>
+&lt;p>首先创建一个pkg.go文件,内容如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">pkg&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">var&lt;/span> &lt;span class="nx">Id&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">9527&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>用以下命令查看的Go语言程序对应的伪汇编代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">go tool compile -S pkg.go
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 或&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go build -gcflags&lt;span class="o">=&lt;/span>-S pkg.go
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># -N关闭内联汇编&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go build -gcflags&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;-S -N&amp;#34;&lt;/span> pkg.go
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>其中gcflags,为go compile flags。关于gcflags的使用帮助可以使用&lt;code>go help build&lt;/code>查看。运行命令我们可以看到下面的arm64汇编输出:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sh" data-lang="sh">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># command-line-arguments&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.producer.command-line-arguments SDWARFCUINFO dupok &lt;span class="nv">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 2d &lt;span class="m">73&lt;/span> &lt;span class="m">68&lt;/span> &lt;span class="m">61&lt;/span> &lt;span class="m">72&lt;/span> &lt;span class="m">65&lt;/span> &lt;span class="m">64&lt;/span> -shared
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok &lt;span class="nv">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 &lt;span class="m">70&lt;/span> 6b &lt;span class="m">67&lt;/span> pkg
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>.Id SNOPTRDATA &lt;span class="nv">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">8&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 &lt;span class="m">37&lt;/span> &lt;span class="m">25&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> 7%......
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.info.command-line-arguments.Id SDWARFVAR dupok &lt;span class="nv">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">42&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 &lt;span class="m">08&lt;/span> &lt;span class="m">63&lt;/span> 6f 6d 6d &lt;span class="m">61&lt;/span> 6e &lt;span class="m">64&lt;/span> 2d 6c &lt;span class="m">69&lt;/span> 6e &lt;span class="m">65&lt;/span> 2d &lt;span class="m">61&lt;/span> &lt;span class="m">72&lt;/span> .command-line-ar
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0010 &lt;span class="m">67&lt;/span> &lt;span class="m">75&lt;/span> 6d &lt;span class="m">65&lt;/span> 6e &lt;span class="m">74&lt;/span> &lt;span class="m">73&lt;/span> 2e &lt;span class="m">49&lt;/span> &lt;span class="m">64&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">09&lt;/span> &lt;span class="m">03&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> guments.Id......
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0020 &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">00&lt;/span> &lt;span class="m">01&lt;/span> ..........
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rel 29+8 &lt;span class="nv">t&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>.Id+0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rel 37+4 &lt;span class="nv">t&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">31&lt;/span> go.info.int+0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>PS: amd64汇编要简单很多：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"># command-line-arguments
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok size=0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 70 6b 67 pkg
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;#34;&amp;#34;.Id SNOPTRDATA size=8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 37 25 00 00 00 00 00 00 7%......
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>逐段分析汇编：
+1.&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">go.cuinfo.producer.command-line-arguments SDWARFCUINFO dupok size=0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 2d 73 68 61 72 65 64 -shared
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>go.cuinfo.&lt;/code>来自(dwarf.go)[https://github.com/golang/go/blob/master/src/cmd/internal/dwarf/dwarf.go]代码中的定义：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// CUInfoPrefix is the prefix for symbols containing information to
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// populate the DWARF compilation unit info entries.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">const&lt;/span> &lt;span class="nx">CUInfoPrefix&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s">&amp;#34;go.cuinfo.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>dwraf全称debugging with attributed record formats。&lt;/p>
+&lt;ul>
+&lt;li>dwarf包的说明:&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>Package dwarf provides access to DWARF debugging information loaded from executable files, as defined in the DWARF 2.0 Standard at &lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
+>http://dwarfstd.org/doc/dwarf-2.0.0.pdf&lt;/a>&lt;/p>
+&lt;/blockquote>
+&lt;ul>
+&lt;li>(dwarf wiki)[https://en.wikipedia.org/wiki/DWARF]&lt;/li>
+&lt;li>dwarf 相关资料(ibm)[https://developer.ibm.com/articles/au-dwarf-debug-format/]&lt;/li>
+&lt;li>(Parsing Go Binary DWARF Info)[https://www.grant.pizza/blog/dwarf/]
+关于dwraf的说明我们以后可以单独写一篇文章,这里大致了解其为一种广泛使用的标准化调试数据格式。
+SDWARFCUINFO即为 section dwarf cuinfo,dupok定义在(textflag.h)[https://github.com/golang/go/blob/master/src/runtime/textflag.h]中,该文件定义了附加到各种函数和数据对象的标志。编译器、汇编器和链接器都必须就这些值达成一致。(待进一步说明)
+&lt;code>0x0000 2d 73 68 61 72 65 64&lt;/code>为&amp;quot;-shared&amp;quot;的16进制ascii码,下&lt;code>pkg&lt;/code>同。同样的&amp;quot;7%&amp;hellip;&amp;hellip;&amp;ldquo;为&amp;quot;0x0000 37 25 00 00 00 00 00 00&amp;quot;的表示。&lt;/li>
+&lt;/ul></description></item></channel></rss>

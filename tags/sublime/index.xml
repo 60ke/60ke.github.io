@@ -1,1 +1,97 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>sublime on LookForAdmin的博客</title><link>https://60ke.github.io/tags/sublime/</link><description>Recent content in sublime on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 29 Nov 2017 03:17:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sublime/index.xml" rel="self" type="application/rss+xml"/><item><title>sublime sftp 插件安装及破解</title><link>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</link><pubDate>Wed, 29 Nov 2017 03:17:00 +0000</pubDate><guid>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</guid><description>每次装完系统都需要重新安装配置sublime+python的环境,这次写个文章记一下。 1.python配置 在![](http://ww1.sinaimg.cn/large/6cf740f6ly1flyr6qgoj1j211y0lcjv9.jpg这里可以创建新的环境配置 linux(</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>sublime on LookForAdmin</title><link>https://60ke.github.io/tags/sublime/</link><description>Recent content in sublime on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 29 Nov 2017 03:17:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sublime/index.xml" rel="self" type="application/rss+xml"/><item><title>sublime sftp 插件安装及破解</title><link>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</link><pubDate>Wed, 29 Nov 2017 03:17:00 +0000</pubDate><guid>https://60ke.github.io/drafts/sublime-sftp-%E6%8F%92%E4%BB%B6%E5%AE%89%E8%A3%85%E5%8F%8A%E7%A0%B4%E8%A7%A3/</guid><description>&lt;p>每次装完系统都需要重新安装配置sublime+python的环境,这次写个文章记一下。&lt;/p>
+&lt;h2 id="1python配置">1.python配置&lt;/h2>
+&lt;p>在![](&lt;a class="link" href="http://ww1.sinaimg.cn/large/6cf740f6ly1flyr6qgoj1j211y0lcjv9.jpg" target="_blank" rel="noopener"
+>http://ww1.sinaimg.cn/large/6cf740f6ly1flyr6qgoj1j211y0lcjv9.jpg&lt;/a>这里可以创建新的环境配置&lt;/p>
+&lt;ul>
+&lt;li>linux(ubuntu)：&lt;/li>
+&lt;/ul>
+&lt;p>python3.sublime-build配置：&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;cmd&amp;quot;: [&amp;quot;/usr/bin/python3&amp;quot;, &amp;quot;-u&amp;quot;, &amp;quot;$file&amp;quot;],
+&amp;quot;file_regex&amp;quot;: &amp;quot;^[ ]*File \&amp;quot;(...*?)\&amp;quot;, line ([0-9]*)&amp;quot;,
+&amp;quot;selector&amp;quot;: &amp;quot;source.python&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>windows：&lt;/li>
+&lt;/ul>
+&lt;p>保存的目录在&lt;code>C:\Users\i5051\AppData\Roaming\Sublime Text 3\Packages\User&lt;/code>里面
+python3.sublime-build配置：&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;cmd&amp;quot;: [&amp;quot;XXXXXXXXXX&amp;quot;,&amp;quot;-u&amp;quot;,&amp;quot;$file&amp;quot;],
+&amp;quot;file_regex&amp;quot;: &amp;quot;^[ ]*File \&amp;quot;(...*?)\&amp;quot;, line ([0-9]*)&amp;quot;,
+&amp;quot;selector&amp;quot;: &amp;quot;source.python&amp;quot;,
+}
+&lt;/code>&lt;/pre>
+&lt;p>&amp;quot;&amp;quot;&amp;quot;
+&amp;ldquo;XXXXXXXXXX&amp;quot;用python.exe的全路径代替
+&amp;quot;&amp;rdquo;&amp;quot;&lt;/p>
+&lt;ul>
+&lt;li>mac：&lt;/li>
+&lt;/ul>
+&lt;p>路径：&lt;code>/Users/ke/Library/Application Support/Sublime Text 3/Packages&lt;/code>
+python3.sublime-build配置：&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;cmd&amp;quot;: [&amp;quot;/usr/local/bin/python3&amp;quot;, &amp;quot;-u&amp;quot;, &amp;quot;$file&amp;quot;],
+&amp;quot;file_regex&amp;quot;: &amp;quot;^[ ]*File \&amp;quot;(...*?)\&amp;quot;, line ([0-9]*)&amp;quot;,
+&amp;quot;selector&amp;quot;: &amp;quot;source.python&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="2必备插件">2.必备插件&lt;/h2>
+&lt;ul>
+&lt;li>SublimeTmpl：可以自定义新建文件模板&lt;/li>
+&lt;/ul>
+&lt;p>python模板配置,在setting-user中设置：&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;attr&amp;quot;: {
+&amp;quot;author&amp;quot;: &amp;quot;60ke&amp;quot;,
+&amp;quot;email&amp;quot;: &amp;quot;worileqing@163.com&amp;quot;,
+&amp;quot;link&amp;quot;: &amp;quot;http://www.worileqing.top&amp;quot;,
+&amp;quot;version&amp;quot;: &amp;quot;python3&amp;quot;
+},
+&amp;quot;date_format&amp;quot;: &amp;quot;%Y-%m-%d %H:%M:%S&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;p>快捷键设置,在key—bingding中设置：&lt;/p>
+&lt;pre>&lt;code>[
+{
+&amp;quot;caption&amp;quot;: &amp;quot;Tmpl: Create python&amp;quot;, &amp;quot;command&amp;quot;: &amp;quot;sublime_tmpl&amp;quot;,
+&amp;quot;keys&amp;quot;: [&amp;quot;ctrl+alt+p&amp;quot;], &amp;quot;args&amp;quot;: {&amp;quot;type&amp;quot;: &amp;quot;python&amp;quot;}
+},
+]
+&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>Sftp：ssh编辑远程文件必备&lt;/li>
+&lt;/ul>
+&lt;p>部分配置：
+用sublime打开文件夹,右键文件夹,在sftp的editing remote mapping中编辑设置：&lt;/p>
+&lt;pre>&lt;code>&amp;quot;type&amp;quot;: &amp;quot;sftp&amp;quot;,
+&amp;quot;save_before_upload&amp;quot;: true,
+&amp;quot;upload_on_save&amp;quot;: true,
+&amp;quot;sync_down_on_open&amp;quot;: false,
+&amp;quot;sync_skip_deletes&amp;quot;: false,
+&amp;quot;sync_same_age&amp;quot;: true,
+&amp;quot;confirm_downloads&amp;quot;: false,
+&amp;quot;confirm_sync&amp;quot;: true,
+&amp;quot;confirm_overwrite_newer&amp;quot;: false,
+&amp;quot;host&amp;quot;: &amp;quot;10.0.2.30&amp;quot;,
+&amp;quot;user&amp;quot;: &amp;quot;root&amp;quot;,
+&amp;quot;password&amp;quot;: &amp;quot;111111&amp;quot;,
+&amp;quot;port&amp;quot;: &amp;quot;22&amp;quot;,
+&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>PrettyJson:格式化Json的插件&lt;/li>
+&lt;/ul>
+&lt;h2 id="3sublime的sftp的插件破解">3.sublime的sftp的插件破解&lt;/h2>
+&lt;p>必备插件sftp：
+1,Package Control可以用来install其他package
+2,sftp远程编辑文件：安装：install-&amp;gt;sftp具体配置&lt;/p>
+&lt;p>sftp工具破解
+1,下载python字节码反编译工具uncompyle2 (pyc 2 py) &lt;a class="link" href="https://github.com/wibiti/uncompyle2" target="_blank" rel="noopener"
+>https://github.com/wibiti/uncompyle2&lt;/a>
+2,安装uncompyle2
+3,工具安装后的位置 E:\Python27\Scripts\uncompyle2
+4,反编译文件commands.pyc
+python uncompyle2 -o commands.py commands.pyc
+5,注释掉函数即可 sublime.set_timeout(reg, 1)&lt;/p>
+&lt;p>PS:sublime的go环境开发可以使用gosublime的插件&lt;/p></description></item></channel></rss>

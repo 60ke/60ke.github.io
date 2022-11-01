@@ -1,1 +1,203 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>others on LookForAdmin的博客</title><link>https://60ke.github.io/categories/others/</link><description>Recent content in others on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 03 Mar 2021 16:31:24 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/others/index.xml" rel="self" type="application/rss+xml"/><item><title>杂谈</title><link>https://60ke.github.io/drafts/%E6%9D%82%E8%B0%88/</link><pubDate>Wed, 03 Mar 2021 16:31:24 +0000</pubDate><guid>https://60ke.github.io/drafts/%E6%9D%82%E8%B0%88/</guid><description>数据结构与算法 1.数据抽象的能力,把现实中的问题抽象出来 2.算法本质上就是通过数据结构解决问题的方法,就像学习一样,先学习了数字加减乘除,方程,微积分等等,才具备解决更加复杂的问题的能力.好的数据结构+好的算法=高效的问题解决</description></item><item><title>mac彻底删除launchpad中的图标</title><link>https://60ke.github.io/drafts/mac%E5%BD%BB%E5%BA%95%E5%88%A0%E9%99%A4launchpad%E4%B8%AD%E7%9A%84%E5%9B%BE%E6%A0%87/</link><pubDate>Fri, 14 Sep 2018 08:52:00 +0000</pubDate><guid>https://60ke.github.io/drafts/mac%E5%BD%BB%E5%BA%95%E5%88%A0%E9%99%A4launchpad%E4%B8%AD%E7%9A%84%E5%9B%BE%E6%A0%87/</guid><description>之前因为wifi的问题装了许多从网络上面下载的dmg软件,之后发现有些软件在卸载之后图标依然存在于启动台,下面是解决办法。 第一步：找到com.apple.dock.launchpad文件夹： 打开一个folder,按command+shift+G,在前往当中输入地址/private</description></item><item><title>解决lnmp上的typecho的404</title><link>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3lnmp%E4%B8%8A%E7%9A%84typecho%E7%9A%84404/</link><pubDate>Wed, 04 Jul 2018 16:27:49 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3lnmp%E4%B8%8A%E7%9A%84typecho%E7%9A%84404/</guid><description>进入nginx配置/usr/local/nginx/conf/vhost 将include enable-php.conf替换为include enable-php-pathinfo.conf</description></item><item><title>bash问题解决</title><link>https://60ke.github.io/drafts/bash%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</link><pubDate>Sun, 26 Nov 2017 12:48:32 +0000</pubDate><guid>https://60ke.github.io/drafts/bash%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</guid><description>解决 [执行中]http: ../sysdeps/posix/getaddrinfo.c:2603：getaddrinfo: 假设 ‘IN6_IS_ADDR_V4MAPPED (sin6-&amp;gt;sin6_addr.s6_addr32)’ 失败的问题 Important Note: Existing Ubuntu 14.04 instances are NOT automatically upgraded to 16.04: You must manually upgrade your instance to Ubuntu 16.04</description></item><item><title>python遇到的问题</title><link>https://60ke.github.io/drafts/python%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 13 Sep 2017 07:51:51 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid><description>此文章用来记录python使用过程中遇到的问题,文章长期更新,作用相当于印象笔记 1.sys.argv 运行py文件是传入的参数 example： python 1.py aa 则sys.argv[0]与sys.argv[1]分别表示 1.py aa</description></item><item><title>通过ssh实现mac远程桌面</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</link><pubDate>Wed, 06 Sep 2017 08:49:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</guid><description>teamviewer因为电脑重启的原因,更改了远程登录的密码,但是我没有保存 所以连接不上了。。。 下面是解决办法： 必要条件：可以通过ssh连接！ 首先通过ssh登录mac 通过下面的命令安装teamviewer brew cask install teamviewer 启动teamviewer open /Applications/TeamViewer.app 截图 screencapture /Users/iMac/Desktop/1.png 查看图片获取密码登录即可 team</description></item><item><title>pycharm安装及主题更换</title><link>https://60ke.github.io/drafts/pycharm%E5%AE%89%E8%A3%85%E5%8F%8A%E4%B8%BB%E9%A2%98%E6%9B%B4%E6%8D%A2/</link><pubDate>Tue, 22 Aug 2017 06:07:23 +0000</pubDate><guid>https://60ke.github.io/drafts/pycharm%E5%AE%89%E8%A3%85%E5%8F%8A%E4%B8%BB%E9%A2%98%E6%9B%B4%E6%8D%A2/</guid><description>进入官网下载pycharm专业版： https://download.jetbrains.8686c.com/python/pycharm-community-2017.2.1.exe 到一下网站获取注册码： http://idea.lanyus.com/ 主题： https://github.com/d1ffuz0r/pycharm-themes windows下的主题安装： 将下载的icls文件拷贝到C:\Users***.PyCharm30\config\colors 在pycharm的file-&amp;gt;Setting-&amp;gt;Editor-&amp;gt;Col</description></item><item><title>ubuntu中安装R和Rstudio</title><link>https://60ke.github.io/drafts/ubuntu%E4%B8%AD%E5%AE%89%E8%A3%85R%E5%92%8CRstudio/</link><pubDate>Mon, 12 Jun 2017 14:24:45 +0000</pubDate><guid>https://60ke.github.io/drafts/ubuntu%E4%B8%AD%E5%AE%89%E8%A3%85R%E5%92%8CRstudio/</guid><description>转载自 作者：会心一击 出处：http://www.cnblogs.com/lijingchn/ 安装R 1.1 首先添加镜像源 sudo gedit /etc/apt/sources.list 加入新镜像源： deb http://cran.rstudio.com/bin/linux/ubuntu trusty/ 1.2 运行命令下载公钥 sudo apt-key adv &amp;ndash;keyserver keyserver.ubuntu.com &amp;ndash;recv-keys 51716619E084DAB9 然后更新一下 sudo apt-get update 1.3 安装R sudo apt-get install r-base 然后验证是否安装成功：在终端输入R,出现R的信息则安装成功。 安装Rstud</description></item><item><title>解决Ubuntu下Sublime Text 2无法输入中文</title><link>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3Ubuntu%E4%B8%8BSublime-Text-2%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87/</link><pubDate>Sun, 11 Jun 2017 04:57:48 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3Ubuntu%E4%B8%8BSublime-Text-2%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87/</guid><description>&lt;p>ubuntu16.04下sublime text 2无法输入中文的问题&lt;/p></description></item><item><title>win10开启UbuntuBash并实现xshell登录</title><link>https://60ke.github.io/drafts/win10%E5%BC%80%E5%90%AFUbuntuBash%E5%B9%B6%E5%AE%9E%E7%8E%B0xshell%E7%99%BB%E5%BD%95/</link><pubDate>Wed, 26 Apr 2017 09:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/win10%E5%BC%80%E5%90%AFUbuntuBash%E5%B9%B6%E5%AE%9E%E7%8E%B0xshell%E7%99%BB%E5%BD%95/</guid><description>&lt;p>看到win10内置ubuntubash没忍住,又把系统换成了win10&lt;/p></description></item><item><title>美股。。。</title><link>https://60ke.github.io/drafts/%E7%BE%8E%E8%82%A1/</link><pubDate>Fri, 21 Apr 2017 14:15:13 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BE%8E%E8%82%A1/</guid><description>炒股几个月了,当时开始入手美股是看好京东,那时京东股票的价格在25-27之间吧,今天已经涨到34了,我入股的501美元外加送的100RMB和推荐老黄的200RMB本金大概在542$,然而现在看了本金在518,困于AMD,当时放了京东是觉得短期更挣钱,但是现在看来不如预想。 两次亏损</description></item><item><title>煎蛋爬虫分析比较总结</title><link>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</link><pubDate>Fri, 21 Apr 2017 13:32:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</guid><description>小甲鱼的爬虫 直接提取出用户正常访问页面的page 模块化结构代码易读性更高 模块化的代码利用率更高,可重复利用 目标：在精通Python之前每天坚持至少写一个爬虫,难度要越来越高</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>others on LookForAdmin</title><link>https://60ke.github.io/categories/others/</link><description>Recent content in others on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 03 Mar 2021 16:31:24 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/others/index.xml" rel="self" type="application/rss+xml"/><item><title>杂谈</title><link>https://60ke.github.io/drafts/%E6%9D%82%E8%B0%88/</link><pubDate>Wed, 03 Mar 2021 16:31:24 +0000</pubDate><guid>https://60ke.github.io/drafts/%E6%9D%82%E8%B0%88/</guid><description>&lt;h2 id="数据结构与算法">数据结构与算法&lt;/h2>
+&lt;p>1.数据抽象的能力,把现实中的问题抽象出来
+2.算法本质上就是通过数据结构解决问题的方法,就像学习一样,先学习了数字加减乘除,方程,微积分等等,才具备解决更加复杂的问题的能力.好的数据结构+好的算法=高效的问题解决&lt;/p></description></item><item><title>mac彻底删除launchpad中的图标</title><link>https://60ke.github.io/drafts/mac%E5%BD%BB%E5%BA%95%E5%88%A0%E9%99%A4launchpad%E4%B8%AD%E7%9A%84%E5%9B%BE%E6%A0%87/</link><pubDate>Fri, 14 Sep 2018 08:52:00 +0000</pubDate><guid>https://60ke.github.io/drafts/mac%E5%BD%BB%E5%BA%95%E5%88%A0%E9%99%A4launchpad%E4%B8%AD%E7%9A%84%E5%9B%BE%E6%A0%87/</guid><description>&lt;p>之前因为wifi的问题装了许多从网络上面下载的dmg软件,之后发现有些软件在卸载之后图标依然存在于启动台,下面是解决办法。&lt;/p>
+&lt;h3 id="第一步找到comappledocklaunchpad文件夹">第一步：找到com.apple.dock.launchpad文件夹：&lt;/h3>
+&lt;p>打开一个folder,按&lt;code>command+shift+G&lt;/code>,在前往当中输入地址/private/var/folders,然后在里边自己尝试找到com.apple.dock.launchpad这个文件夹,我的路径是,省略号处应该大家都不一样,所以慢慢找,总之最后找到名为com.apple.dock.launchpad的文件夹。&lt;/p>
+&lt;h3 id="第二步找到数据库获取其路径">第二步：找到数据库,获取其路径：&lt;/h3>
+&lt;p>打开com.apple.dock.launchpad 文件夹&lt;/p>
+&lt;p>之后有一个db文件夹,再点进去有一个文件叫db,它就是我们要找的数据库。&lt;/p>
+&lt;h3 id="第三步开始对数据库进行操作">第三步：开始对数据库进行操作&lt;/h3>
+&lt;p>打开终端：cd到刚才拷贝的路径
+然后输入：
+&lt;code>sqlite3 db &amp;quot;delete from apps where title='应用名称';&amp;quot;&amp;amp;&amp;amp;killall Dock&lt;/code>&lt;/p>
+&lt;p>注意要将应用名称处替换成你要删除的图标的名称,然后回车即可&lt;/p></description></item><item><title>解决lnmp上的typecho的404</title><link>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3lnmp%E4%B8%8A%E7%9A%84typecho%E7%9A%84404/</link><pubDate>Wed, 04 Jul 2018 16:27:49 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3lnmp%E4%B8%8A%E7%9A%84typecho%E7%9A%84404/</guid><description>&lt;p>进入nginx配置&lt;code>/usr/local/nginx/conf/vhost&lt;/code>
+将&lt;code>include enable-php.conf&lt;/code>替换为&lt;code>include enable-php-pathinfo.conf&lt;/code>&lt;/p></description></item><item><title>bash问题解决</title><link>https://60ke.github.io/drafts/bash%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</link><pubDate>Sun, 26 Nov 2017 12:48:32 +0000</pubDate><guid>https://60ke.github.io/drafts/bash%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/</guid><description>&lt;h2 id="解决-执行中http-sysdepsposixgetaddrinfoc2603getaddrinfo-假设-in6_is_addr_v4mapped-sin6-sin6_addrs6_addr32-失败的问题">解决 [执行中]http: ../sysdeps/posix/getaddrinfo.c:2603：getaddrinfo: 假设 ‘IN6_IS_ADDR_V4MAPPED (sin6-&amp;gt;sin6_addr.s6_addr32)’ 失败的问题&lt;/h2>
+&lt;p>Important Note: Existing Ubuntu 14.04 instances are NOT automatically upgraded to 16.04: You must manually upgrade your instance to Ubuntu 16.04 in one of two ways:&lt;/p>
+&lt;p>Remove &amp;amp; Replace (recommended)
+Upgrade In-Place
+Remove &amp;amp; replace
+If you&amp;rsquo;re currently running an Ubuntu 14.04 instance, we recommend removing and replacing your existing instance with a fresh new Ubuntu 16.04 instance.&lt;/p>
+&lt;p>WARNING: The instructions below will delete your existing distro and any of the files you&amp;rsquo;ve stored in the Linux filesystem. Therefore, be sure to copy/move any Linux files you want to keep, for example, to a Windows folder (e.g. /mnt/c/temp/wslbackup/&amp;hellip;) BEFORE removing and replacing your instance!&lt;/p>
+&lt;p>To remove and re-install your Ubuntu instance, run the following commands from a Cmd/PowerShell Console.&lt;/p>
+&lt;p>C:&amp;gt; lxrun /uninstall /full /y
+&amp;hellip;
+C:&amp;gt; lxrun /install
+The lxrun /install command above will then download and install a fresh new copy of Ubuntu 16.04 onto your machine.&lt;/p>
+&lt;p>Upgrade In-Place
+If your Ubuntu instance is particularly complex to configure, you can opt to upgrade it in-place, though this may not result in an optimal instance.&lt;/p>
+&lt;p>If you opt to upgrade your instance in-place, use Ubuntu&amp;rsquo;s instructions for upgrading an existing instance:&lt;/p>
+&lt;p>$ sudo do-release-upgrade&lt;/p>
+&lt;p>具体可参考：https://blogs.msdn.microsoft.com/commandline/2017/04/11/windows-10-creators-update-whats-new-in-bashwsl-windows-console/&lt;/p></description></item><item><title>python遇到的问题</title><link>https://60ke.github.io/drafts/python%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</link><pubDate>Wed, 13 Sep 2017 07:51:51 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98/</guid><description>&lt;h2 id="此文章用来记录python使用过程中遇到的问题文章长期更新作用相当于印象笔记">此文章用来记录python使用过程中遇到的问题,文章长期更新,作用相当于印象笔记&lt;/h2>
+&lt;p>1.&lt;code>sys.argv&lt;/code>
+运行py文件是传入的参数
+example：&lt;/p>
+&lt;pre>&lt;code>python 1.py aa
+&lt;/code>&lt;/pre>
+&lt;p>则sys.argv[0]与sys.argv[1]分别表示 1.py aa&lt;/p></description></item><item><title>通过ssh实现mac远程桌面</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</link><pubDate>Wed, 06 Sep 2017 08:49:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</guid><description>&lt;p>teamviewer因为电脑重启的原因,更改了远程登录的密码,但是我没有保存 所以连接不上了。。。&lt;/p>
+&lt;h1 id="下面是解决办法">下面是解决办法：&lt;/h1>
+&lt;hr>
+&lt;h3 id="必要条件可以通过ssh连接">&lt;strong>必要条件：可以通过ssh连接！&lt;/strong>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>首先通过ssh登录mac&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>通过下面的命令安装teamviewer&lt;/p>
+&lt;p>&lt;code>brew cask install teamviewer&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>启动teamviewer&lt;/p>
+&lt;p>&lt;code>open /Applications/TeamViewer.app&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>截图&lt;/p>
+&lt;p>&lt;code>screencapture /Users/iMac/Desktop/1.png&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>查看图片获取密码登录即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="teamviewer已经登录被其它窗口挡到怎么办">&lt;strong>teamviewer已经登录被其它窗口挡到怎么办？&lt;/strong>&lt;/h3>
+&lt;p>关闭再重新打开即可！&lt;/p>
+&lt;pre>&lt;code>killall TeamViewer
+open /Applications/TeamViewer.app&lt;/code>&lt;/pre></description></item><item><title>pycharm安装及主题更换</title><link>https://60ke.github.io/drafts/pycharm%E5%AE%89%E8%A3%85%E5%8F%8A%E4%B8%BB%E9%A2%98%E6%9B%B4%E6%8D%A2/</link><pubDate>Tue, 22 Aug 2017 06:07:23 +0000</pubDate><guid>https://60ke.github.io/drafts/pycharm%E5%AE%89%E8%A3%85%E5%8F%8A%E4%B8%BB%E9%A2%98%E6%9B%B4%E6%8D%A2/</guid><description>&lt;p>进入官网下载pycharm专业版：
+&lt;a class="link" href="https://download.jetbrains.8686c.com/python/pycharm-community-2017.2.1.exe" target="_blank" rel="noopener"
+>https://download.jetbrains.8686c.com/python/pycharm-community-2017.2.1.exe&lt;/a>&lt;/p>
+&lt;p>到一下网站获取注册码：
+&lt;a class="link" href="http://idea.lanyus.com/" target="_blank" rel="noopener"
+>http://idea.lanyus.com/&lt;/a>&lt;/p>
+&lt;p>主题：
+&lt;a class="link" href="https://github.com/d1ffuz0r/pycharm-themes" target="_blank" rel="noopener"
+>https://github.com/d1ffuz0r/pycharm-themes&lt;/a>&lt;/p>
+&lt;p>windows下的主题安装：
+将下载的icls文件拷贝到C:\Users***.PyCharm30\config\colors
+在pycharm的file-&amp;gt;Setting-&amp;gt;Editor-&amp;gt;Colors &amp;amp; Fonts里就可以看到刚刚下载的颜色字体主题包&lt;/p></description></item><item><title>ubuntu中安装R和Rstudio</title><link>https://60ke.github.io/drafts/ubuntu%E4%B8%AD%E5%AE%89%E8%A3%85r%E5%92%8Crstudio/</link><pubDate>Mon, 12 Jun 2017 14:24:45 +0000</pubDate><guid>https://60ke.github.io/drafts/ubuntu%E4%B8%AD%E5%AE%89%E8%A3%85r%E5%92%8Crstudio/</guid><description>&lt;p>转载自 作者：会心一击
+出处：http://www.cnblogs.com/lijingchn/&lt;/p>
+&lt;ol>
+&lt;li>安装R&lt;/li>
+&lt;/ol>
+&lt;p>1.1 首先添加镜像源&lt;/p>
+&lt;p>sudo gedit /etc/apt/sources.list
+加入新镜像源：
+deb &lt;a class="link" href="http://cran.rstudio.com/bin/linux/ubuntu" target="_blank" rel="noopener"
+>http://cran.rstudio.com/bin/linux/ubuntu&lt;/a> trusty/
+1.2 运行命令下载公钥&lt;/p>
+&lt;p>sudo apt-key adv &amp;ndash;keyserver keyserver.ubuntu.com &amp;ndash;recv-keys 51716619E084DAB9
+然后更新一下
+sudo apt-get update
+1.3 安装R&lt;/p>
+&lt;p>sudo apt-get install r-base
+然后验证是否安装成功：在终端输入R,出现R的信息则安装成功。&lt;/p>
+&lt;ol start="2">
+&lt;li>安装Rstudio&lt;/li>
+&lt;/ol>
+&lt;p>2.1 安装&lt;/p>
+&lt;p>首先,去下载对应自己系统的安装文件: &lt;a class="link" href="http://www.rstudio.com/products/rstudio/download/" target="_blank" rel="noopener"
+>http://www.rstudio.com/products/rstudio/download/&lt;/a>,然后执行一下步骤。&lt;/p>
+&lt;p>　　&lt;/p>
+&lt;p>sudo apt-get install gdebi-core
+sudo apt-get install libapparmor1 # Required only for Ubuntu, not Debian&lt;/p>
+&lt;p>sudo gdebi 下载的Rstudio的deb安装包
+2.2 在Rstudio里安装ggplot2&lt;/p>
+&lt;p>安装ggplot2包之前需要先安装其它的依赖包：&amp;rsquo; plyr &amp;rsquo; , &amp;rsquo; digest &amp;rsquo; , &amp;rsquo; gtable &amp;rsquo; , &amp;rsquo; reshape2 &amp;rsquo; , &amp;rsquo; scales &amp;rsquo; , &amp;rsquo; proto &amp;rsquo; , 在Rstudio的命令窗口分别执行以下命令。&lt;/p>
+&lt;p>　　&lt;/p>
+&lt;p>复制代码
+install.packages(&amp;lsquo;plyr&amp;rsquo;)
+install.packages(&amp;lsquo;digest&amp;rsquo;)
+install.packages(&amp;lsquo;gtable&amp;rsquo;)
+install.packages(&amp;lsquo;reshape2&amp;rsquo;)
+install.packages(&amp;lsquo;scales&amp;rsquo;)
+install.packages(&amp;lsquo;proto&amp;rsquo;)
+复制代码
+然后,安装 ‘ ggplot2 &amp;rsquo; 包 , 安装成功后就可以使用了。&lt;/p>
+&lt;p>install.packages(&amp;lsquo;ggplot2&amp;rsquo;)&lt;/p></description></item><item><title>解决Ubuntu下Sublime Text 2无法输入中文</title><link>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3ubuntu%E4%B8%8Bsublime-text-2%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87/</link><pubDate>Sun, 11 Jun 2017 04:57:48 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%A7%A3%E5%86%B3ubuntu%E4%B8%8Bsublime-text-2%E6%97%A0%E6%B3%95%E8%BE%93%E5%85%A5%E4%B8%AD%E6%96%87/</guid><description>&lt;p>ubuntu16.04下sublime text 2无法输入中文的问题&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>保存下面的代码到文件sublime_imfix.c(位于~目录,即主文件夹目录)&lt;/p>
+&lt;p>#include &amp;lt;gtk/gtkimcontext.h&amp;gt;
+void gtk_im_context_set_client_window (GtkIMContext *context,
+GdkWindow *window)
+{
+GtkIMContextClass *klass;
+g_return_if_fail (GTK_IS_IM_CONTEXT (context));
+klass = GTK_IM_CONTEXT_GET_CLASS (context);
+if (klass-&amp;gt;set_client_window)
+klass-&amp;gt;set_client_window (context, window);
+g_object_set_data(G_OBJECT(context),&amp;ldquo;window&amp;rdquo;,window);
+if(!GDK_IS_WINDOW (window))
+return;
+int width = gdk_window_get_width(window);
+int height = gdk_window_get_height(window);
+if(width != 0 &amp;amp;&amp;amp; height !=0)
+gtk_im_context_focus_in(context);
+}&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>将上一步的代码编译成共享库libsublime-imfix.so
+然后将libsublime-imfix.so拷贝到sublime_text所在文件夹,修改文件/usr/bin/subl的内容&lt;/p>
+&lt;p>cd ~
+gcc -shared -o libsublime-imfix.so sublime_imfix.c &lt;code>pkg-config --libs --cflags gtk+-2.0&lt;/code> -fPIC
+sudo mv libsublime-imfix.so /opt/sublime_text_2/
+将&lt;/p>
+&lt;p>#!/bin/sh
+/opt/sublime_text_2/sublime_text &amp;ldquo;$@&amp;rdquo;&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>修改为&lt;/p>
+&lt;pre>&lt;code>#!/bin/sh
+LD_PRELOAD=/opt/sublime_text_2/libsublime-imfix.so exec /opt/sublime_text_2/sublime_text &amp;quot;$@&amp;quot;
+&lt;/code>&lt;/pre></description></item><item><title>win10开启UbuntuBash并实现xshell登录</title><link>https://60ke.github.io/drafts/win10%E5%BC%80%E5%90%AFubuntubash%E5%B9%B6%E5%AE%9E%E7%8E%B0xshell%E7%99%BB%E5%BD%95/</link><pubDate>Wed, 26 Apr 2017 09:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/win10%E5%BC%80%E5%90%AFubuntubash%E5%B9%B6%E5%AE%9E%E7%8E%B0xshell%E7%99%BB%E5%BD%95/</guid><description>&lt;p>看到win10内置ubuntubash没忍住,又把系统换成了win10&lt;/p>
+&lt;h2 id="一开启bash">一,开启Bash&lt;/h2>
+&lt;ol>
+&lt;li>把系统设置改为开发人员模式
+&lt;img src="http://ww1.sinaimg.cn/large/6cf740f6gy1ff06qeqmyqj20m10hijry.jpg"
+loading="lazy"
+>&lt;/li>
+&lt;li>经控制面板进入程序开启Ubuntu子系统
+&lt;img src="http://ww1.sinaimg.cn/large/6cf740f6gy1ff06tnov4wj20md0fpq3y.jpg"
+loading="lazy"
+>&lt;/li>
+&lt;li>打开cmd输入bash开始下载Ps:不翻墙,正常情况下是无法下载的下面是解决下载的办法
+1.更改系统设置的区域为香港特别行政区
+2.更改本地dns为微软的dns：4.2.2.1; 4.2.2.2
+等待下载完成就好：
+&lt;img src="http://ww1.sinaimg.cn/large/6cf740f6gy1ff070e3hgxj20k50e1whq.jpg"
+loading="lazy"
+>&lt;/li>
+&lt;/ol>
+&lt;h2 id="二开启ssh">二,开启ssh&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>设置root密码：
+打开bash默认root登陆,用一下命令设置root密码：&lt;/p>
+&lt;p>passwd root&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>开启ssh&lt;/p>
+&lt;p>service ssh start&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>设置sshd&lt;/p>
+&lt;p>vi etc/ssh/sshd_config&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>将PasswordAuthentication改为yes,PermitRootLogin改为yes
+PS：如果（密匙登陆的情况）出现could not load host key的错误可以用dpkg-reconfigure openssh-server 生成&lt;/p></description></item><item><title>美股。。。</title><link>https://60ke.github.io/drafts/%E7%BE%8E%E8%82%A1/</link><pubDate>Fri, 21 Apr 2017 14:15:13 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%BE%8E%E8%82%A1/</guid><description>&lt;pre>&lt;code>炒股几个月了,当时开始入手美股是看好京东,那时京东股票的价格在25-27之间吧,今天已经涨到34了,我入股的501美元外加送的100RMB和推荐老黄的200RMB本金大概在542$,然而现在看了本金在518,困于AMD,当时放了京东是觉得短期更挣钱,但是现在看来不如预想。
+&lt;/code>&lt;/pre>
+&lt;h2 id="两次亏损">两次亏损&lt;/h2>
+&lt;pre>&lt;code>一次是微博当时夜间看着微博疯长,因为看好微博的地位垄断,以及马上就要出财报,感觉会超出预期,所以以59$的价格买入,然而财报虽然超出华尔街预期,但是在财报出来的半月股价已经被炒到58多,利好已经被炒空,财报虽然超出华尔街预期,但是其实低于近半月股价期望,所以股价不升反降,而我以59的价格买入超出历史最高价格,上头的成分很大,因为本来看好,实时关注的时候看着股价疯长怕越来越高,没忍住冲动。。。后来想想很是后悔和不该,刚入股票一再告诫自己买涨不买跌,微博最近狂涨,再买风险较大,当然最主要的教训还是## 超出华尔街预期的财报未必会涨！！！ ##
+第二次亏损,也就是现在这次AMD的,amd也是近一年狂涨的股价,但是因为最近产品（处理器）比较给力,外加相对于它的竞争对手Intel,NVIDIA来说它的价格过于便宜（性价比太高）,当然更是因为我亲眼见过,当天AMD开盘降了10%之后一天之内扭跌为涨,让我觉得有部分强力资金在支撑,所以觉得比较稳当,当时时以13.7多买的目标价格15（接近历史最高,因为觉得AMD还是处于增长的,所以超越历史股价不是问题）,之后不到一周的时间赚了20$左右,但是在14.2徘徊了一两天,因为学习原因没过多思考,然而突然遭遇暴跌百分之10左右。原因是分析师下调了AMD的目标股价,这下甩不出来了,过来一星期的今天亏损百分之6,7.觉得这次的教训,主要在于,扯的不够快,14.2其实也可以了,但是觉得放着也没啥问题,结果。。。## 见好就收 ##
+&lt;/code>&lt;/pre>
+&lt;h2 id="两次盈利">两次盈利&lt;/h2>
+&lt;pre>&lt;code>最开始27买了京东,之后京东开始跌到25因为长期看好的缘故,没卖,后来经过了漫长的恢复27又给卖了,算上交易费4$左右略亏了几块人民币（其实这次交易在我现在看来也是没错的当时京东长期徘徊在27左右股价比较稳定一时半会确实转不来钱）,后来看准时机在微博45.5入手,然而在入手之后又跌到了42左右当时坚持没卖,两个月后以49.27的价格出售。虽然赚的不少但是时间太长49的价格虽然不少最高,但是我个人也是满意的。（别老想着抄底,最高卖）不过期间时间过长
+第二次盈利,是在美国苹果状告高通导致高通股价大跌的时候,以52.82买入,目标价格57至少,后来看长期徘徊在56块多,以56.61的价格出售,期间经历20天。这次交易是最为满意的一次。没啥说的。
+当时炒股算了每月增长%7每年就可以达到每年2.25的增长,10年3325的增长,本来以为很容易带到（其实现在也这么觉得）,虽然现在实时并非如此,嗯 怎么说呢加油吧&lt;/code>&lt;/pre></description></item><item><title>煎蛋爬虫分析比较总结</title><link>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</link><pubDate>Fri, 21 Apr 2017 13:32:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E7%85%8E%E8%9B%8B%E7%88%AC%E8%99%AB%E5%88%86%E6%9E%90%E6%AF%94%E8%BE%83%E6%80%BB%E7%BB%93/</guid><description>&lt;p>小甲鱼的爬虫&lt;/p>
+&lt;ol>
+&lt;li>直接提取出用户正常访问页面的page
+&lt;img src="https://ws1.sinaimg.cn/large/6cf740f6ly1feumgqfv6vj20a701qjra.jpg"
+loading="lazy"
+>&lt;/li>
+&lt;li>模块化结构代码易读性更高&lt;/li>
+&lt;li>模块化的代码利用率更高,可重复利用&lt;/li>
+&lt;/ol>
+&lt;p>目标：在精通Python之前每天坚持至少写一个爬虫,难度要越来越高&lt;/p></description></item></channel></rss>

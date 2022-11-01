@@ -1,7 +1,264 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>old on LookForAdmin的博客</title><link>https://60ke.github.io/categories/old/</link><description>Recent content in old on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 05 Apr 2017 15:22:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/old/index.xml" rel="self" type="application/rss+xml"/><item><title>python爬取微博</title><link>https://60ke.github.io/drafts/python%E7%88%AC%E5%8F%96%E5%BE%AE%E5%8D%9A/</link><pubDate>Wed, 05 Apr 2017 15:22:00 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E7%88%AC%E5%8F%96%E5%BE%AE%E5%8D%9A/</guid><description>&lt;p>微博算是用的比较多了,但是一条一条的翻看
-太过于麻烦,无奈爬取之。&lt;/p></description></item><item><title>VMware安装MacOS</title><link>https://60ke.github.io/drafts/VMware%E5%AE%89%E8%A3%85MacOS-/</link><pubDate>Wed, 05 Apr 2017 15:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/VMware%E5%AE%89%E8%A3%85MacOS-/</guid><description>&lt;h2 id="准备工作">准备工作：&lt;/h2>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>old on LookForAdmin</title><link>https://60ke.github.io/categories/old/</link><description>Recent content in old on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 05 Apr 2017 15:22:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/categories/old/index.xml" rel="self" type="application/rss+xml"/><item><title>python爬取微博</title><link>https://60ke.github.io/drafts/python%E7%88%AC%E5%8F%96%E5%BE%AE%E5%8D%9A/</link><pubDate>Wed, 05 Apr 2017 15:22:00 +0000</pubDate><guid>https://60ke.github.io/drafts/python%E7%88%AC%E5%8F%96%E5%BE%AE%E5%8D%9A/</guid><description>&lt;p>微博算是用的比较多了,但是一条一条的翻看
+太过于麻烦,无奈爬取之。&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>环境：win7+python2.7；&lt;/strong>&lt;/li>
+&lt;li>python模块：request；bs4；beautifulsoup4；lxml；&lt;/li>
+&lt;li>&lt;strong>chrome浏览器&lt;/strong>&lt;/li>
+&lt;li>实现过程：&lt;/li>
+&lt;/ul>
+&lt;h2 id="获取cookie">&lt;strong>获取cookie&lt;/strong>：&lt;/h2>
+&lt;p>打开chrome然后Ctrl+Shift+I调出开发者工具,点击tooggle device toolbar(Ctrl+shift+M)然后在Responsive选择合适的设备,&lt;img src="http://i.imgur.com/D0MMgUl.png"
+loading="lazy"
+>我这里选择的是nexus5X,接下来打开weibo.com这时候应该看到的就是手机端网页的微博登录页面。&lt;img src="http://i.imgur.com/xKxzCUN.png"
+loading="lazy"
+>在开发者工具中选中Network&amp;ndash;Preserve log,然后登录微博。在开发者工具中找到有关m.weibo.cn的复制自己的cookie&lt;img src="http://i.imgur.com/EwCHQaS.png"
+loading="lazy"
+>&lt;/p>
+&lt;h2 id="获取你想爬取微博的user_id">&lt;strong>获取你想爬取微博的user_id&lt;/strong>：&lt;/h2>
+&lt;p>就是你要爬取的微博的主页网址中weibo.com/u/后面的数字部分&lt;img src="http://i.imgur.com/0aANYrF.png"
+loading="lazy"
+>&lt;/p>
+&lt;h2 id="开始利用python脚本爬取">开始利用python脚本爬取&lt;/h2>
+&lt;p>这是python程序的源码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;span class="lnt">54
+&lt;/span>&lt;span class="lnt">55
+&lt;/span>&lt;span class="lnt">56
+&lt;/span>&lt;span class="lnt">57
+&lt;/span>&lt;span class="lnt">58
+&lt;/span>&lt;span class="lnt">59
+&lt;/span>&lt;span class="lnt">60
+&lt;/span>&lt;span class="lnt">61
+&lt;/span>&lt;span class="lnt">62
+&lt;/span>&lt;span class="lnt">63
+&lt;/span>&lt;span class="lnt">64
+&lt;/span>&lt;span class="lnt">65
+&lt;/span>&lt;span class="lnt">66
+&lt;/span>&lt;span class="lnt">67
+&lt;/span>&lt;span class="lnt">68
+&lt;/span>&lt;span class="lnt">69
+&lt;/span>&lt;span class="lnt">70
+&lt;/span>&lt;span class="lnt">71
+&lt;/span>&lt;span class="lnt">72
+&lt;/span>&lt;span class="lnt">73
+&lt;/span>&lt;span class="lnt">74
+&lt;/span>&lt;span class="lnt">75
+&lt;/span>&lt;span class="lnt">76
+&lt;/span>&lt;span class="lnt">77
+&lt;/span>&lt;span class="lnt">78
+&lt;/span>&lt;span class="lnt">79
+&lt;/span>&lt;span class="lnt">80
+&lt;/span>&lt;span class="lnt">81
+&lt;/span>&lt;span class="lnt">82
+&lt;/span>&lt;span class="lnt">83
+&lt;/span>&lt;span class="lnt">84
+&lt;/span>&lt;span class="lnt">85
+&lt;/span>&lt;span class="lnt">86
+&lt;/span>&lt;span class="lnt">87
+&lt;/span>&lt;span class="lnt">88
+&lt;/span>&lt;span class="lnt">89
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">#-*-coding:utf8-*-
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import re
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import string
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import sys
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import os
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import urllib
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import urllib2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">from bs4 import BeautifulSoup
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">import requests
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">from lxml import etree
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">reload(sys)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sys.setdefaultencoding(&amp;#39;utf-8&amp;#39;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">if(len(sys.argv)&amp;gt;=2):
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> user_id = (int)(sys.argv[1])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">else:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> user_id = (int)(raw_input(u&amp;#34;请输入user_id: &amp;#34;))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">cookie = {&amp;#34;Cookie&amp;#34;: &amp;#34;#your cookie&amp;#34;}
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">url = &amp;#39;http://weibo.cn/u/%d?filter=1&amp;amp;page=1&amp;#39;%user_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">html = requests.get(url, cookies = cookie).content
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">selector = etree.HTML(html)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">pageNum = (int)(selector.xpath(&amp;#39;//input[@name=&amp;#34;mp&amp;#34;]&amp;#39;)[0].attrib[&amp;#39;value&amp;#39;])
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">result = &amp;#34;&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">urllist_set = set()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">word_count = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">image_count = 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">print u&amp;#39;爬虫准备就绪...&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">for page in range(1,pageNum+1):
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> #获取lxml页面
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> url = &amp;#39;http://weibo.cn/u/%d?filter=1&amp;amp;page=%d&amp;#39;%(user_id,page)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> lxml = requests.get(url, cookies = cookie).content
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> #文字爬取
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> selector = etree.HTML(lxml)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> content = selector.xpath(&amp;#39;//span[@class=&amp;#34;ctt&amp;#34;]&amp;#39;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for each in content:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> text = each.xpath(&amp;#39;string(.)&amp;#39;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if word_count&amp;gt;=4:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> text = &amp;#34;%d :&amp;#34;%(word_count-3) +text+&amp;#34;\n\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> else :
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> text = text+&amp;#34;\n\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> result = result + text
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> word_count += 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> #图片爬取
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> soup = BeautifulSoup(lxml, &amp;#34;lxml&amp;#34;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> urllist = soup.find_all(&amp;#39;a&amp;#39;,href=re.compile(r&amp;#39;^http://weibo.cn/mblog/oripic&amp;#39;,re.I))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> first = 0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for imgurl in urllist:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> urllist_set.add(requests.get(imgurl[&amp;#39;href&amp;#39;], cookies = cookie).url)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> image_count +=1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">fo = open(&amp;#34;/Users/Personals/%s&amp;#34;%user_id, &amp;#34;wb&amp;#34;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">fo.write(result)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">word_path=os.getcwd()+&amp;#39;/%d&amp;#39;%user_id
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">print u&amp;#39;文字微博爬取完毕&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">link = &amp;#34;&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">fo2 = open(&amp;#34;/Users/Personals/%s_imageurls&amp;#34;%user_id, &amp;#34;wb&amp;#34;)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">for eachlink in urllist_set:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> link = link + eachlink +&amp;#34;\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">fo2.write(link)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">print u&amp;#39;图片链接爬取完毕&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">if not urllist_set:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> print u&amp;#39;该页面中不存在图片&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">else:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> #下载图片,保存在当前目录的pythonimg文件夹下
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> image_path=os.getcwd()+&amp;#39;/weibo_image&amp;#39;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if os.path.exists(image_path) is False:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> os.mkdir(image_path)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> x=1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for imgurl in urllist_set:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> temp= image_path + &amp;#39;/%s.jpg&amp;#39; % x
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> print u&amp;#39;正在下载第%s张图片&amp;#39; % x
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> try:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> urllib.urlretrieve(urllib2.urlopen(imgurl).geturl(),temp)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> except:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> print u&amp;#34;该图片下载失败:%s&amp;#34;%imgurl
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> x+=1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">print u&amp;#39;原创微博爬取完毕,共%d条,保存路径%s&amp;#39;%(word_count-4,word_path)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">print u&amp;#39;微博图片爬取完毕,共%d张,保存路径%s&amp;#39;%(image_count-1,image_path)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>可以将上面的代码保存为wb.py然后在cmd里面运行&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">python wb.py
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>大功告成&lt;/p>
+&lt;hr>
+&lt;p>***2016/12/29 星期四 3:16:40 ***&lt;/p>
+&lt;h2 id="补充">&lt;em>补充：&lt;/em>&lt;/h2>
+&lt;p>python模块的安装可以用easy_install的命令安装 例如&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">easy_install lxml
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;hr>
+&lt;hr>
+&lt;p>python模块pip安装：http://jingyan.baidu.com/article/e73e26c0d94e0524adb6a7ff.html
+用Python写一个简单的微博爬虫: &lt;a class="link" href="http://www.jianshu.com/p/7c5a4d7545ca" target="_blank" rel="noopener"
+>http://www.jianshu.com/p/7c5a4d7545ca&lt;/a>
+Microsoft Visual C++ Compiler for Python 2.7:
+&lt;a class="link" href="http://www.microsoft.com/en-us/download/details.aspx?id=44266" target="_blank" rel="noopener"
+>http://www.microsoft.com/en-us/download/details.aspx?id=44266&lt;/a>&lt;/p></description></item><item><title>VMware安装MacOS</title><link>https://60ke.github.io/drafts/vmware%E5%AE%89%E8%A3%85macos-/</link><pubDate>Wed, 05 Apr 2017 15:18:00 +0000</pubDate><guid>https://60ke.github.io/drafts/vmware%E5%AE%89%E8%A3%85macos-/</guid><description>&lt;h2 id="准备工作">准备工作：&lt;/h2>
 &lt;p>VMware12
 OX 10.12 Sierra镜像cdr
 Unlocker208&amp;ndash;VMware上的Mac补丁
 （bios intelVT开启）
-&lt;strong>工具地址&lt;/strong>：链接：&lt;/p></description></item><item><title>通过路由器自定义host与连接设备共享host</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87%E8%B7%AF%E7%94%B1%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89host%E4%B8%8E%E8%BF%9E%E6%8E%A5%E8%AE%BE%E5%A4%87%E5%85%B1%E4%BA%ABhost/</link><pubDate>Wed, 05 Apr 2017 15:13:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87%E8%B7%AF%E7%94%B1%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89host%E4%B8%8E%E8%BF%9E%E6%8E%A5%E8%AE%BE%E5%A4%87%E5%85%B1%E4%BA%ABhost/</guid><description>&lt;p>次奥&lt;/p></description></item></channel></rss>
+&lt;strong>工具地址&lt;/strong>：链接：&lt;/p>
+&lt;p>&lt;a class="link" href="http://pan.baidu.com/s/1nv0iiZB" target="_blank" rel="noopener"
+>http://pan.baidu.com/s/1nv0iiZB&lt;/a> 密码：f1tw
+&lt;strong>VMware Workstation 12序列号&lt;/strong>: 5A02H-AU243-TZJ49-GTC7K-3C61N&lt;/p>
+&lt;h2 id="安装过程">安装过程&lt;/h2>
+&lt;ol>
+&lt;li>安装VMware&lt;/li>
+&lt;li>安装mac补丁
+解压unlocker208,右键win-install.cmd以管理员运行,然后等待cmd窗口自己关闭,unlocker208安装完成&lt;/li>
+&lt;li>安装VMware里面的mac
+上述工作准备完成后新建虚拟机里面就会多出Apple Mac OS X(M)选项,安转即可&lt;/li>
+&lt;li>不可恢复错误解决问题解决 mac安转完成打开出现提示不可恢复错误,此时进入虚拟机安装目录用记事本类的编辑器,编辑macOS 10.12.vmx加入以下代码：
+&lt;code>smc.version = &amp;quot;0&amp;quot;&lt;/code>
+&lt;strong>完工&lt;/strong>&lt;/li>
+&lt;/ol>
+&lt;h2 id="补充">补充&lt;/h2>
+&lt;p>VMware优化：http://blog.csdn.net/whitehack/article/details/47074403/&lt;/p></description></item><item><title>通过路由器自定义host与连接设备共享host</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87%E8%B7%AF%E7%94%B1%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89host%E4%B8%8E%E8%BF%9E%E6%8E%A5%E8%AE%BE%E5%A4%87%E5%85%B1%E4%BA%ABhost/</link><pubDate>Wed, 05 Apr 2017 15:13:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87%E8%B7%AF%E7%94%B1%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89host%E4%B8%8E%E8%BF%9E%E6%8E%A5%E8%AE%BE%E5%A4%87%E5%85%B1%E4%BA%ABhost/</guid><description>&lt;p>次奥&lt;/p>
+&lt;h2 id="过程">过程&lt;/h2>
+&lt;p>我的路由器是newifi现在刷的是Pandorabox是基于openwrt的路由系统,系统集成的dhcp/dns服务可以自定义host&lt;img src="http://i.imgur.com/wjaVIrT.png"
+loading="lazy"
+>。用winscp连接路由上传我们的host文件到路由,然后在路由设置里的额外的hosts文件打钩,填入我们刚刚的host。然后ssh连接路由输入命令
+&lt;code>/etc/init.d/dnsmasq restart&lt;/code>
+Ps：如果是电脑本地的dns不能使用自定义的,需要改为路由器的dns,其实直接改为自动获取dns就行了。&lt;/p>
+&lt;h2 id="host">host&lt;/h2></description></item></channel></rss>

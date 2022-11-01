@@ -1,390 +1,377 @@
-<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=referrer content="no-referrer-when-downgrade"><title>rust包导入 | LookForAdmin的博客</title><meta property="og:title" content="rust包导入 - LookForAdmin的博客"><meta property="og:type" content="article"><meta property="article:published_time" content="2021-02-03T10:30:15+08:00"><meta property="article:modified_time" content="2021-02-03T10:30:15+08:00"><meta name=Keywords content="golang,go语言,go语言笔记,LookForAdmin,Rust,分布式,Python,公众号"><meta name=description content="rust包导入"><meta name=author content="LookForAdmin"><meta property="og:url" content="https://60ke.github.io/drafts/rust%E5%8C%85%E5%AF%BC%E5%85%A5/"><link rel="shortcut icon" href=/favicon.ico type=image/x-icon><link rel=stylesheet href=/css/normalize.css><link rel=stylesheet href=/css/style.css><script type=text/javascript src=//cdn.bootcdn.net/ajax/libs/jquery/3.4.1/jquery.min.js></script>
-<link rel=stylesheet href=/css/douban.css><link rel=stylesheet href=/css/other.css></head><body><header id=header class=clearfix><div class=container><div class=col-group><div class=site-name><a id=logo href=https://60ke.github.io>LookForAdmin的博客</a><p class=description>专注于Golang、Python、Rust、分布式存储</p></div><div><nav id=nav-menu class=clearfix><a href=https://60ke.github.io>首页</a>
-<a href=https://60ke.github.io/drafts/ title=草稿箱>草稿箱</a>
-<a href=https://60ke.github.io/archives/ title=归档>归档</a>
-<a href=https://60ke.github.io/about/ title=关于>关于</a></nav></div></div></div></header><div id=body><div class=container><div class=col-group><div class=col-8 id=main><div class=res-cons><style type=text/css>.post-toc{position:fixed;width:200px;margin-left:-210px;padding:5px 10px;font-family:Athelas,STHeiti,Microsoft Yahei,serif;font-size:12px;border:1px solid rgba(0,0,0,7%);border-radius:5px;background-color:rgba(255,255,255,.98);background-clip:padding-box;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.125);box-shadow:1px 1px 2px rgba(0,0,0,.125);word-wrap:break-word;white-space:nowrap;-webkit-box-sizing:border-box;box-sizing:border-box;z-index:999;cursor:pointer;max-height:70%;overflow-y:auto;overflow-x:hidden}.post-toc .post-toc-title{width:100%;margin:0 auto;font-size:20px;font-weight:400;text-transform:uppercase;text-align:center}.post-toc .post-toc-content{font-size:15px}.post-toc .post-toc-content>nav>ul{margin:10px 0}.post-toc .post-toc-content ul{padding-left:20px;list-style:square;margin:.5em;line-height:1.8em}.post-toc .post-toc-content ul ul{padding-left:15px;display:none}@media print,screen and (max-width:1057px){.post-toc{display:none}}</style><div class=post-toc style=position:absolute;top:188px><h2 class=post-toc-title>文章目录</h2><div class=post-toc-content><nav id=TableOfContents></nav></div></div><script type=text/javascript>$(document).ready(function(){if(e=$(".post-toc"),e.length){t=$("#main").offset().left,t<220&&e.css({width:t-10,"margin-left":0-t});var e,t,n=e.offset().top-20,s={start:{position:"absolute",top:n},process:{position:"fixed",top:20}};$(window).scroll(function(){var t=$(window).scrollTop();t<n?e.css(s.start):e.css(s.process)})}$("#TableOfContents").children().length<1&&$(".post-toc").remove()})</script><article class=post><header><h1 class=post-title>rust包导入</h1></header><date class="post-meta meta-date">2021年2月3日</date><div class=post-meta><span>|</span>
-<span class=meta-category><a href=/categories/rust>rust</a></span></div><div class=post-meta><span id=busuanzi_container_page_pv>|<span id=busuanzi_value_page_pv></span><span>
-阅读</span></span></div><div class=post-content><p>rust 新版本导入包使用,可以不用先<code>extern crate</code>只需在cargo.toml声明,然后可直接用<code>use</code></p><p>我们创建个项目<code>codec_test</code></p><p>当rust中同时存在<code>lib.rs</code>,<code>main.rs</code>时无法使用,<code>use crate::types::*</code>
+<!doctype html><html lang=en-us dir=ltr><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="rust 新版本导入包使用,可以不用先extern crate只需在cargo.toml声明,然后可直接用use
+我们创建个项目codec_test
+当rust中同时存在lib.rs,main.rs时无法使用,use crate::types::* 错误提示: help: a similar path exists: codec_test::types,这是因为在lib.rs中对于lib.rs来说crate::代表了codec_testcrate本身,而对于main.rs来说则相当于是mian.rs导入了名为codec_test的外部crate
+代码验证: tree
+1 2 3 4 5 ├── Cargo.toml ├── src │ ├── lib.rs │ ├── main.rs │ └── types.rs lib.rs
+1 pub mod types; cargo.toml
+1 2 3 4 5 6 7 8 9 [package] name = &amp;#34;codec_test&amp;#34; version = &amp;#34;0.1.0&amp;#34; authors = [&amp;#34;k &amp;lt;worileqing@163.com&amp;gt;&amp;#34;] edition = &amp;#34;2018&amp;#34; # See more keys and their definitions at https://doc."><title>rust包导入</title><link rel=canonical href=https://60ke.github.io/drafts/rust%E5%8C%85%E5%AF%BC%E5%85%A5/><link rel=stylesheet href=/scss/style.min.8191399262444ab68b72a18c97392f5349be20a1615d77445be51e974c144cff.css><meta property="og:title" content="rust包导入"><meta property="og:description" content="rust 新版本导入包使用,可以不用先extern crate只需在cargo.toml声明,然后可直接用use
+我们创建个项目codec_test
+当rust中同时存在lib.rs,main.rs时无法使用,use crate::types::* 错误提示: help: a similar path exists: codec_test::types,这是因为在lib.rs中对于lib.rs来说crate::代表了codec_testcrate本身,而对于main.rs来说则相当于是mian.rs导入了名为codec_test的外部crate
+代码验证: tree
+1 2 3 4 5 ├── Cargo.toml ├── src │ ├── lib.rs │ ├── main.rs │ └── types.rs lib.rs
+1 pub mod types; cargo.toml
+1 2 3 4 5 6 7 8 9 [package] name = &amp;#34;codec_test&amp;#34; version = &amp;#34;0.1.0&amp;#34; authors = [&amp;#34;k &amp;lt;worileqing@163.com&amp;gt;&amp;#34;] edition = &amp;#34;2018&amp;#34; # See more keys and their definitions at https://doc."><meta property="og:url" content="https://60ke.github.io/drafts/rust%E5%8C%85%E5%AF%BC%E5%85%A5/"><meta property="og:site_name" content="LookForAdmin"><meta property="og:type" content="article"><meta property="article:section" content="Drafts"><meta property="article:tag" content="rust"><meta property="article:published_time" content="2021-02-03T10:30:15+00:00"><meta property="article:modified_time" content="2021-02-03T10:30:15+00:00"><meta name=twitter:title content="rust包导入"><meta name=twitter:description content="rust 新版本导入包使用,可以不用先extern crate只需在cargo.toml声明,然后可直接用use
+我们创建个项目codec_test
+当rust中同时存在lib.rs,main.rs时无法使用,use crate::types::* 错误提示: help: a similar path exists: codec_test::types,这是因为在lib.rs中对于lib.rs来说crate::代表了codec_testcrate本身,而对于main.rs来说则相当于是mian.rs导入了名为codec_test的外部crate
+代码验证: tree
+1 2 3 4 5 ├── Cargo.toml ├── src │ ├── lib.rs │ ├── main.rs │ └── types.rs lib.rs
+1 pub mod types; cargo.toml
+1 2 3 4 5 6 7 8 9 [package] name = &amp;#34;codec_test&amp;#34; version = &amp;#34;0.1.0&amp;#34; authors = [&amp;#34;k &amp;lt;worileqing@163.com&amp;gt;&amp;#34;] edition = &amp;#34;2018&amp;#34; # See more keys and their definitions at https://doc."><link rel="shortcut icon" href=/img/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/Avatar.jpeg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a>
+<span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>LookForAdmin</a></h1><h2 class=site-description>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</h2></div></header><ol class=social-menu><li><a href=https://github.com/60ke target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/posts target=_blank><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg><span>Home</span></a></li><li><a href=/drafts><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-infinity" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M9.828 9.172a4 4 0 100 5.656A10 10 0 0012 12a10 10 0 012.172-2.828 4 4 0 110 5.656A10 10 0 0112 12 10 10 0 009.828 9.172"/></svg><span>草稿箱</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg><span>about</span></a></li><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg><span>Archives</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg><span>Search</span></a></li><div class=menu-bottom-section><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg><span>暗色模式</span></li></div></ol></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/rust/>rust</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/drafts/rust%E5%8C%85%E5%AF%BC%E5%85%A5/>rust包导入</a></h2></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg><time class=article-time--published>Feb 03, 2021</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><time class=article-time--reading>阅读时长: 3 分钟</time></div></footer></div></header><section class=article-content><p>rust 新版本导入包使用,可以不用先<code>extern crate</code>只需在cargo.toml声明,然后可直接用<code>use</code></p><p>我们创建个项目<code>codec_test</code></p><p>当rust中同时存在<code>lib.rs</code>,<code>main.rs</code>时无法使用,<code>use crate::types::*</code>
 错误提示:
 <code>help: a similar path exists: codec_test::types</code>,这是因为在<code>lib.rs</code>中对于<code>lib.rs</code>来说<code>crate::</code>代表了<code>codec_test</code>crate本身,而对于<code>main.rs</code>来说则相当于是<code>mian.rs</code>导入了名为<code>codec_test</code>的外部<code>crate</code></p><p>代码验证:
-<code>tree</code></p><pre tabindex=0><code>├── Cargo.toml
-├── src
-│   ├── lib.rs
-│   ├── main.rs
-│   └── types.rs
-</code></pre><p><code>lib.rs</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mod</span> <span style=color:#555>types</span>;<span style=color:#bbb>
-</span></span></span></code></pre></td></tr></table></div></div><p><code>cargo.toml</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">7
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">8
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">9
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=display:flex><span>[<span style=color:#a61717;background-color:#e3d2d2>package</span>]
-</span></span><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>name</span> <span style=color:#a61717;background-color:#e3d2d2>=</span> <span style=color:#d14>&#34;codec_test&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>version</span> <span style=color:#a61717;background-color:#e3d2d2>=</span> <span style=color:#d14>&#34;0.1.0&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>authors</span> <span style=color:#a61717;background-color:#e3d2d2>=</span> [<span style=color:#d14>&#34;k &lt;worileqing@163.com&gt;&#34;</span>]
-</span></span><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>edition</span> <span style=color:#a61717;background-color:#e3d2d2>=</span> <span style=color:#d14>&#34;2018&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#a61717;background-color:#e3d2d2>#</span> <span style=color:#a61717;background-color:#e3d2d2>See</span> <span style=color:#a61717;background-color:#e3d2d2>more</span> <span style=color:#a61717;background-color:#e3d2d2>keys</span> <span style=color:#a61717;background-color:#e3d2d2>and</span> <span style=color:#a61717;background-color:#e3d2d2>their</span> <span style=color:#a61717;background-color:#e3d2d2>definitions</span> <span style=color:#a61717;background-color:#e3d2d2>at</span> <span style=color:#a61717;background-color:#e3d2d2>https:</span><span style=color:#998;font-style:italic>//doc.rust-lang.org/cargo/reference/manifest.html
-</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span>
-</span></span><span style=display:flex><span>[<span style=color:#a61717;background-color:#e3d2d2>dependencies</span>]
-</span></span></code></pre></td></tr></table></div></div><p><code>main.rs</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::convert::<span style=color:#0086b3>From</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>// use crate::types::Sink;
-</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>codec_test::types::Sink;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>// use codec_test::types::Sink1;
-</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>type</span> <span style=color:#458;font-weight:700>U256</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb> </span><span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[derive(Debug)]</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>Sink1</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>capacity:<span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>preamble:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>heap:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>from</span>(num:<span style=color:#458;font-weight:700>u32</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>U256</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>slice<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#099>0</span><span style=color:#000;font-weight:700>u8</span>;<span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>28</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>24</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>29</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>16</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>30</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>8</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>31</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>num<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span><span style=color:#0086b3>From</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u32</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>Sink1<span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>from</span>(num: <span style=color:#458;font-weight:700>u32</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>Self</span><span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>slice<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#099>0</span><span style=color:#000;font-weight:700>u8</span>;<span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>28</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>24</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>29</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>16</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>30</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>8</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>31</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>num<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>Sink1{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>capacity:<span style=color:#099>1</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>preamble:<span style=color:#458;font-weight:700>slice</span>.into(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>heap:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>trait</span><span style=color:#bbb> </span>Codec:<span style=color:#0086b3>Sized</span> {<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>encode</span>(<span style=color:#999>self</span>,sink: <span style=color:#000;font-weight:700>&amp;</span><span style=color:#458;font-weight:700>mut</span><span style=color:#bbb> </span>Sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span>Codec<span style=color:#bbb> </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u32</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>encode</span>(<span style=color:#999>self</span>,sink: <span style=color:#000;font-weight:700>&amp;</span><span style=color:#458;font-weight:700>mut</span><span style=color:#bbb> </span>Sink){<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>tar<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>from(<span style=color:#999>self</span>);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>sink.preamble.extend_from_slice(<span style=color:#000;font-weight:700>&amp;</span>tar);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>main</span>()<span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>a:<span style=color:#458;font-weight:700>u32</span> <span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>sink<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>Sink{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>capacity:<span style=color:#099>1</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>preamble:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>heap:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>};<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>a.encode(<span style=color:#000;font-weight:700>&amp;</span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{:?}&#34;</span>,sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>sink1<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>Sink1::from(<span style=color:#099>3</span>);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{:?}&#34;</span>,sink1);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>sink2:<span style=color:#458;font-weight:700>Sink1</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>4.</span>into();<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;sink2 {:?}&#34;</span>,sink2);<span style=color:#bbb> 
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span></code></pre></td></tr></table></div></div><p><code>types.rs</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">1
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">2
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">3
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">4
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">5
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">6
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#999;font-weight:700;font-style:italic>#[derive(Debug)]</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>Sink</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>capacity:<span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>preamble:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>heap:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span></code></pre></td></tr></table></div></div><p>删除<code>main.rs</code>,将代码放入<code>lib.rs</code>使用<code>cargo test -- --nocapture test</code>验证</p><pre tabindex=0><code>├── Cargo.toml
-├── src
-│   ├── lib.rs
-│   └── types.rs
-</code></pre><p><code>lib.rs</code></p><div class=highlight><div style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><table style=border-spacing:0;padding:0;margin:0;border:0><tr><td style=vertical-align:top;padding:0;margin:0;border:0><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 1
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 2
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 3
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 4
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 5
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 6
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 7
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 8
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f"> 9
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">10
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">11
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">12
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">13
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">14
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">15
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">16
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">17
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">18
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">19
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">20
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">21
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">22
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">23
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">24
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">25
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">26
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">27
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">28
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">29
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">30
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">31
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">32
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">33
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">34
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">35
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">36
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">37
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">38
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">39
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">40
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">41
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">42
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">43
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">44
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">45
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">46
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">47
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">48
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">49
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">50
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">51
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">52
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">53
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">54
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">55
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">56
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">57
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">58
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">59
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">60
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">61
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">62
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">63
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">64
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">65
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">66
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">67
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">68
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">69
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">70
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">71
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">72
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">73
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">74
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">75
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">76
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">77
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">78
-</span><span style="white-space:pre;user-select:none;margin-right:.4em;padding:0 .4em;color:#7f7f7f">79
-</span></code></pre></td><td style=vertical-align:top;padding:0;margin:0;border:0;width:100%><pre tabindex=0 style=background-color:#fff;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust><span style=display:flex><span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mod</span> <span style=color:#555>types</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span>std::convert::<span style=color:#0086b3>From</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>use</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>crate</span>::types::Sink;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#998;font-style:italic>// use wasm2ct::types::Sink1;
-</span></span></span><span style=display:flex><span><span style=color:#998;font-style:italic></span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>type</span> <span style=color:#458;font-weight:700>U256</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb> </span><span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[derive(Debug)]</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>struct</span> <span style=color:#458;font-weight:700>Sink1</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>capacity:<span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>preamble:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>pub</span><span style=color:#bbb> </span>heap:<span style=color:#0086b3>Vec</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u8</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>from</span>(num:<span style=color:#458;font-weight:700>u32</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>U256</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>slice<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#099>0</span><span style=color:#000;font-weight:700>u8</span>;<span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>28</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>24</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>29</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>16</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>30</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>8</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice[<span style=color:#099>31</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>num<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>slice<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span><span style=color:#0086b3>From</span><span style=color:#000;font-weight:700>&lt;</span><span style=color:#458;font-weight:700>u32</span><span style=color:#000;font-weight:700>&gt;</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span>Sink1<span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>from</span>(num: <span style=color:#458;font-weight:700>u32</span>)<span style=color:#bbb> </span>-&gt; <span style=color:#458;font-weight:700>Self</span><span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>slice<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>[<span style=color:#099>0</span><span style=color:#000;font-weight:700>u8</span>;<span style=color:#099>32</span>];<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>28</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>24</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>29</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>16</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>30</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>(num<span style=color:#000;font-weight:700>&gt;&gt;</span><span style=color:#099>8</span>)<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>slice[<span style=color:#099>31</span>]<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>num<span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>Sink1{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>capacity:<span style=color:#099>1</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>as</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>usize</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>preamble:<span style=color:#458;font-weight:700>slice</span>.into(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>            </span>heap:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>trait</span><span style=color:#bbb> </span>Codec:<span style=color:#0086b3>Sized</span> {<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>encode</span>(<span style=color:#999>self</span>,sink: <span style=color:#000;font-weight:700>&amp;</span><span style=color:#458;font-weight:700>mut</span><span style=color:#bbb> </span>Sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>impl</span><span style=color:#bbb> </span>Codec<span style=color:#bbb> </span><span style=color:#000;font-weight:700>for</span><span style=color:#bbb> </span><span style=color:#458;font-weight:700>u32</span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>encode</span>(<span style=color:#999>self</span>,sink: <span style=color:#000;font-weight:700>&amp;</span><span style=color:#458;font-weight:700>mut</span><span style=color:#bbb> </span>Sink){<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>tar<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>from(<span style=color:#999>self</span>);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>sink.preamble.extend_from_slice(<span style=color:#000;font-weight:700>&amp;</span>tar);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#999;font-weight:700;font-style:italic>#[test]</span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span><span style=color:#000;font-weight:700>fn</span> <span style=color:#900;font-weight:700>test</span>()<span style=color:#bbb> </span>{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>a:<span style=color:#458;font-weight:700>u32</span> <span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>8</span>;<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>sink<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>Sink{<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>capacity:<span style=color:#099>1</span>,<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>preamble:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>        </span>heap:<span style=color:#0086b3>Vec</span>::new(),<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>};<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>a.encode(<span style=color:#000;font-weight:700>&amp;</span><span style=color:#000;font-weight:700>mut</span><span style=color:#bbb> </span>sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{:?}&#34;</span>,sink);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>sink1<span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span>Sink1::from(<span style=color:#099>3</span>);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;{:?}&#34;</span>,sink1);<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span><span style=color:#000;font-weight:700>let</span><span style=color:#bbb> </span>sink2:<span style=color:#458;font-weight:700>Sink1</span><span style=color:#bbb> </span><span style=color:#000;font-weight:700>=</span><span style=color:#bbb> </span><span style=color:#099>4.</span>into();<span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb>    </span>println!(<span style=color:#d14>&#34;sink2 {:?}&#34;</span>,sink2);<span style=color:#bbb> 
-</span></span></span><span style=display:flex><span><span style=color:#bbb>
-</span></span></span><span style=display:flex><span><span style=color:#bbb></span>}<span style=color:#bbb>
-</span></span></span></code></pre></td></tr></table></div></div></div><div class=post-archive><h2>See Also</h2><ul class=listing><li><a href=/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/>高性能web服务与并发测试</a></li><li><a href=/drafts/rust%E7%B1%BB%E5%B1%9E%E6%80%A7%E5%AE%8F/>rust类属性宏</a></li><li><a href=/drafts/rust-num/>rust num</a></li><li><a href=/drafts/rust-macro/>rust macro</a></li><li><a href=/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/>ewasm虚拟机开发</a></li></ul></div><div class="post-meta meta-tags"><ul class=clearfix><li><a href=/tags/rust>rust</a></li></ul></div></article><div class="post bg-white"><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname theme=github-light crossorigin=anonymous async></script></div></div><footer id=footer><div>&copy; 2022 <a href=https://60ke.github.io>LookForAdmin的博客 By LookForAdmin</a></div><br><div><div class=github-badge><a href=https://gohugo.io/ target=_black rel=nofollow><span class=badge-subject>Powered by</span><span class="badge-value bg-blue">Hugo</span></a></div><div class=github-badge><a href=https://github.com/flysnow-org/maupassant-hugo target=_black><span class=badge-subject>Theme</span><span class="badge-value bg-yellowgreen">Maupassant</span></a></div></div></footer><script type=text/javascript>window.MathJax={tex2jax:{inlineMath:[["$","$"]],processEscapes:!0}}</script><script src='//cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
-<a id=rocket href=#top></a>
-<script type=text/javascript src='/js/totop.js?v=0.0.0' async></script>
-<script type=text/javascript src=//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js async></script>
-<script src=/js/douban.js></script></div><div id=secondary><section class=widget><form id=search action=https://60ke.github.io/search/ method=get accept-charset=utf-8 target=_blank _lpchecked=1><input type=text name=q maxlength=20 placeholder=Search>
-<input type=hidden name=sitesearch value=https://60ke.github.io>
-<button type=submit class="submit icon-search"></button></form></section><section class=widget><h3 class=widget-title>最近文章</h3><ul class=widget-list><li><a href=https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/ title=任务计划>任务计划</a></li><li><a href=https://60ke.github.io/posts/Ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/ title=Ubuntu黑屏无法登录>Ubuntu黑屏无法登录</a></li><li><a href=https://60ke.github.io/posts/githubAction/ title=Github使用Action自动编译发布go项目>Github使用Action自动编译发布go项目</a></li><li><a href=https://60ke.github.io/posts/quorum%E9%9A%90%E7%A7%81%E4%BA%A4%E6%98%93%E7%9A%84%E7%BB%93%E6%9E%84%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90%E5%8F%8A%E4%B8%8EBlockMaze%E7%9A%84%E6%AF%94%E8%BE%83/ title=Quorum隐私交易的结构流程分析及与BlockMaze的比较>Quorum隐私交易的结构流程分析及与BlockMaze的比较</a></li><li><a href=https://60ke.github.io/posts/%E6%B5%85%E8%B0%88%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE/ title=浅谈共识协议>浅谈共识协议</a></li><li><a href=https://60ke.github.io/posts/p2pHolePunching/ title=P2pHolePunching>P2pHolePunching</a></li><li><a href=https://60ke.github.io/posts/go%E6%B3%9B%E5%9E%8B%E5%AE%9E%E8%B7%B5/ title=go泛型实践>go泛型实践</a></li><li><a href=https://60ke.github.io/posts/antlr4/ title="write a antlr4 visitor with golang">write a antlr4 visitor with golang</a></li><li><a href=https://60ke.github.io/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/ title=高性能web服务与并发测试>高性能web服务与并发测试</a></li><li><a href=https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/ title=ewasm虚拟机开发>ewasm虚拟机开发</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/categories/>分类</a></h3><ul class=widget-list><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/MySQL/>MySQL (2)</a></li><li><a href=https://60ke.github.io/categories/default/>default (11)</a></li><li><a href=https://60ke.github.io/categories/go/>go (3)</a></li><li><a href=https://60ke.github.io/categories/hexo/>hexo (1)</a></li><li><a href=https://60ke.github.io/categories/Linux/>Linux (1)</a></li><li><a href=https://60ke.github.io/categories/mac/>mac (2)</a></li><li><a href=https://60ke.github.io/categories/old/>old (3)</a></li><li><a href=https://60ke.github.io/categories/others/>others (12)</a></li><li><a href=https://60ke.github.io/categories/php/>php (6)</a></li><li><a href=https://60ke.github.io/categories/python/>python (19)</a></li><li><a href=https://60ke.github.io/categories/python%E7%88%AC%E8%99%AB/>python爬虫 (8)</a></li><li><a href=https://60ke.github.io/categories/rust/>rust (8)</a></li><li><a href=https://60ke.github.io/categories/shell/>shell (1)</a></li><li><a href=https://60ke.github.io/categories/wasm/>wasm (1)</a></li><li><a href=https://60ke.github.io/categories/%E5%A5%B9/>她 (1)</a></li><li><a href=https://60ke.github.io/categories/%E6%9D%82%E7%BB%AA/>杂绪 (3)</a></li><li><a href=https://60ke.github.io/categories/%E8%87%AA%E5%8A%A8%E5%8C%96/>自动化 (1)</a></li></ul></section><section class=widget><h3 class=widget-title><a href=/tags/>标签</a></h3><div class=tagcloud><a href=https://60ke.github.io/tags/blog/>blog</a>
-<a href=https://60ke.github.io/tags/c/>c</a>
-<a href=https://60ke.github.io/tags/emacs/>emacs</a>
-<a href=https://60ke.github.io/tags/english/>english</a>
-<a href=https://60ke.github.io/tags/go/>go</a>
-<a href=https://60ke.github.io/tags/golang/>golang</a>
-<a href=https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/>go汇编</a>
-<a href=https://60ke.github.io/tags/homebrew/>homebrew</a>
-<a href=https://60ke.github.io/tags/ios/>ios</a>
-<a href=https://60ke.github.io/tags/linux/>linux</a>
-<a href=https://60ke.github.io/tags/lisp/>lisp</a>
-<a href=https://60ke.github.io/tags/mac/>mac</a>
-<a href=https://60ke.github.io/tags/maomaomao/>maomaomao</a>
-<a href=https://60ke.github.io/tags/mysql/>mysql</a>
-<a href=https://60ke.github.io/tags/other/>other</a>
-<a href=https://60ke.github.io/tags/others/>others</a>
-<a href=https://60ke.github.io/tags/pycharm/>pycharm</a>
-<a href=https://60ke.github.io/tags/python/>python</a>
-<a href=https://60ke.github.io/tags/rust/>rust</a>
-<a href=https://60ke.github.io/tags/scrapy/>scrapy</a>
-<a href=https://60ke.github.io/tags/sgx/>sgx</a>
-<a href=https://60ke.github.io/tags/shell/>shell</a>
-<a href=https://60ke.github.io/tags/sublime/>sublime</a>
-<a href=https://60ke.github.io/tags/vscode/>vscode</a>
-<a href=https://60ke.github.io/tags/wasm/>wasm</a>
-<a href=https://60ke.github.io/tags/xpath/>xpath</a>
-<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91/>并发</a>
-<a href=https://60ke.github.io/tags/%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B/>并发编程</a>
-<a href=https://60ke.github.io/tags/%E5%BC%80%E5%8F%91/>开发</a>
-<a href=https://60ke.github.io/tags/%E6%80%BB%E7%BB%93/>总结</a>
-<a href=https://60ke.github.io/tags/%E6%AD%A3%E5%88%99/>正则</a>
-<a href=https://60ke.github.io/tags/%E6%B3%9B%E5%9E%8B/>泛型</a>
-<a href=https://60ke.github.io/tags/%E7%88%AC%E8%99%AB/>爬虫</a>
-<a href=https://60ke.github.io/tags/%E7%AC%94%E8%AE%B0/>笔记</a>
-<a href=https://60ke.github.io/tags/%E8%87%AA%E5%8A%A8%E5%8C%96/>自动化</a>
-<a href=https://60ke.github.io/tags/%E8%B7%A8%E5%B9%B3%E5%8F%B0/>跨平台</a>
-<a href=https://60ke.github.io/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/>路由器</a>
-<a href=https://60ke.github.io/tags/%E9%80%86%E5%90%91/>逆向</a></div></section><section class=widget><h3 class=widget-title>友情链接</h3><ul class=widget-list><li><a target=_blank href=https://60ke.github.io/old_blogs/ title=旧文章>旧文章</a></li></ul></section><section class=widget><h3 class=widget-title>其它</h3><ul class=widget-list><li><a href=https://60ke.github.io/index.xml>文章 RSS</a></li></ul></section></div></div></div></div></body></html>
+<code>tree</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>├── Cargo.toml
+</span></span><span class=line><span class=cl>├── src
+</span></span><span class=line><span class=cl>│   ├── lib.rs
+</span></span><span class=line><span class=cl>│   ├── main.rs
+</span></span><span class=line><span class=cl>│   └── types.rs
+</span></span></code></pre></td></tr></table></div></div><p><code>lib.rs</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>mod</span> <span class=nn>types</span><span class=p>;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>cargo.toml</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>[</span><span class=err>package</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=err>name</span> <span class=err>=</span> <span class=s2>&#34;codec_test&#34;</span>
+</span></span><span class=line><span class=cl><span class=err>version</span> <span class=err>=</span> <span class=s2>&#34;0.1.0&#34;</span>
+</span></span><span class=line><span class=cl><span class=err>authors</span> <span class=err>=</span> <span class=p>[</span><span class=s2>&#34;k &lt;worileqing@163.com&gt;&#34;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=err>edition</span> <span class=err>=</span> <span class=s2>&#34;2018&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=err>#</span> <span class=err>See</span> <span class=err>more</span> <span class=err>keys</span> <span class=err>and</span> <span class=err>their</span> <span class=err>definitions</span> <span class=err>at</span> <span class=err>https:</span><span class=c1>//doc.rust-lang.org/cargo/reference/manifest.html
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=p>[</span><span class=err>dependencies</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>main.rs</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>convert</span>::<span class=nb>From</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>// use crate::types::Sink;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>use</span><span class=w> </span><span class=n>codec_test</span>::<span class=n>types</span>::<span class=n>Sink</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>// use codec_test::types::Sink1;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>pub</span><span class=w> </span><span class=k>type</span> <span class=nc>U256</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=kt>u8</span><span class=p>;</span><span class=w> </span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=cp>#[derive(Debug)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>pub</span><span class=w> </span><span class=k>struct</span> <span class=nc>Sink1</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>capacity</span>:<span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>preamble</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>heap</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>fn</span> <span class=nf>from</span><span class=p>(</span><span class=n>num</span>:<span class=kt>u32</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>U256</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>slice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=mi>0</span><span class=k>u8</span><span class=p>;</span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>28</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>24</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>29</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>16</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>30</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>8</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>31</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>num</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>impl</span><span class=w> </span><span class=nb>From</span><span class=o>&lt;</span><span class=kt>u32</span><span class=o>&gt;</span><span class=w> </span><span class=k>for</span><span class=w> </span><span class=n>Sink1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>from</span><span class=p>(</span><span class=n>num</span>: <span class=kt>u32</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>Self</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>slice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=mi>0</span><span class=k>u8</span><span class=p>;</span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>28</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>24</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>29</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>16</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>30</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>8</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>31</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>num</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Sink1</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>capacity</span>:<span class=mi>1</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>preamble</span>:<span class=nc>slice</span><span class=p>.</span><span class=n>into</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>heap</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>trait</span><span class=w> </span><span class=n>Codec</span>:<span class=nb>Sized</span> <span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>encode</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>sink</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>Sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>impl</span><span class=w> </span><span class=n>Codec</span><span class=w> </span><span class=k>for</span><span class=w> </span><span class=kt>u32</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>encode</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>sink</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>Sink</span><span class=p>){</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>tar</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>from</span><span class=p>(</span><span class=bp>self</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>sink</span><span class=p>.</span><span class=n>preamble</span><span class=p>.</span><span class=n>extend_from_slice</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tar</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>fn</span> <span class=nf>main</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>a</span>:<span class=kt>u32</span> <span class=o>=</span><span class=w> </span><span class=mi>8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>sink</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Sink</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>capacity</span>:<span class=mi>1</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>preamble</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>heap</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>a</span><span class=p>.</span><span class=n>encode</span><span class=p>(</span><span class=o>&amp;</span><span class=k>mut</span><span class=w> </span><span class=n>sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{:?}&#34;</span><span class=p>,</span><span class=n>sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>sink1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Sink1</span>::<span class=n>from</span><span class=p>(</span><span class=mi>3</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{:?}&#34;</span><span class=p>,</span><span class=n>sink1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>sink2</span>:<span class=nc>Sink1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mf>4.</span><span class=n>into</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;sink2 {:?}&#34;</span><span class=p>,</span><span class=n>sink2</span><span class=p>);</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>types.rs</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=cp>#[derive(Debug)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>pub</span><span class=w> </span><span class=k>struct</span> <span class=nc>Sink</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>capacity</span>:<span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>preamble</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>heap</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>删除<code>main.rs</code>,将代码放入<code>lib.rs</code>使用<code>cargo test -- --nocapture test</code>验证</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>├── Cargo.toml
+</span></span><span class=line><span class=cl>├── src
+</span></span><span class=line><span class=cl>│   ├── lib.rs
+</span></span><span class=line><span class=cl>│   └── types.rs
+</span></span></code></pre></td></tr></table></div></div><p><code>lib.rs</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-rust data-lang=rust><span class=line><span class=cl><span class=k>pub</span><span class=w> </span><span class=k>mod</span> <span class=nn>types</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>use</span><span class=w> </span><span class=n>std</span>::<span class=n>convert</span>::<span class=nb>From</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>use</span><span class=w> </span><span class=k>crate</span>::<span class=n>types</span>::<span class=n>Sink</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>// use wasm2ct::types::Sink1;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>pub</span><span class=w> </span><span class=k>type</span> <span class=nc>U256</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=kt>u8</span><span class=p>;</span><span class=w> </span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=cp>#[derive(Debug)]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>pub</span><span class=w> </span><span class=k>struct</span> <span class=nc>Sink1</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>capacity</span>:<span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>preamble</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>pub</span><span class=w> </span><span class=n>heap</span>:<span class=nb>Vec</span><span class=o>&lt;</span><span class=kt>u8</span><span class=o>&gt;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>fn</span> <span class=nf>from</span><span class=p>(</span><span class=n>num</span>:<span class=kt>u32</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>U256</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>slice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=mi>0</span><span class=k>u8</span><span class=p>;</span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>28</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>24</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>29</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>16</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>30</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>8</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=p>[</span><span class=mi>31</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>num</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>slice</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>impl</span><span class=w> </span><span class=nb>From</span><span class=o>&lt;</span><span class=kt>u32</span><span class=o>&gt;</span><span class=w> </span><span class=k>for</span><span class=w> </span><span class=n>Sink1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>from</span><span class=p>(</span><span class=n>num</span>: <span class=kt>u32</span><span class=p>)</span><span class=w> </span>-&gt; <span class=nc>Self</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>slice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>[</span><span class=mi>0</span><span class=k>u8</span><span class=p>;</span><span class=mi>32</span><span class=p>];</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>28</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>24</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>29</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>16</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>30</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>num</span><span class=o>&gt;&gt;</span><span class=mi>8</span><span class=p>)</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>slice</span><span class=p>[</span><span class=mi>31</span><span class=p>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>num</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>u8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Sink1</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>capacity</span>:<span class=mi>1</span><span class=w> </span><span class=k>as</span><span class=w> </span><span class=kt>usize</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>preamble</span>:<span class=nc>slice</span><span class=p>.</span><span class=n>into</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>heap</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>trait</span><span class=w> </span><span class=n>Codec</span>:<span class=nb>Sized</span> <span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>encode</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>sink</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>Sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>impl</span><span class=w> </span><span class=n>Codec</span><span class=w> </span><span class=k>for</span><span class=w> </span><span class=kt>u32</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>fn</span> <span class=nf>encode</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span><span class=n>sink</span>: <span class=kp>&amp;</span><span class=nc>mut</span><span class=w> </span><span class=n>Sink</span><span class=p>){</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>let</span><span class=w> </span><span class=n>tar</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>from</span><span class=p>(</span><span class=bp>self</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>sink</span><span class=p>.</span><span class=n>preamble</span><span class=p>.</span><span class=n>extend_from_slice</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tar</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=cp>#[test]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>fn</span> <span class=nf>test</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>a</span>:<span class=kt>u32</span> <span class=o>=</span><span class=w> </span><span class=mi>8</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=k>mut</span><span class=w> </span><span class=n>sink</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Sink</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>capacity</span>:<span class=mi>1</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>preamble</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>heap</span>:<span class=nb>Vec</span>::<span class=n>new</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>a</span><span class=p>.</span><span class=n>encode</span><span class=p>(</span><span class=o>&amp;</span><span class=k>mut</span><span class=w> </span><span class=n>sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{:?}&#34;</span><span class=p>,</span><span class=n>sink</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>sink1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Sink1</span>::<span class=n>from</span><span class=p>(</span><span class=mi>3</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;{:?}&#34;</span><span class=p>,</span><span class=n>sink1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>let</span><span class=w> </span><span class=n>sink2</span>:<span class=nc>Sink1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=mf>4.</span><span class=n>into</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=fm>println!</span><span class=p>(</span><span class=s>&#34;sink2 {:?}&#34;</span><span class=p>,</span><span class=n>sink2</span><span class=p>);</span><span class=w> 
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/rust/>rust</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg><span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/drafts/m1-vscode-lldb/><div class=article-details><h2 class=article-title>M1-vscode-lldb</h2></div></a></article><article><a href=/drafts/%E4%BB%8E%E9%9B%B6%E5%AE%9E%E7%8E%B0nosql%E6%95%B0%E6%8D%AE%E5%BA%93/><div class=article-details><h2 class=article-title>从零实现nosql数据库</h2></div></a></article><article><a href=/drafts/new-mac/><div class=article-details><h2 class=article-title>new_mac</h2></div></a></article><article><a href=/posts/%E9%AB%98%E6%80%A7%E8%83%BDweb%E6%9C%8D%E5%8A%A1%E4%B8%8E%E5%B9%B6%E5%8F%91%E6%B5%8B%E8%AF%95/><div class=article-details><h2 class=article-title>高性能web服务与并发测试</h2></div></a></article><article><a href=/drafts/rust%E7%B1%BB%E5%B1%9E%E6%80%A7%E5%AE%8F/><div class=article-details><h2 class=article-title>rust类属性宏</h2></div></a></article></div></div></aside><script src=https://utteranc.es/client.js repo=60ke/blogs issue-term=pathname crossorigin=anonymous async></script><style>.utterances{max-width:unset}</style><script>function setUtterancesTheme(e){let t=document.querySelector(".utterances iframe");t&&t.contentWindow.postMessage({type:"set-theme",theme:`github-${e}`},"https://utteranc.es")}addEventListener("message",e=>{if(e.origin!=="https://utteranc.es")return;setUtterancesTheme(document.documentElement.dataset.scheme)}),window.addEventListener("onColorSchemeChange",e=>{setUtterancesTheme(e.detail)})</script><footer class=site-footer><section class=copyright>&copy;
+2020 -
+2022 LookForAdmin</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.16.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)"></button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script>
+<script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

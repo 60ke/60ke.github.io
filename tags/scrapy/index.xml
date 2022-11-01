@@ -1,4 +1,143 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>scrapy on LookForAdmin的博客</title><link>https://60ke.github.io/tags/scrapy/</link><description>Recent content in scrapy on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 23 Aug 2017 06:26:33 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/scrapy/index.xml" rel="self" type="application/rss+xml"/><item><title>scrapy保存数据为多个json</title><link>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</link><pubDate>Wed, 23 Aug 2017 06:26:33 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</guid><description>定义pipline： # -*- coding: utf-8 -*- # Define your item pipelines here # # Don't forget to add your pipeline to the ITEM_PIPELINES setting # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html # class VmwarePipeline(object): # def process_item(self, item, spider): # return item import json import codecs class VmwarePipeline(object): def process_item(self, item, spider): self.file = codecs.open('%s.json'%item['vid'], 'w', encoding='utf-8') line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot; self.file.write(line) return item def spider_closed(self, spider): self.file.close() PS：scrapy中spiders的解析不能执行的问题 目前为止遇到的情况有两种 解析函数本身存在问题,解析错误导致不能继续传递 解析的</description></item><item><title>scrapy之获取ubuntu安全公告,并将cve存储为json</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</link><pubDate>Tue, 22 Aug 2017 03:33:00 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</guid><description>创建ubuntu项目 scrapy startproject ubuntu 创建spider模板 cd ubuntu scrapy genspider Ubuntu https://usn.ubuntu.com cat ubuntu/ubuntu/spiders/Ubuntu.py # -*- coding: utf-8 -*- import scrapy class UbuntuSpider(scrapy.Spider): name = 'Ubuntu' allowed_domains = ['https://usn.ubuntu.com'] start_urls = ['http://https://usn.ubuntu.com/'] def parse(self, response): pass ~ 编写spider # -*- coding: utf-8 -*- import scrapy from bs4 import BeautifulSoup import re import requests from ubuntu.items import UbuntuItem class UbuntuSpider(scrapy.Spider): name = 'Ubuntu' allowed_domains = ['usn.ubuntu.com'] def start_requests(self): url = &amp;quot;https://usn.ubuntu.com/usn/&amp;quot; content = requests.get(url).text soup = BeautifulSoup(content,&amp;quot;html.parser&amp;quot;) page = soup.find(attrs={&amp;quot;class&amp;quot;:&amp;quot;right&amp;quot;}).text.strip() max_page = re.findall(&amp;quot;Showing page 1 of (.+?) &amp;quot;,page)[0] start_urls = [] for page in range(int(max_page)): page +=1 url = 'https://usn.ubuntu.com/usn/?page=%s'%page yield scrapy.Request(url,callback=self.parse0) def parse0(self, response): # 获取公告中usn的cv</description></item><item><title>scrapy-xpath用法</title><link>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</link><pubDate>Tue, 22 Aug 2017 02:04:10 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</guid><description>&lt;p>转载自http://www.cnblogs.com/huhuuu/p/3701017.html　　
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>scrapy on LookForAdmin</title><link>https://60ke.github.io/tags/scrapy/</link><description>Recent content in scrapy on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 23 Aug 2017 06:26:33 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/scrapy/index.xml" rel="self" type="application/rss+xml"/><item><title>scrapy保存数据为多个json</title><link>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</link><pubDate>Wed, 23 Aug 2017 06:26:33 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%BF%9D%E5%AD%98%E6%95%B0%E6%8D%AE%E4%B8%BA%E5%A4%9A%E4%B8%AAjson/</guid><description>&lt;h2 id="定义pipline">定义pipline：&lt;/h2>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+# class VmwarePipeline(object):
+# def process_item(self, item, spider):
+# return item
+import json
+import codecs
+class VmwarePipeline(object):
+def process_item(self, item, spider):
+self.file = codecs.open('%s.json'%item['vid'], 'w', encoding='utf-8')
+line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot;
+self.file.write(line)
+return item
+def spider_closed(self, spider):
+self.file.close()
+&lt;/code>&lt;/pre>
+&lt;h2 id="psscrapy中spiders的解析不能执行的问题">PS：scrapy中spiders的解析不能执行的问题&lt;/h2>
+&lt;p>目前为止遇到的情况有两种&lt;/p>
+&lt;ol>
+&lt;li>解析函数本身存在问题,解析错误导致不能继续传递&lt;/li>
+&lt;li>解析的网址不在定义的&lt;code>allowed_domains&lt;/code>中（这个比较坑,因为scrapy对于是否在&lt;code>allowed_domains&lt;/code>的判断不够准确,没有必要的话最好不写这个&lt;code>allowed_domains&lt;/code>）&lt;/li>
+&lt;/ol></description></item><item><title>scrapy之获取ubuntu安全公告,并将cve存储为json</title><link>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</link><pubDate>Tue, 22 Aug 2017 03:33:00 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy%E4%B9%8B%E8%8E%B7%E5%8F%96ubuntu%E5%AE%89%E5%85%A8%E5%85%AC%E5%91%8A%E5%B9%B6%E5%B0%86cve%E5%AD%98%E5%82%A8%E4%B8%BAjson/</guid><description>&lt;h2 id="创建ubuntu项目">创建ubuntu项目&lt;/h2>
+&lt;pre>&lt;code>scrapy startproject ubuntu
+&lt;/code>&lt;/pre>
+&lt;h2 id="创建spider模板">创建spider模板&lt;/h2>
+&lt;pre>&lt;code>cd ubuntu
+scrapy genspider Ubuntu https://usn.ubuntu.com
+cat ubuntu/ubuntu/spiders/Ubuntu.py
+# -*- coding: utf-8 -*-
+import scrapy
+class UbuntuSpider(scrapy.Spider):
+name = 'Ubuntu'
+allowed_domains = ['https://usn.ubuntu.com']
+start_urls = ['http://https://usn.ubuntu.com/']
+def parse(self, response):
+pass
+~
+&lt;/code>&lt;/pre>
+&lt;h2 id="编写spider">编写spider&lt;/h2>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+import scrapy
+from bs4 import BeautifulSoup
+import re
+import requests
+from ubuntu.items import UbuntuItem
+class UbuntuSpider(scrapy.Spider):
+name = 'Ubuntu'
+allowed_domains = ['usn.ubuntu.com']
+def start_requests(self):
+url = &amp;quot;https://usn.ubuntu.com/usn/&amp;quot;
+content = requests.get(url).text
+soup = BeautifulSoup(content,&amp;quot;html.parser&amp;quot;)
+page = soup.find(attrs={&amp;quot;class&amp;quot;:&amp;quot;right&amp;quot;}).text.strip()
+max_page = re.findall(&amp;quot;Showing page 1 of (.+?) &amp;quot;,page)[0]
+start_urls = []
+for page in range(int(max_page)):
+page +=1
+url = 'https://usn.ubuntu.com/usn/?page=%s'%page
+yield scrapy.Request(url,callback=self.parse0)
+def parse0(self, response):
+# 获取公告中usn的cve_url
+cves = response.xpath(&amp;quot;//@href&amp;quot;).extract()
+for cve in cves:
+if cve.startswith(&amp;quot;http://people.ubuntu.com/~ubuntu-security/cve/&amp;quot;):
+item = UbuntuItem()
+item['cve'] = cve
+yield item
+&lt;/code>&lt;/pre>
+&lt;p>需要注意的地方：&lt;/p>
+&lt;ol>
+&lt;li>通常需要重写start_requests()函数&lt;/li>
+&lt;li>导入模块语句&lt;code>from ubuntu.items import UbuntuItem&lt;/code>&lt;/li>
+&lt;li>定义item&lt;code>item = UbuntuItem()&lt;/code>注意后面的括号&lt;/li>
+&lt;/ol>
+&lt;h2 id="存储为json">存储为json&lt;/h2>
+&lt;p>1.定义item&lt;/p>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define here the models for your scraped items
+#
+# See documentation in:
+# http://doc.scrapy.org/en/latest/topics/items.html
+import scrapy
+class UbuntuItem(scrapy.Item):
+# define the fields for your item here like:
+# name = scrapy.Field()
+cve = scrapy.Field()
+&lt;/code>&lt;/pre>
+&lt;p>2.定义piplines&lt;/p>
+&lt;pre>&lt;code># -*- coding: utf-8 -*-
+# Define your item pipelines here
+#
+# Don't forget to add your pipeline to the ITEM_PIPELINES setting
+# See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import json
+import codecs
+# class UbuntuPipeline(object):
+# def process_item(self, item, spider):
+# return item
+class UbuntuPipeline(object):
+def __init__(self):
+self.file = codecs.open('cve.json', 'w', encoding='utf-8')
+def process_item(self, item, spider):
+line = json.dumps(dict(item), ensure_ascii=False) + &amp;quot;\n&amp;quot;
+self.file.write(line)
+return item
+def spider_closed(self, spider):
+self.file.close()
+&lt;/code>&lt;/pre>
+&lt;p>3.spider中保存item的语句（见上面）&lt;/p>
+&lt;p>4.settings设置&lt;/p>
+&lt;pre>&lt;code>ITEM_PIPELINES = {
+'ubuntu.pipelines.UbuntuPipeline': 300,
+}
+&lt;/code>&lt;/pre>
+&lt;h1 id="ps写包含代码的文章的时候不要用ctrluctrlo来创建列表会造成ctrlk的代码显示不正常">ps:写包含代码的文章的时候,不要用&lt;code>ctrl+u&lt;/code>,&lt;code>ctrl+o&lt;/code>来创建列表,会造成&lt;code>ctrl+k&lt;/code>的代码显示不正常&lt;/h1></description></item><item><title>scrapy-xpath用法</title><link>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</link><pubDate>Tue, 22 Aug 2017 02:04:10 +0000</pubDate><guid>https://60ke.github.io/drafts/scrapy-xpath%E7%94%A8%E6%B3%95/</guid><description>&lt;p>转载自http://www.cnblogs.com/huhuuu/p/3701017.html　　
 Scrapy是基于python的开源爬虫框架,使用起来也比较方便。具体的官网档：http://doc.scrapy.org/en/latest/&lt;/p>
 &lt;p>　　之前以为了解python就可以直接爬网站了,原来还要了解HTML,XML的基本协议,在了解基础以后,在了解下xpath的基础上,再使用正则表达式(python下的re包提供支持)提取一定格式的信息（比如说url）,就比较容易处理网页了。&lt;/p>
-&lt;p>　　xpath是Scrapy下快速提取特定信息（如title,head,href等）的一个接口。&lt;/p></description></item></channel></rss>
+&lt;p>　　xpath是Scrapy下快速提取特定信息（如title,head,href等）的一个接口。&lt;/p>
+&lt;p>几个简单的例子：&lt;/p>
+&lt;p>　　/html/head/title: 选择HTML文档&lt;!-- raw HTML omitted -->元素下面的&lt;!-- raw HTML omitted --> 标签。
+　　/html/head/title/text(): 选择前面提到的&lt;!-- raw HTML omitted --> 元素下面的文本内容
+　　//td: 选择所有 &lt;!-- raw HTML omitted --> 元素
+　　//div[@class=&amp;ldquo;mine&amp;rdquo;]: 选择所有包含 class=&amp;ldquo;mine&amp;rdquo; 属性的div 标签元素&lt;/p>
+&lt;p>　　基本的路径意义：&lt;/p>
+&lt;p>　　&lt;/p>
+&lt;p>表达式 描述
+nodename 选取此节点的所有子节点。
+/ 从根节点选取。
+// 从匹配选择的当前节点选择文档中的节点,而不考虑它们的位置。
+. 选取当前节点。
+.. 选取当前节点的父节点。
+@ 选取属性。
+　　&lt;/p>
+&lt;p>　　具体的使用实例：&lt;/p>
+&lt;p>　　比如对http://www.dmoz.org/Computers/Programming/Languages/Python/Books/ 网站提取特定的信息&lt;/p>
+&lt;p>　　1）、先在第一层tutorial文件夹下,在cmd中输入： scrapy shell &lt;a class="link" href="http://www.dmoz.org/Computers/Programming/Languages/Python/Books/" target="_blank" rel="noopener"
+>http://www.dmoz.org/Computers/Programming/Languages/Python/Books/&lt;/a>&lt;/p>
+&lt;p>　　2）、现在比如我们需要抓取该网页的tittle,由于前面的shell命令已经实例化了一个selector的对象sel, 就输入 sel.xpath(&amp;rsquo;//title&amp;rsquo;) 获取了网页的标题。&lt;/p>
+&lt;p>　　3）、比如我们想要知道该网页下的www.****.com形式的链接,可以使用xpath 结合正则表达式re提取信息,输入 sel.xpath(&amp;rsquo;//@href&amp;rsquo;).re(&amp;ldquo;www.[0-9a-zA-Z]+.com&amp;rdquo;)&lt;/p></description></item></channel></rss>

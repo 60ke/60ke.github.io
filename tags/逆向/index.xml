@@ -1,1 +1,177 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>逆向 on LookForAdmin的博客</title><link>https://60ke.github.io/tags/%E9%80%86%E5%90%91/</link><description>Recent content in 逆向 on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 20 Mar 2020 21:19:49 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E9%80%86%E5%90%91/index.xml" rel="self" type="application/rss+xml"/><item><title>获取ipa、脱壳</title><link>https://60ke.github.io/drafts/%E8%8E%B7%E5%8F%96%E8%84%B1%E5%A3%B3ipa/</link><pubDate>Fri, 20 Mar 2020 21:19:49 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%8E%B7%E5%8F%96%E8%84%B1%E5%A3%B3ipa/</guid><description>获取ipa 1.抓包获取 1.手机上有thos可以实现全局抓包获取 特别注意的是,手机的全局代理在运行商店的时候,网络可能会出现问题。比较稳妥的操作是连2.4G的wifi(5Gwifi商店没网了但是其它APP正常,不知道是不是thos版本的问题),提前购买了APP(这样可以避免下载的时</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>逆向 on LookForAdmin</title><link>https://60ke.github.io/tags/%E9%80%86%E5%90%91/</link><description>Recent content in 逆向 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 20 Mar 2020 21:19:49 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/%E9%80%86%E5%90%91/index.xml" rel="self" type="application/rss+xml"/><item><title>获取ipa、脱壳</title><link>https://60ke.github.io/drafts/%E8%8E%B7%E5%8F%96%E8%84%B1%E5%A3%B3ipa/</link><pubDate>Fri, 20 Mar 2020 21:19:49 +0000</pubDate><guid>https://60ke.github.io/drafts/%E8%8E%B7%E5%8F%96%E8%84%B1%E5%A3%B3ipa/</guid><description>&lt;h2 id="获取ipa">获取ipa&lt;/h2>
+&lt;h3 id="1抓包获取">1.抓包获取&lt;/h3>
+&lt;p>1.手机上有thos可以实现全局抓包获取
+特别注意的是,手机的全局代理在运行商店的时候,网络可能会出现问题。比较稳妥的操作是连2.4G的wifi(5Gwifi商店没网了但是其它APP正常,不知道是不是thos版本的问题),提前购买了APP(这样可以避免下载的时候的账号验证)
+2.电脑上可以使用Charles或者其他抓包工具
+抓包可以获取到App Store的ipa链接,可以直接http下载。但是下载下来的ipa文件无法解压。&lt;/p>
+&lt;h3 id="2使用appleconfigurator-2">2.使用appleconfigurator 2&lt;/h3>
+&lt;p>使用苹果自己的软件,登录账户,在操作菜单中点击添加找到自己想获取的app,提示app已存在时,不做任何操作,打开finder command+shift+g 到&lt;code>~/Library/Group Containers/K36BKF7T3D.group.com.apple.configurator/Library/Caches/Assets/TemporaryItems/MobileApps/&lt;/code>就能看到ipa文件了,值得注意的是这里的ipa可解压。不过有加壳。
+先看解压的文件结构：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">tree
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── META-INF
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│   ├── com.apple.FixedZipMetadata.bin
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│   └── com.apple.ZipMetadata.plist
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── Payload
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│   └── caiyunInterpreter.app
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── iTunesArtwork
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">└── iTunesMetadata.plist
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>显示caiyunInterpreter.app的包内容,可以按文件大小排序可以看到最大的二进制文件&lt;code>caiyunInterpreter&lt;/code>。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">otool -l caiyunInterpreter &lt;span class="p">|&lt;/span>grep crypt
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptoff &lt;span class="m">16384&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptsize &lt;span class="m">8273920&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptid &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptoff &lt;span class="m">16384&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptsize &lt;span class="m">8945664&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> cryptid &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>使用otool命令,查看cyptid。其值为1表示加壳,0表示未加壳。&lt;/p>
+&lt;h2 id="脱壳">脱壳&lt;/h2>
+&lt;h3 id="1clutch">1.Clutch&lt;/h3>
+&lt;p>脱壳工具Clush可在github上看到源代码。下载其编译好后的二进制,scp到手机的&lt;code>/usr/bin&lt;/code>目录。使用&lt;code>Clutch -i&lt;/code>查看已安装的软件列表&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Installed apps:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1: QQ邮箱 &amp;lt;com.tencent.qqmail&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2: 微信 &amp;lt;com.tencent.xin&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">3: 优酷视频-刘老根3精彩呈现 &amp;lt;com.youku.YouKu&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">4: 米家-精品商城 智能生活 &amp;lt;com.xiaomi.mihome&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">5: YouTube &amp;lt;com.google.ios.youtube&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">6: 当当-9.9元超值购物秒杀 &amp;lt;com.dangdang.iphone&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">7: 有道云笔记 - 扫描王版 &amp;lt;com.youdao.note.iphone&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">8: 拉勾招聘-互联网求职找工作必备 &amp;lt;com.lagou.lagouhr&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">9: 支付宝 - 让生活更简单 &amp;lt;com.alipay.iphoneclient&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>对微信进行脱壳：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Clutch -d com.tencent.xin
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>当然了并不能成功。&lt;/p>
+&lt;h3 id="2dumpdecrypted">2.dumpdecrypted&lt;/h3>
+&lt;p>dumpdecrypted也是在github上有源代码,但是需要自己编译。下载源码运行&lt;code>make&lt;/code>的时候报错了,错误信息大致如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">xcrun: error: SDK &lt;span class="s2">&amp;#34;iphoneos&amp;#34;&lt;/span>cannot be located
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">xcrun: error: unableto lookup item &lt;span class="s1">&amp;#39;Path&amp;#39;&lt;/span>inSDK &lt;span class="s1">&amp;#39;iphoneos&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">clang: warning: nosuch sysroot directory: &lt;span class="s1">&amp;#39;-F/System/Library/Frameworks&amp;#39;&lt;/span> &lt;span class="o">[&lt;/span>-Wmissing-sysroot&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">dumpdecrypted.c:27:10:fatal error: &lt;span class="s1">&amp;#39;stdio.h&amp;#39;&lt;/span> file not found
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>无法找到对应的 SDK 和 stdio.h 文件, 这种问题大多数是 Xcode 路径造成的.&lt;/p>
+&lt;p>使用下面的命令看一下系统指向的 Xcode 路径:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">xcode-select -p
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/Library/Developer/CommandLineTools
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>显然不是 Xcode 的路径, 那只能重新切换一下其路径即指向正确的 Xcode 路径即可.&lt;/p>
+&lt;p>命令如下:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">sudo xcode-select --switch /Applications/Xcode.app
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">make
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">tree
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── Makefile
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── README
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── dumpdecrypted.c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── dumpdecrypted.dylib
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">└── dumpdecrypted.o
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>编译 dumpdecrypted成功.然后需要对&lt;code>dumpdecrypted.dylib&lt;/code>进行签名
+两种方式：
+1.ldid
+&lt;code>ldid -S dumpdecrypted.dylib&lt;/code>
+2.codesign&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">codesign -f -s - ./dumpdecrypted.dylib
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>scp到ios &lt;code>/usr/bin&lt;/code>
+具体使用教程可百度&lt;/p>
+&lt;h3 id="3binject">3.binject&lt;/h3>
+&lt;p>以上的两个脱壳软件针对的是ios11之前了,binject可支持ios11&amp;ndash;ios11.2。由于现在都是IOS13了直接跳过。&lt;/p>
+&lt;h3 id="4crackerxi-ios11--ios13">4.crackerxi (ios11&amp;ndash;ios13)&lt;/h3>
+&lt;p>cydia添加源http://cydia.iphonecake.com/,setting除了fakesign都打钩,直接生成脱壳后的ipa一步到位。&lt;/p></description></item></channel></rss>

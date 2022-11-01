@@ -1,1 +1,339 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>mac on LookForAdmin的博客</title><link>https://60ke.github.io/tags/mac/</link><description>Recent content in mac on LookForAdmin的博客</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 18 Mar 2020 20:39:03 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/mac/index.xml" rel="self" type="application/rss+xml"/><item><title>homebrew的坑</title><link>https://60ke.github.io/drafts/homebrew%E7%9A%84%E5%9D%91/</link><pubDate>Wed, 18 Mar 2020 20:39:03 +0000</pubDate><guid>https://60ke.github.io/drafts/homebrew%E7%9A%84%E5%9D%91/</guid><description>现在python最新版本是3.8,brew默认安装的python3是3.7。于是乎想给python升级,突然发现brew安装的文件夹/usr/local/Cellar下面有多个python3的文件夹,但是运行brew list的时候只显示一个python3,看起来用brew是没法卸</description></item><item><title>openvpn</title><link>https://60ke.github.io/drafts/openvpn%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/</link><pubDate>Fri, 06 Mar 2020 23:01:35 +0000</pubDate><guid>https://60ke.github.io/drafts/openvpn%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/</guid><description>mac运行openvpn 1 2 3 4 5 6 7 8 9 brew install openvpn sudo brew services start openvpn ln -s /usr/local/opt/openvpn/sbin/openvpn /usr/local/bin/openvpn 命令行运行： sudo openvpn --config (confpath)/siccs.conf #sudo openvpn --config ~/siccs_v1.ovpn 后台运行： sudo openvpn --config (confpath)/siccs.conf —daemon openvpn文件合并 以当前的conf文件作为模板 删除或者注释以下几行内容： 1 2 3 4 ca ca.crt 改为：#ca ca.crt cert client.crt 改为：#cert client.crt key client.key 改为：#key client.key tls-auth ta.key 1 改为</description></item><item><title>Mac安装LaTeX</title><link>https://60ke.github.io/drafts/Mac%E5%AE%89%E8%A3%85LaTeX/</link><pubDate>Fri, 06 Mar 2020 22:46:14 +0000</pubDate><guid>https://60ke.github.io/drafts/Mac%E5%AE%89%E8%A3%85LaTeX/</guid><description>由于现在网上很多软件文档都是基于Sphinx写成的,例如：https://solidity-cn.readthedocs.io/zh/develop/,离线阅读难免不便好在借助Sphinx的rst文件可以生成对应的pdf,epub,html等类型。 这里以https://githu</description></item><item><title>mac下的Python2的mysql模块</title><link>https://60ke.github.io/drafts/mac%E4%B8%8B%E7%9A%84Python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/</link><pubDate>Thu, 30 May 2019 15:53:33 +0000</pubDate><guid>https://60ke.github.io/drafts/mac%E4%B8%8B%E7%9A%84Python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/</guid><description>mac下的Python2的mysql模块 1 2 3 4 5 6 7 brew install mysql brew unlink mysql brew install mysql-connector-c sed -i -e &amp;#39;s/libs=&amp;#34;$libs -l &amp;#34;/libs=&amp;#34;$libs -lmysqlclient -lssl -lcrypto&amp;#34;/g&amp;#39; /usr/local/bin/mysql_config pip install MySQL-python brew unlink mysql-connector-c brew link --overwrite mysql brew unlink mysql # only if installed, causes the next step to fail brew install mysql-connector-c locate mysql_config file with which (mysql_config) edit the mysql_config file, under # Create options change this: libs=&amp;quot;$libs -l &amp;quot; to this: libs=&amp;quot;$libs -lmysqlclient -lssl -lcrypto&amp;quot; if using vim, :wq! to save the read-only file Now the install should run successfully pip install mysqlclient Adding this separately, as it&amp;rsquo;s similar but not directly related to the initial question pip install MySQL-python Fix mysql brew formula, if it was unlinked</description></item><item><title>homebrew 安装mysql</title><link>https://60ke.github.io/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/</link><pubDate>Thu, 30 May 2019 01:53:33 +0000</pubDate><guid>https://60ke.github.io/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/</guid><description>homebrew 安装mysql 安装mysql brew install mysql 启动mysql服务 mysql.server start 设置mysql(密码等) mysql_secure_installation</description></item><item><title>通过ssh实现mac远程桌面</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</link><pubDate>Wed, 06 Sep 2017 08:49:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</guid><description>teamviewer因为电脑重启的原因,更改了远程登录的密码,但是我没有保存 所以连接不上了。。。 下面是解决办法： 必要条件：可以通过ssh连接！ 首先通过ssh登录mac 通过下面的命令安装teamviewer brew cask install teamviewer 启动teamviewer open /Applications/TeamViewer.app 截图 screencapture /Users/iMac/Desktop/1.png 查看图片获取密码登录即可 team</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>mac on LookForAdmin</title><link>https://60ke.github.io/tags/mac/</link><description>Recent content in mac on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 18 Mar 2020 20:39:03 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/mac/index.xml" rel="self" type="application/rss+xml"/><item><title>homebrew的坑</title><link>https://60ke.github.io/drafts/homebrew%E7%9A%84%E5%9D%91/</link><pubDate>Wed, 18 Mar 2020 20:39:03 +0000</pubDate><guid>https://60ke.github.io/drafts/homebrew%E7%9A%84%E5%9D%91/</guid><description>&lt;p>现在python最新版本是3.8,brew默认安装的python3是3.7。于是乎想给python升级,突然发现brew安装的文件夹&lt;code>/usr/local/Cellar&lt;/code>下面有多个python3的文件夹,但是运行&lt;code>brew list&lt;/code>的时候只显示一个python3,看起来用&lt;code>brew&lt;/code>是没法卸载了。惨的是之前安装的openssl里面也有&lt;code>1.0&lt;/code>,&lt;code>1.1&lt;/code>两个文件夹。但是卸载1.0的时候也对应的是&lt;code>1.1&lt;/code>,而且还没生效。&lt;/p>
+&lt;h2 id="1卸载openssl-10">1.卸载openssl 1.0&lt;/h2>
+&lt;p>1.删除brew 安装的文件夹 &lt;code>/usr/local/Cellar/openssl&lt;/code>
+2.查看有没有软连接&lt;code>ls -al /usr/local/bin/openssl&lt;/code>以及&lt;code>ls -al /usr/local/opt/openssl&lt;/code>,有则删除&lt;/p>
+&lt;h2 id="2启用openssl">2.启用openssl&lt;/h2>
+&lt;p>&lt;code>brew link openssl&lt;/code>&lt;/p>
+&lt;h2 id="3清理无效的系统变量和软连接">3.清理无效的系统变量和软连接&lt;/h2>
+&lt;p>1.先查看环境变量&lt;code>echo $PATH&lt;/code>确定哪些无效
+有时候可能一下子找不到,知道系统的环境变量的加载顺序可以用的上：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">/etc/profile
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/etc/paths
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/etc/paths.d/
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">~/.bash_profile
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">~/.bash_login
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">~/.profile
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">~/.bashrc
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>/etc/profile和/etc/paths, /etc/paths.d/是系统级别的,系统启动就会加载；
+2.在系统环境变量里删除无效的软连接
+可以用这个bash删除指定目录下的无效软连接：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#! /bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;enter scan path: &amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">read&lt;/span> path
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> -z &lt;span class="nv">$path&lt;/span> &lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;please enter scan path&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exit&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">for&lt;/span> file in &lt;span class="k">$(&lt;/span>find &lt;span class="nv">$path&lt;/span> -type l&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">do&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="o">[&lt;/span> ! -e &lt;span class="nv">$file&lt;/span> &lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">then&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;rm &lt;/span>&lt;span class="nv">$file&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rm -f &lt;span class="nv">$file&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">fi&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">done&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="4安装python-38">4.安装python 3.8&lt;/h2>
+&lt;p>1.运行brew 安装
+&lt;code>brew install python@3.8&lt;/code>,特别的运行&lt;code>pip3 install packages&lt;/code>时如果提示权限问题,可以加&lt;code>--user&lt;/code>参数。
+2.调整系统变量使&lt;code>python3&lt;/code>生效
+像python3这样的一般brew安装完,会直接调用&lt;code>brew link python3&lt;/code>使系统的环境变量生效,如果没有可以手动运行一遍,按照提示继续操作。&lt;/p></description></item><item><title>openvpn</title><link>https://60ke.github.io/drafts/openvpn%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/</link><pubDate>Fri, 06 Mar 2020 23:01:35 +0000</pubDate><guid>https://60ke.github.io/drafts/openvpn%E6%96%87%E4%BB%B6%E5%90%88%E5%B9%B6/</guid><description>&lt;h2 id="mac运行openvpn">mac运行openvpn&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">brew install openvpn
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo brew services start openvpn
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ln -s /usr/local/opt/openvpn/sbin/openvpn /usr/local/bin/openvpn
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">命令行运行：
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo openvpn --config &lt;span class="o">(&lt;/span>confpath&lt;span class="o">)&lt;/span>/siccs.conf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#sudo openvpn --config ~/siccs_v1.ovpn&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">后台运行：
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo openvpn --config &lt;span class="o">(&lt;/span>confpath&lt;span class="o">)&lt;/span>/siccs.conf —daemon
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="openvpn文件合并">openvpn文件合并&lt;/h2>
+&lt;p>以当前的conf文件作为模板&lt;/p>
+&lt;p>删除或者注释以下几行内容：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="err">ca&lt;/span> &lt;span class="err">ca.crt&lt;/span>　　&lt;span class="err">改为：#ca&lt;/span> &lt;span class="err">ca.crt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">cert&lt;/span> &lt;span class="err">client.crt&lt;/span>　　&lt;span class="err">改为：#cert&lt;/span> &lt;span class="err">client.crt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">key&lt;/span> &lt;span class="err">client.key&lt;/span>　　&lt;span class="err">改为：#key&lt;/span> &lt;span class="err">client.key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>　　&lt;span class="err">改为：#tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在最后面添加以下内容：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">&amp;lt;ca&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ca.crt 文件内容
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;/ca&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;cert&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">client.crt 文件内容
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;/cert&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;key&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">client.key 文件内容
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;/key&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">key-direction 1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;tls-auth&amp;gt;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">ta.key 文件内容
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;lt;/tls-auth&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>Mac安装LaTeX</title><link>https://60ke.github.io/drafts/mac%E5%AE%89%E8%A3%85latex/</link><pubDate>Fri, 06 Mar 2020 22:46:14 +0000</pubDate><guid>https://60ke.github.io/drafts/mac%E5%AE%89%E8%A3%85latex/</guid><description>&lt;p>由于现在网上很多软件文档都是基于Sphinx写成的,例如：https://solidity-cn.readthedocs.io/zh/develop/,离线阅读难免不便好在借助Sphinx的rst文件可以生成对应的pdf,epub,html等类型。
+这里以https://github.com/etherchina/solidity-doc-cn为例：&lt;/p>
+&lt;h2 id="安装环境">安装环境&lt;/h2>
+&lt;p>mac下的LaTeX有两种：
+1.mactex(这个安装包较大)
+&lt;code>brew cask install mactex&lt;/code>
+2.BasicTeX
+&lt;code>brew cask install basictex&lt;/code>&lt;/p>
+&lt;p>在项目目录下使用命令&lt;code>make --help&lt;/code>查看:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">Usage: make &lt;span class="o">[&lt;/span>options&lt;span class="o">]&lt;/span> &lt;span class="o">[&lt;/span>target&lt;span class="o">]&lt;/span> ...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Options:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -b, -m Ignored &lt;span class="k">for&lt;/span> compatibility.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -B, --always-make Unconditionally make all targets.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -C DIRECTORY, --directory&lt;span class="o">=&lt;/span>DIRECTORY
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Change to DIRECTORY before doing anything.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -d Print lots of debugging information.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> --debug&lt;span class="o">[=&lt;/span>FLAGS&lt;span class="o">]&lt;/span> Print various types of debugging information.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -e, --environment-overrides
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Environment variables override makefiles.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -f FILE, --file&lt;span class="o">=&lt;/span>FILE, --makefile&lt;span class="o">=&lt;/span>FILE
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Read FILE as a makefile.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -h, --help Print this message and exit.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -i, --ignore-errors Ignore errors from commands.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -I DIRECTORY, --include-dir&lt;span class="o">=&lt;/span>DIRECTORY
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Search DIRECTORY &lt;span class="k">for&lt;/span> included makefiles.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -j &lt;span class="o">[&lt;/span>N&lt;span class="o">]&lt;/span>, --jobs&lt;span class="o">[=&lt;/span>N&lt;span class="o">]&lt;/span> Allow N &lt;span class="nb">jobs&lt;/span> at once&lt;span class="p">;&lt;/span> infinite &lt;span class="nb">jobs&lt;/span> with no arg.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -k, --keep-going Keep going when some targets can&lt;span class="s1">&amp;#39;t be made.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -l [N], --load-average[=N], --max-load[=N]
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> Don&amp;#39;&lt;/span>t start multiple &lt;span class="nb">jobs&lt;/span> unless load is below N.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -L, --check-symlink-times Use the latest mtime between symlinks and target.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -n, --just-print, --dry-run, --recon
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Don&lt;span class="s1">&amp;#39;t actually run any commands; just print them.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -o FILE, --old-file=FILE, --assume-old=FILE
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> Consider FILE to be very old and don&amp;#39;&lt;/span>t remake it.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -p, --print-data-base Print make&lt;span class="s1">&amp;#39;s internal database.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -q, --question Run no commands; exit status says if up to date.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -r, --no-builtin-rules Disable the built-in implicit rules.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -R, --no-builtin-variables Disable the built-in variable settings.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s1"> -s, --silent, --quiet Don&amp;#39;&lt;/span>t &lt;span class="nb">echo&lt;/span> commands.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -S, --no-keep-going, --stop
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Turns off -k.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -t, --touch Touch targets instead of remaking them.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -v, --version Print the version number of make and exit.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -w, --print-directory Print the current directory.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> --no-print-directory Turn off -w, even &lt;span class="k">if&lt;/span> it was turned on implicitly.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> -W FILE, --what-if&lt;span class="o">=&lt;/span>FILE, --new-file&lt;span class="o">=&lt;/span>FILE, --assume-new&lt;span class="o">=&lt;/span>FILE
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Consider FILE to be infinitely new.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> --warn-undefined-variables Warn when an undefined variable is referenced.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>通过help可以看出我们可以编译pdf、epub等类型文件（make过程可能造成编码错误）。&lt;/p></description></item><item><title>mac下的Python2的mysql模块</title><link>https://60ke.github.io/drafts/mac%E4%B8%8B%E7%9A%84python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/</link><pubDate>Thu, 30 May 2019 15:53:33 +0000</pubDate><guid>https://60ke.github.io/drafts/mac%E4%B8%8B%E7%9A%84python2%E7%9A%84mysql%E6%A8%A1%E5%9D%97/</guid><description>&lt;h1 id="mac下的python2的mysql模块">mac下的Python2的mysql模块&lt;/h1>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="n">brew&lt;/span> &lt;span class="n">install&lt;/span> &lt;span class="n">mysql&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">brew&lt;/span> &lt;span class="n">unlink&lt;/span> &lt;span class="n">mysql&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">brew&lt;/span> &lt;span class="n">install&lt;/span> &lt;span class="n">mysql&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">connector&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">sed&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="n">i&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="n">e&lt;/span> &lt;span class="s1">&amp;#39;s/libs=&amp;#34;$libs -l &amp;#34;/libs=&amp;#34;$libs -lmysqlclient -lssl -lcrypto&amp;#34;/g&amp;#39;&lt;/span> &lt;span class="o">/&lt;/span>&lt;span class="n">usr&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">local&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nb">bin&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">mysql_config&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">pip&lt;/span> &lt;span class="n">install&lt;/span> &lt;span class="n">MySQL&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">python&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">brew&lt;/span> &lt;span class="n">unlink&lt;/span> &lt;span class="n">mysql&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">connector&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">c&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">brew&lt;/span> &lt;span class="n">link&lt;/span> &lt;span class="o">--&lt;/span>&lt;span class="n">overwrite&lt;/span> &lt;span class="n">mysql&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol>
+&lt;li>
+&lt;p>&lt;code>brew unlink mysql # only if installed, causes the next step to fail&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>brew install mysql-connector-c&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>locate &lt;code>mysql_config&lt;/code> file with &lt;code>which (mysql_config)&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>edit the &lt;code>mysql_config&lt;/code> file, under &lt;code># Create options&lt;/code> change this:&lt;/p>
+&lt;p>&lt;code>libs=&amp;quot;$libs -l &amp;quot;&lt;/code>&lt;/p>
+&lt;p>to this:&lt;/p>
+&lt;p>&lt;code>libs=&amp;quot;$libs -lmysqlclient -lssl -lcrypto&amp;quot;&lt;/code>&lt;/p>
+&lt;p>if using vim, &lt;code>:wq!&lt;/code> to save the read-only file&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Now the install should run successfully&lt;/p>
+&lt;p>&lt;code>pip install mysqlclient&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Adding this separately, as it&amp;rsquo;s similar but not directly related to the initial question&lt;/p>
+&lt;p>&lt;code>pip install MySQL-python&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Fix &lt;code>mysql&lt;/code> brew formula, if it was unlinked in the first step.&lt;/p>
+&lt;p>&lt;code>brew unlink mysql-connector-c&lt;/code>&lt;/p>
+&lt;p>&lt;code>brew link mysql&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>homebrew 安装mysql</title><link>https://60ke.github.io/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/</link><pubDate>Thu, 30 May 2019 01:53:33 +0000</pubDate><guid>https://60ke.github.io/drafts/homebrew-%E5%AE%89%E8%A3%85mysql/</guid><description>&lt;h1 id="homebrew-安装mysql">homebrew 安装mysql&lt;/h1>
+&lt;ol>
+&lt;li>
+&lt;p>安装mysql&lt;/p>
+&lt;p>&lt;code>brew install mysql&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>启动mysql服务&lt;/p>
+&lt;p>&lt;code>mysql.server start&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>设置mysql(密码等)&lt;/p>
+&lt;p>&lt;code>mysql_secure_installation&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>通过ssh实现mac远程桌面</title><link>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</link><pubDate>Wed, 06 Sep 2017 08:49:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E9%80%9A%E8%BF%87ssh%E5%AE%9E%E7%8E%B0mac%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2/</guid><description>&lt;p>teamviewer因为电脑重启的原因,更改了远程登录的密码,但是我没有保存 所以连接不上了。。。&lt;/p>
+&lt;h1 id="下面是解决办法">下面是解决办法：&lt;/h1>
+&lt;hr>
+&lt;h3 id="必要条件可以通过ssh连接">&lt;strong>必要条件：可以通过ssh连接！&lt;/strong>&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>首先通过ssh登录mac&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>通过下面的命令安装teamviewer&lt;/p>
+&lt;p>&lt;code>brew cask install teamviewer&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>启动teamviewer&lt;/p>
+&lt;p>&lt;code>open /Applications/TeamViewer.app&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>截图&lt;/p>
+&lt;p>&lt;code>screencapture /Users/iMac/Desktop/1.png&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>查看图片获取密码登录即可&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="teamviewer已经登录被其它窗口挡到怎么办">&lt;strong>teamviewer已经登录被其它窗口挡到怎么办？&lt;/strong>&lt;/h3>
+&lt;p>关闭再重新打开即可！&lt;/p>
+&lt;pre>&lt;code>killall TeamViewer
+open /Applications/TeamViewer.app&lt;/code>&lt;/pre></description></item></channel></rss>
