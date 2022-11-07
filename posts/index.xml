@@ -1,9 +1,327 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on LookForAdmin</title><link>https://60ke.github.io/posts/</link><description>Recent content in Posts on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 31 Oct 2022 13:59:35 +0800</lastBuildDate><atom:link href="https://60ke.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>任务计划</title><link>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</link><pubDate>Mon, 11 Apr 2022 10:15:27 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</guid><description>&lt;ul>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Posts on LookForAdmin</title><link>https://60ke.github.io/posts/</link><description>Recent content in Posts on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 02 Nov 2022 15:21:23 +0800</lastBuildDate><atom:link href="https://60ke.github.io/posts/index.xml" rel="self" type="application/rss+xml"/><item><title>任务计划</title><link>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</link><pubDate>Mon, 11 Apr 2022 10:15:27 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</guid><description>&lt;ul>
 &lt;li>布隆过滤器实现&lt;/li>
 &lt;li>goleveldb源码阅读&lt;/li>
 &lt;li>etcd源码阅读&lt;/li>
 &lt;li>simpleraft实现&lt;/li>
-&lt;/ul></description></item><item><title>Ubuntu黑屏无法登录</title><link>https://60ke.github.io/posts/ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/</link><pubDate>Mon, 31 Oct 2022 13:59:35 +0800</pubDate><guid>https://60ke.github.io/posts/ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/</guid><description>&lt;p>今天公司台式机断电重启后,在登录之前黑屏进不去了.搞了好一会解决了,记录一下过程:&lt;/p>
+&lt;/ul></description></item><item><title>Cdn加速</title><link>https://60ke.github.io/posts/cdn%E5%8A%A0%E9%80%9F/</link><pubDate>Wed, 02 Nov 2022 15:21:23 +0800</pubDate><guid>https://60ke.github.io/posts/cdn%E5%8A%A0%E9%80%9F/</guid><description>&lt;ul>
+&lt;li>通过jsDelivr引用资源
+使用方法：https://cdn.jsdelivr.net/gh/你的用户名/你的仓库名@发布的版本号/文件路径&lt;/li>
+&lt;/ul></description></item><item><title>Couchdb压缩备份方案</title><link>https://60ke.github.io/posts/couchdb%E5%8E%8B%E7%BC%A9%E6%B5%8B%E8%AF%95/</link><pubDate>Wed, 02 Nov 2022 11:57:38 +0800</pubDate><guid>https://60ke.github.io/posts/couchdb%E5%8E%8B%E7%BC%A9%E6%B5%8B%E8%AF%95/</guid><description>&lt;h3 id="压缩">压缩&lt;/h3>
+&lt;ul>
+&lt;li>安装couchdb&lt;/li>
+&lt;li>登录web页面并查看数据库: http://10.182.1.77:5984/_utils/#/_all_dbs&lt;/li>
+&lt;li>压缩数据库,以&lt;code>_replicator&lt;/code>为例,执行curl&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">curl -X POST -H &amp;#34;Content-Type: application/json&amp;#34; http://admin:8lab@127.0.0.1:5984/_replicator/_compact
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>刷新web页面查看数据库大小已经变小&lt;/li>
+&lt;/ul>
+&lt;h3 id="备份">备份&lt;/h3>
+&lt;p>1 .couchdb默认配置即为4分片2备份:https://docs.couchdb.org/en/3.2.2-docs/cluster/sharding.html#shards-and-replicas
+&lt;img src="http://tva1.sinaimg.cn/large/008kbQFaly1h7qyytgjwzj32la0t24qp.jpg"
+loading="lazy"
+alt="image.png"
+>&lt;/p>
+&lt;p>2.同时可以创建实时备份的任务&lt;/p>
+&lt;ul>
+&lt;li>进入web(http://10.182.1.77:5984/_utils/#/replication/_create)创建备份任务
+&lt;img src="http://tva1.sinaimg.cn/large/008kbQFaly1h7qyk9al42j32cu170wmq.jpg"
+loading="lazy"
+alt="image.png"
+>&lt;/li>
+&lt;/ul>
+&lt;p>选择&lt;code>continuous&lt;/code>持续性备份(如果考虑到安全性可以选择远程备份)&lt;/p>
+&lt;ul>
+&lt;li>执行后就能看到持续进行的状态了
+&lt;img src="http://tva1.sinaimg.cn/large/008kbQFaly1h7qymwe382j32kg13capl.jpg"
+loading="lazy"
+alt="image.png"
+>&lt;/li>
+&lt;/ul></description></item><item><title>Git使用指定位置私钥</title><link>https://60ke.github.io/posts/git%E4%BD%BF%E7%94%A8%E6%8C%87%E5%AE%9A%E4%BD%8D%E7%BD%AE%E7%A7%81%E9%92%A5/</link><pubDate>Tue, 01 Nov 2022 16:48:13 +0800</pubDate><guid>https://60ke.github.io/posts/git%E4%BD%BF%E7%94%A8%E6%8C%87%E5%AE%9A%E4%BD%8D%E7%BD%AE%E7%A7%81%E9%92%A5/</guid><description>&lt;p>修改 &lt;code>~/.ssh/config&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">Host github.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> HostName github.com
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> User git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IdentityFile /home/lsk/.ssh/id_ed25519
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> IdentitiesOnly yes
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>or you can try this:&lt;/p>
+&lt;p>GIT_SSH_COMMAND=&amp;ldquo;ssh -i ~/.ssh/id_ed25519&amp;rdquo; git clone &lt;a class="link" href="mailto:git@github.com" >git@github.com&lt;/a>:trias-lab/tmware.git&lt;/p></description></item><item><title>Docker存储位置修改</title><link>https://60ke.github.io/posts/docker%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE%E4%BF%AE%E6%94%B9/</link><pubDate>Tue, 01 Nov 2022 16:20:18 +0800</pubDate><guid>https://60ke.github.io/posts/docker%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE%E4%BF%AE%E6%94%B9/</guid><description>&lt;p>docker磁盘占用空间过大,将其移到单独的新磁盘上:&lt;/p>
+&lt;ul>
+&lt;li>使用&lt;code>fdisk -l&lt;/code>确定磁盘路径为&lt;code>/dev/sda&lt;/code>&lt;/li>
+&lt;li>使用&lt;code>fdisk /dev/sda&lt;/code>为磁盘分区
+由于磁盘之前有个gpt已经存在一个分区了,故新分区被分配在了&lt;code>/dev/sda2&lt;/code>路径下,需要使用&lt;code>fdisk -l&lt;/code>确认&lt;/li>
+&lt;li>使用&lt;code>mkfs.ext4 /dev/sda2&lt;/code>格式化&lt;code>/dev/sda2&lt;/code>&lt;/li>
+&lt;li>使用&lt;code>mount /dev/sda2 /data&lt;/code>挂载分区到&lt;code>/data&lt;/code>目录下
+如&lt;code>/data&lt;/code>不存在需先创建&lt;/li>
+&lt;li>使用&lt;code>docker stop $(docker ps -a -q)&lt;/code>停止当前的所有docker进程&lt;/li>
+&lt;li>使用&lt;code>mv /var/lib/docker /data/docker&lt;/code>转移现有的docker数据&lt;/li>
+&lt;li>使用软连接&lt;code>ln -s /data/docker /var/lib/docker&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>Reference: &lt;a class="link" href="https://blog.csdn.net/duan19920101/article/details/104823301" target="_blank" rel="noopener"
+>https://blog.csdn.net/duan19920101/article/details/104823301&lt;/a>&lt;/p></description></item><item><title>Bsc_debug</title><link>https://60ke.github.io/posts/bsc_debug/</link><pubDate>Mon, 31 Oct 2022 16:50:41 +0800</pubDate><guid>https://60ke.github.io/posts/bsc_debug/</guid><description>&lt;h2 id="init">init&lt;/h2>
+&lt;p>&lt;code>./geth --datadir data init genesis.json&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>文件依赖：
+&lt;ul>
+&lt;li>genesis.json&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="启动">启动&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">./geth --config config.toml --datadir ./data --networkid 820014 --rpc --rpcapi eth,net,web3,miner,txpool --rpcaddr 0.0.0.0 --rpcport 9545 --port 3060
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>config.toml&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;span class="lnt">48
+&lt;/span>&lt;span class="lnt">49
+&lt;/span>&lt;span class="lnt">50
+&lt;/span>&lt;span class="lnt">51
+&lt;/span>&lt;span class="lnt">52
+&lt;/span>&lt;span class="lnt">53
+&lt;/span>&lt;span class="lnt">54
+&lt;/span>&lt;span class="lnt">55
+&lt;/span>&lt;span class="lnt">56
+&lt;/span>&lt;span class="lnt">57
+&lt;/span>&lt;span class="lnt">58
+&lt;/span>&lt;span class="lnt">59
+&lt;/span>&lt;span class="lnt">60
+&lt;/span>&lt;span class="lnt">61
+&lt;/span>&lt;span class="lnt">62
+&lt;/span>&lt;span class="lnt">63
+&lt;/span>&lt;span class="lnt">64
+&lt;/span>&lt;span class="lnt">65
+&lt;/span>&lt;span class="lnt">66
+&lt;/span>&lt;span class="lnt">67
+&lt;/span>&lt;span class="lnt">68
+&lt;/span>&lt;span class="lnt">69
+&lt;/span>&lt;span class="lnt">70
+&lt;/span>&lt;span class="lnt">71
+&lt;/span>&lt;span class="lnt">72
+&lt;/span>&lt;span class="lnt">73
+&lt;/span>&lt;span class="lnt">74
+&lt;/span>&lt;span class="lnt">75
+&lt;/span>&lt;span class="lnt">76
+&lt;/span>&lt;span class="lnt">77
+&lt;/span>&lt;span class="lnt">78
+&lt;/span>&lt;span class="lnt">79
+&lt;/span>&lt;span class="lnt">80
+&lt;/span>&lt;span class="lnt">81
+&lt;/span>&lt;span class="lnt">82
+&lt;/span>&lt;span class="lnt">83
+&lt;/span>&lt;span class="lnt">84
+&lt;/span>&lt;span class="lnt">85
+&lt;/span>&lt;span class="lnt">86
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-toml" data-lang="toml">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Eth&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#DiscoveryURLs = []&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">NoPruning&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">NoPrefetch&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">LightPeers&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">100&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">UltraLightFraction&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">75&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">EnablePreimageRecording&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">EWASMInterpreter&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">EVMInterpreter&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Eth&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Miner&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GasFloor&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">30000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GasCeil&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">40000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GasPrice&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">1000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Recommit&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">10000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Noverify&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Eth&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Ethash&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">CacheDir&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">CachesInMem&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">CachesOnDisk&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">CachesLockMmap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">DatasetDir&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">DatasetsInMem&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">DatasetsOnDisk&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">DatasetsLockMmap&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">PowMode&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Eth&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">TxPool&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Locals&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">NoLocals&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Journal&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;transactions.rlp&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Rejournal&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">3600000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">PriceLimit&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">1000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">PriceBump&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">10&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">AccountSlots&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">16&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GlobalSlots&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">4096&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">AccountQueue&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">64&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GlobalQueue&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">1024&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Lifetime&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">10800000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Eth&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">GPO&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Blocks&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">20&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Percentile&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">60&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#[Shh]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#MaxMessageSize = 1048576&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#RestrictConnectionBetweenLightClients = true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Node&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">DataDir&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;~/data/node1&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#omitempty = &amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">InsecureUnlockAllowed&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">NoUSB&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">IPCPath&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;geth.ipc&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">HTTPHost&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;0.0.0.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">HTTPPort&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">8545&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">HTTPVirtualHosts&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;*&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">HTTPModules&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;debug&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="s2">&amp;#34;eth&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;net&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;web3&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;txpool&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;parlia&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">WSPort&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">8576&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">WSModules&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;net&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;web3&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;eth&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c">#GraphQLPort = 8577&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">GraphQLVirtualHosts&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;*&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">P2P&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">MaxPeers&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">50&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">NoDiscovery&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">StaticNodes&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">BootstrapNodes&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">TrustedNodes&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">ListenAddr&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;127.0.0.1:30303&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">EnableMsgEvents&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="kc">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">HTTPTimeouts&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">ReadTimeout&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">30000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">WriteTimeout&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">30000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">IdleTimeout&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">120000000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">Node&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">LogConfig&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">FileRoot&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">FilePath&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;log/bsc.log&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">MaxBytesSize&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">10485760&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Level&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;info&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="调试">调试&lt;/h2>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">dlv debug . -- --config /Users/k/bsc_test/config.toml --datadir /Users/k/bsc_test/data --networkid &lt;span class="m">820014&lt;/span> --rpc --rpcapi eth,net,web3,miner,txpool --rpcaddr 0.0.0.0 --rpcport &lt;span class="m">8545&lt;/span> --port &lt;span class="m">30303&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="调试工具">调试工具&lt;/h2>
+&lt;ul>
+&lt;li>(dlv)[https://chai2010.cn/advanced-go-programming-book/ch3-asm/ch3-09-debug.html]&lt;/li>
+&lt;li>(gdb)[https://go.dev/doc/gdb]&lt;/li>
+&lt;/ul></description></item><item><title>工作笔记</title><link>https://60ke.github.io/posts/%E5%B7%A5%E4%BD%9C%E7%AC%94%E8%AE%B0/</link><pubDate>Mon, 31 Oct 2022 15:29:19 +0800</pubDate><guid>https://60ke.github.io/posts/%E5%B7%A5%E4%BD%9C%E7%AC%94%E8%AE%B0/</guid><description>&lt;ul>
+&lt;li>bsc编译 hidapi错误&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># github.com/karalabe/usb&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">../../vendor/github.com/karalabe/usb/hid_enabled.go:22:10: fatal error: ./hidapi/hidapi/hidapi.h: No such file or directory
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="m">22&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="c1">#include &amp;#34;./hidapi/hidapi/hidapi.h&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">compilation terminated.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>解决办法:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">rm -fr usb
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">git clone https://github.com/karalabe/usb
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>Ubuntu黑屏无法登录</title><link>https://60ke.github.io/posts/ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/</link><pubDate>Mon, 31 Oct 2022 13:59:35 +0800</pubDate><guid>https://60ke.github.io/posts/ubuntu%E9%BB%91%E5%B1%8F%E6%97%A0%E6%B3%95%E7%99%BB%E5%BD%95/</guid><description>&lt;p>今天公司台式机断电重启后,在登录之前黑屏进不去了.搞了好一会解决了,记录一下过程:&lt;/p>
 &lt;ol>
 &lt;li>使用&lt;code>e&lt;/code>按键进入grub&lt;/li>
 &lt;li>将&lt;code>quiet splash&lt;/code>替换为&lt;code>nomodset&lt;/code>&lt;/li>
