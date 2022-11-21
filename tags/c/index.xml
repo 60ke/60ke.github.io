@@ -1,4 +1,94 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>c on LookForAdmin</title><link>https://60ke.github.io/tags/c/</link><description>Recent content in c on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 08 Nov 2021 11:27:50 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/c/index.xml" rel="self" type="application/rss+xml"/><item><title>跨平台编译</title><link>https://60ke.github.io/drafts/golang%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91/</link><pubDate>Mon, 08 Nov 2021 11:27:50 +0000</pubDate><guid>https://60ke.github.io/drafts/golang%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91/</guid><description>&lt;h1 id="golang跨平台编译">golang跨平台编译&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>c on LookForAdmin</title><link>https://60ke.github.io/tags/c/</link><description>Recent content in c on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 10 Nov 2022 11:05:53 +0800</lastBuildDate><atom:link href="https://60ke.github.io/tags/c/index.xml" rel="self" type="application/rss+xml"/><item><title>Itrustee</title><link>https://60ke.github.io/posts/itrustee/</link><pubDate>Thu, 10 Nov 2022 11:05:53 +0800</pubDate><guid>https://60ke.github.io/posts/itrustee/</guid><description>&lt;p>华为基于TrustZone开发了IturstTEE,一开始是在手机上使用,后来华为出了鲲鹏的服务器,在服务器端也支持了: &lt;a class="link" href="https://www.hikunpeng.com/zh/developer/boostkit/confidential-computing" target="_blank" rel="noopener"
+>https://www.hikunpeng.com/zh/developer/boostkit/confidential-computing&lt;/a>。公司现有有一套泰山服务器搭建好了TEE环境,现记录一下TEE使用过程中遇到的问题。&lt;/p>
+&lt;h3 id="环境部署">环境部署&lt;/h3>
+&lt;p>&lt;a class="link" href="https://support.huawei.com/enterprise/zh/doc/EDOC1100231607/778dd7e" target="_blank" rel="noopener"
+>https://support.huawei.com/enterprise/zh/doc/EDOC1100231607/778dd7e&lt;/a>&lt;/p>
+&lt;h3 id="证书申请">证书申请&lt;/h3>
+&lt;p>&lt;a class="link" href="https://support.huawei.com/enterprise/zh/doc/EDOC1100231607/65204c54" target="_blank" rel="noopener"
+>https://support.huawei.com/enterprise/zh/doc/EDOC1100231607/65204c54&lt;/a>&lt;/p>
+&lt;h3 id="sdk开发">SDK开发&lt;/h3>
+&lt;p>CA,TA交互流程:
+&lt;img src="https://ww1.sinaimg.cn/large/008kbQFaly1h7zvzqjljcj31fk1bc7hq.jpg"
+loading="lazy"
+alt="008kbQFaly1h7zvzqjljcj31fk1bc7hq"
+>
+&lt;a class="link" href="https://gitee.com/openeuler/itrustee_sdk/tree/master" target="_blank" rel="noopener"
+>itrustee sdk&lt;/a>在码云上进行了开源,项目&lt;code>test&lt;/code>目录下有代码示例,以helloword为例:
+helloword项目直接编译CA,TA并将其放入对应目录(CA=&amp;gt;/vendor/bin/,TA=&amp;gt;/data/),运行发现返回&lt;code>open session failed&lt;/code>(坑来了&amp;hellip;),使用&lt;code>tlogcat&lt;/code>命令查看日志,发现无相关日志输出&amp;hellip;
+一番踩坑后发现:下面的这段代码缺少&lt;code>context.ta_path = (uint8_t *)&amp;quot;*.sec&amp;quot;;&lt;/code>,导致CA根本没有连接到TA,所以根本没有日志&amp;hellip;&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-C" data-lang="C">&lt;span class="line">&lt;span class="cl"> &lt;span class="n">operation&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">started&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">OPERATION_START_FLAG&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">operation&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">paramTypes&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">TEEC_PARAM_TYPES&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TEEC_NONE&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TEEC_NONE&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TEEC_NONE&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">TEEC_NONE&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">result&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">TEEC_OpenSession&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">session&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">g_demoTemplateUuid&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">TEEC_LOGIN_IDENTIFY&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">NULL&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">operation&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">origin&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="n">TEEC_SUCCESS&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;teec open session failed&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">goto&lt;/span> &lt;span class="n">cleanup_2&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>加入代码后可以正常运行了:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sh" data-lang="sh">&lt;span class="line">&lt;span class="cl">/vendor/bin/teec_hello
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Succeed to load TA, TA&lt;span class="err">&amp;#39;&lt;/span>s version: demo_20200601.
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>其它要注意的:&lt;/p>
+&lt;ul>
+&lt;li>CA运行路径需是: &lt;code>/vendor/bin/app_name&lt;/code>&lt;/li>
+&lt;li>TA:加载CA的路径:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-C" data-lang="C">&lt;span class="line">&lt;span class="cl">&lt;span class="n">addcaller_ca_exec&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">CA_PATH&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;root&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="n">TEE_SUCCESS&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>Stackoverflow</title><link>https://60ke.github.io/posts/stackoverflow/</link><pubDate>Wed, 09 Nov 2022 11:55:43 +0800</pubDate><guid>https://60ke.github.io/posts/stackoverflow/</guid><description>&lt;ul>
+&lt;li>C
+C语言结构体语法:&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-C" data-lang="C">&lt;span class="line">&lt;span class="cl">&lt;span class="k">struct&lt;/span> &lt;span class="n">Bit&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">unsigned&lt;/span> &lt;span class="nl">b&lt;/span> &lt;span class="p">:&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;a class="link" href="https://stackoverflow.com/questions/8564532/colon-in-c-struct-what-does-it-mean" target="_blank" rel="noopener"
+>&amp;quot;:&amp;quot; (colon) in C struct - what does it mean?&lt;/a> &amp;lt;==&amp;gt; &lt;a class="link" href="https://stackoverflow.com/questions/824295/what-does-c-struct-syntax-a-b-mean" target="_blank" rel="noopener"
+>https://stackoverflow.com/questions/824295/what-does-c-struct-syntax-a-b-mean&lt;/a>&lt;/p></description></item><item><title>跨平台编译</title><link>https://60ke.github.io/drafts/golang%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91/</link><pubDate>Mon, 08 Nov 2021 11:27:50 +0000</pubDate><guid>https://60ke.github.io/drafts/golang%E8%B7%A8%E5%B9%B3%E5%8F%B0%E7%BC%96%E8%AF%91/</guid><description>&lt;h1 id="golang跨平台编译">golang跨平台编译&lt;/h1>
 &lt;h2 id="运行go-tool-dist-list查看golang当前支持的平台">运行&lt;code>go tool dist list&lt;/code>查看golang当前支持的平台&lt;/h2>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
