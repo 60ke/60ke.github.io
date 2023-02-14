@@ -112,10 +112,10 @@
 &lt;/span>&lt;span class="lnt">4
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="err">ca&lt;/span> &lt;span class="err">ca.crt&lt;/span>　　&lt;span class="err">改为：#ca&lt;/span> &lt;span class="err">ca.crt&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">cert&lt;/span> &lt;span class="err">client.crt&lt;/span>　　&lt;span class="err">改为：#cert&lt;/span> &lt;span class="err">client.crt&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">key&lt;/span> &lt;span class="err">client.key&lt;/span>　　&lt;span class="err">改为：#key&lt;/span> &lt;span class="err">client.key&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>　　&lt;span class="err">改为：#tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="err">ca&lt;/span> &lt;span class="err">ca.crt　　改为：#ca&lt;/span> &lt;span class="err">ca.crt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">cert&lt;/span> &lt;span class="err">client.crt　　改为：#cert&lt;/span> &lt;span class="err">client.crt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">key&lt;/span> &lt;span class="err">client.key　　改为：#key&lt;/span> &lt;span class="err">client.key&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="err">　　改为：#tls-auth&lt;/span> &lt;span class="err">ta.key&lt;/span> &lt;span class="mi">1&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>在最后面添加以下内容：&lt;/p>
