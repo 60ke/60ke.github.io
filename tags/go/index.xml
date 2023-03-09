@@ -1,4 +1,706 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>go on LookForAdmin</title><link>https://60ke.github.io/tags/go/</link><description>Recent content in go on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 30 Aug 2022 15:30:59 +0800</lastBuildDate><atom:link href="https://60ke.github.io/tags/go/index.xml" rel="self" type="application/rss+xml"/><item><title>Github使用Action自动编译发布go项目</title><link>https://60ke.github.io/posts/githubaction/</link><pubDate>Tue, 30 Aug 2022 15:30:59 +0800</pubDate><guid>https://60ke.github.io/posts/githubaction/</guid><description>&lt;h3 id="准备">准备&lt;/h3>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>go on LookForAdmin</title><link>https://60ke.github.io/tags/go/</link><description>Recent content in go on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 09 Mar 2023 10:54:32 +0800</lastBuildDate><atom:link href="https://60ke.github.io/tags/go/index.xml" rel="self" type="application/rss+xml"/><item><title>go代码调试</title><link>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</link><pubDate>Thu, 09 Mar 2023 10:54:32 +0800</pubDate><guid>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</guid><description>&lt;p>Go目前支持&lt;a class="link" href="https://sourceware.org/gdb/current/onlinedocs/gdb/" target="_blank" rel="noopener"
+>GDB&lt;/a>,&lt;a class="link" href="https://lldb.llvm.org/use/tutorial.html" target="_blank" rel="noopener"
+>LLDB&lt;/a>,&lt;a class="link" href="https://github.com/go-delve/delve" target="_blank" rel="noopener"
+>Delve&lt;/a>等调试工具.官方出了&lt;a class="link" href="https://go.dev/doc/gdb" target="_blank" rel="noopener"
+>GDB调试教程&lt;/a>但是官方更推荐&lt;a class="link" href="https://github.com/go-delve/delve" target="_blank" rel="noopener"
+>Delve&lt;/a>(⊙ˍ⊙)&lt;/p>
+&lt;h2 id="delve文档">Delve文档&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://github.com/go-delve/delve/tree/master/Documentation" target="_blank" rel="noopener"
+>Delve官方文档&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;a class="link" href="https://chai2010.cn/advanced-go-programming-book/ch3-asm/ch3-09-debug.html" target="_blank" rel="noopener"
+>go语言高级编程之Delve调试&lt;/a>
+为避免失联,将中文文档摘抄&lt;/p>
+&lt;blockquote>
+&lt;h1 id="39-delve-调试器">3.9 Delve 调试器&lt;/h1>
+&lt;p>目前 Go 语言支持 GDB、LLDB 和 Delve 几种调试器。其中 GDB 是最早支持的调试工&amp;gt;具，LLDB 是 macOS 系统推荐的标准调试工具。但是 GDB 和 LLDB 对 Go 语言的专有&amp;gt;特性都缺乏很大支持，而只有 Delve 是专门为 Go 语言设计开发的调试工具。而且 &amp;gt;Delve 本身也是采用 Go 语言开发，对 Windows 平台也提供了一样的支持。本节我们&amp;gt;基于 Delve 简单解释如何调试 Go 汇编程序。&lt;/p>
+&lt;h2 id="391-delve-入门">3.9.1 Delve 入门&lt;/h2>
+&lt;p>首先根据官方的文档正确安装 Delve 调试器。我们会先构造一个简单的 Go 语言代码，&amp;gt;用于熟悉下 Delve 的简单用法。&lt;/p>
+&lt;p>创建 main.go 文件，main 函数先通过循初始化一个切片，然后输出切片的内容：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">nums&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="kt">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="p">&amp;lt;&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">nums&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="nx">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">nums&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">nums&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>命令行进入包所在目录，然后输入 &lt;code>dlv debug&lt;/code> 命令进入调试：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">$ dlv debug
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Type &amp;#39;help&amp;#39; for list of commands.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>输入 help 命令可以查看到 Delve 提供的调试命令列表：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">help&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">The&lt;/span> &lt;span class="nx">following&lt;/span> &lt;span class="nx">commands&lt;/span> &lt;span class="nx">are&lt;/span> &lt;span class="nx">available&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">args&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">function&lt;/span> &lt;span class="nx">arguments&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">b&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Sets&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">breakpoint&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">breakpoints&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">bp&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">active&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">breakpoints&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clear&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Deletes&lt;/span> &lt;span class="nx">breakpoint&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clearall&lt;/span> &lt;span class="o">--------------------&lt;/span> &lt;span class="nx">Deletes&lt;/span> &lt;span class="nx">multiple&lt;/span> &lt;span class="nx">breakpoints&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">condition&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">cond&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">condition&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">config&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Changes&lt;/span> &lt;span class="nx">configuration&lt;/span> &lt;span class="nx">parameters&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">---------&lt;/span> &lt;span class="nx">Run&lt;/span> &lt;span class="nx">until&lt;/span> &lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="nx">program&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">termination&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">disassemble&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">disass&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">Disassembler&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">down&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Move&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span> &lt;span class="nx">down&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">exit&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">quit&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">q&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------&lt;/span> &lt;span class="nx">Exit&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">debugger&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">frame&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">execute&lt;/span> &lt;span class="nx">command&lt;/span>&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">funcs&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">functions&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">goroutine&lt;/span> &lt;span class="o">-------------------&lt;/span> &lt;span class="nx">Shows&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="nx">changes&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">goroutine&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">goroutines&lt;/span> &lt;span class="o">------------------&lt;/span> &lt;span class="nx">List&lt;/span> &lt;span class="nx">program&lt;/span> &lt;span class="nx">goroutines&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">help&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">h&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Prints&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">help&lt;/span> &lt;span class="nx">message&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">list&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">ls&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">l&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">--------&lt;/span> &lt;span class="nx">Show&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">code&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">locals&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">local&lt;/span> &lt;span class="nx">variables&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">next&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">n&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Step&lt;/span> &lt;span class="nx">over&lt;/span> &lt;span class="nx">to&lt;/span> &lt;span class="nx">next&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">line&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">on&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="nx">Executes&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">command&lt;/span> &lt;span class="nx">when&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">is&lt;/span> &lt;span class="nx">hit&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">print&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Evaluate&lt;/span> &lt;span class="nx">an&lt;/span> &lt;span class="nx">expression&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">regs&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">contents&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">CPU&lt;/span> &lt;span class="nx">registers&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">restart&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="nx">Restart&lt;/span> &lt;span class="nx">process&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">set&lt;/span> &lt;span class="o">-------------------------&lt;/span> &lt;span class="nx">Changes&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">value&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">variable&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">source&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Executes&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">file&lt;/span> &lt;span class="nx">containing&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">delve&lt;/span>&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sources&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">files&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">stack&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">bt&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">stack&lt;/span> &lt;span class="nx">trace&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">step&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">s&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Single&lt;/span> &lt;span class="nx">step&lt;/span> &lt;span class="nx">through&lt;/span> &lt;span class="nx">program&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">step&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nf">instruction&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">si&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">Single&lt;/span> &lt;span class="nx">step&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">single&lt;/span> &lt;span class="nx">cpu&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">instruction&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">stepout&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Step&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">function&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">thread&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">tr&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="nx">Switch&lt;/span> &lt;span class="nx">to&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">specified&lt;/span> &lt;span class="nx">thread&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">threads&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">every&lt;/span> &lt;span class="nx">traced&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">thread&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">trace&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">tracepoint&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">types&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">types&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">up&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="nx">Move&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span> &lt;span class="nx">up&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">vars&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="kn">package&lt;/span> &lt;span class="nx">variables&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">whatis&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Prints&lt;/span> &lt;span class="kd">type&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">an&lt;/span> &lt;span class="nx">expression&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Type&lt;/span> &lt;span class="nx">help&lt;/span> &lt;span class="nx">followed&lt;/span> &lt;span class="nx">by&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">command&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">full&lt;/span> &lt;span class="nx">documentation&lt;/span>&lt;span class="p">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>每个 Go 程序的入口是 main.main 函数，我们可以用 break 在此设置一个断点：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) break main.main
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint 1 set at 0x10ae9b8 for main.main() ./main.go:7
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后通过 breakpoints 查看已经设置的所有断点：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) breakpoints
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint unrecovered-panic at 0x102a380 for runtime.startpanic()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> /usr/local/go/src/runtime/panic.go:588 (0)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> print runtime.curg._panic.arg
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint 1 at 0x10ae9b8 for main.main() ./main.go:7 (0)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>我们发现除了我们自己设置的 main.main 函数断点外，Delve 内部已经为 panic 异&amp;gt;常函数设置了一个断点。&lt;/p>
+&lt;p>通过 vars 命令可以查看全部包级的变量。因为最终的目标程序可能含有大量的全局变&amp;gt;量，我们可以通过一个正则参数选择想查看的全局变量：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) vars main
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">main.initdone· = 2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">runtime.main_init_done = chan bool 0/0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">runtime.mainStarted = true
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后就可以通过 continue 命令让程序运行到下一个断点处：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) continue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:7 (hits goroutine(1):1 total:1) (PC: &amp;gt;0x10ae9b8)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3: import (
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 7: func main() {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>输入 next 命令单步执行进入 main 函数内部：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:8 (PC: 0x10ae9cf)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3: import (
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 8: nums := make([]int, 5)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>进入函数之后可以通过 args 和 locals 命令查看函数的参数和局部变量：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) args
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(no args)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) locals
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nums = []int len: 842350763880, cap: 17491881, nil
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>因为 main 函数没有参数，因此 args 命令没有任何输出。而 locals 命令则输出了局&amp;gt;部变量 nums 切片的值：此时切片还未完成初始化，切片的底层指针为 nil，长度和容量&amp;gt;都是一个随机数值。&lt;/p>
+&lt;p>再次输入 next 命令单步执行后就可以查看到 nums 切片初始化之后的结果了：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) next
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:9 (PC: 0x10aea12)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 9: for i := 0; i &amp;lt;len(nums); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) locals
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nums = []int len: 5, cap: 5, [...]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i = 17601536
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>此时因为调试器已经到了 for 语句行，因此局部变量出现了还未初始化的循环迭代变量 &amp;gt;i。&lt;/p>
+&lt;p>下面我们通过组合使用 break 和 condition 命令，在循环内部设置一个条件断点，当&amp;gt;循环变量 i 等于 3 时断点生效：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) break main.go:10
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint 2 set at 0x10aea33 for main.main() ./main.go:10
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) condition 2 i==3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后通过 continue 执行到刚设置的条件断点，并且输出局部变量：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) continue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:10 (hits goroutine(1):1 total:1) (PC: &amp;gt;0x10aea33)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 10: nums[i] = i * i
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) locals
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nums = []int len: 5, cap: 5, [...]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i = 3
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) print nums
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[]int len: 5, cap: 5, [0,1,4,0,0]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>我们发现当循环变量 i 等于 3 时，nums 切片的前 3 个元素已经正确初始化。&lt;/p>
+&lt;p>我们还可以通过 stack 查看当前执行函数的栈帧信息：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) stack
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">0 0x00000000010aea33 in main.main
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> at ./main.go:10
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">1 0x000000000102bd60 in runtime.main
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> at /usr/local/go/src/runtime/proc.go:198
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2 0x0000000001053bd1 in runtime.goexit
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> at /usr/local/go/src/runtime/asm_amd64.s:2361
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>或者通过 goroutine 和 goroutines 命令查看当前 Goroutine 相关的信息：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) goroutine
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Thread 101686 at ./main.go:10
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Goroutine 1:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Runtime: ./main.go:10 main.main (0x10aea33)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> User: ./main.go:10 main.main (0x10aea33)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Go: /usr/local/go/src/runtime/asm_amd64.s:258 runtime.rt0_go &amp;gt;(0x1051643)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Start: /usr/local/go/src/runtime/proc.go:109 runtime.main &amp;gt;(0x102bb90)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) goroutines
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[4 goroutines]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">* Goroutine 1 - User: ./main.go:10 main.main (0x10aea33) (thread &amp;gt;101686)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Goroutine 2 - User: /usr/local/go/src/runtime/proc.go:292 \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> runtime.gopark (0x102c189)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Goroutine 3 - User: /usr/local/go/src/runtime/proc.go:292 \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> runtime.gopark (0x102c189)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Goroutine 4 - User: /usr/local/go/src/runtime/proc.go:292 \
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> runtime.gopark (0x102c189)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>最后完成调试工作后输入 quit 命令退出调试器。至此我们已经掌握了 Delve 调试器器&amp;gt;的简单用法。&lt;/p>
+&lt;h2 id="392-调试汇编程序">3.9.2 调试汇编程序&lt;/h2>
+&lt;p>用 Delve 调试 Go 汇编程序的过程比调试 Go 语言程序更加简单。调试汇编程序时，我&amp;gt;们需要时刻关注寄存器的状态，如果涉及函数调用或局部变量或参数还需要重点关注栈寄存&amp;gt;器 SP 的状态。&lt;/p>
+&lt;p>为了编译演示，我们重新实现一个更简单的 main 函数：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在 main 函数中调用汇编语言实现的 asmSayHello 函数输出一个字符串。&lt;/p>
+&lt;p>asmSayHello 函数在 main_amd64.s 文件中实现：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">#include &amp;#34;textflag.h&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">#include &amp;#34;funcdata.h&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// &amp;#34;Hello World!\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DATA text&amp;lt;&amp;gt;+0(SB)/8,$&amp;#34;Hello Wo&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DATA text&amp;lt;&amp;gt;+8(SB)/8,$&amp;#34;rld!\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">GLOBL text&amp;lt;&amp;gt;(SB),NOPTR,$16
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// func asmSayHello()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TEXT ·asmSayHello(SB), $16-0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> NO_LOCAL_POINTERS
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ $text&amp;lt;&amp;gt;+0(SB), AX
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ AX, (SP)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ $16, 8(SP)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> CALL runtime·printstring(SB)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> RET
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>参考前面的调试流程，在执行到 main 函数断点时，可以 disassemble 反汇编命令查&amp;gt;看 main 函数对应的汇编代码：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">break&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Breakpoint&lt;/span> &lt;span class="mi">1&lt;/span> &lt;span class="nx">set&lt;/span> &lt;span class="nx">at&lt;/span> &lt;span class="mh">0x105011f&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">.&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">.&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">hits&lt;/span> &lt;span class="nf">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="nx">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="mh">0x105011f&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">1&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">2&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">=&amp;gt;&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">4&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kd">func&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">disassemble&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">TEXT&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">SB&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span>&lt;span class="nx">path&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">to&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">pkg&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050110&lt;/span> &lt;span class="mi">65488&lt;/span>&lt;span class="nx">b0c25a0080000&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">rcx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="nx">g&lt;/span> &lt;span class="p">&amp;gt;[&lt;/span>&lt;span class="mh">0x8a0&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050119&lt;/span> &lt;span class="mi">483&lt;/span>&lt;span class="nx">b6110&lt;/span> &lt;span class="nx">cmp&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">r&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mh">0x10&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011d&lt;/span> &lt;span class="mi">761&lt;/span>&lt;span class="nx">a&lt;/span> &lt;span class="nx">jbe&lt;/span> &lt;span class="mh">0x1050139&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">=&amp;gt;&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011f&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="nx">ec08&lt;/span> &lt;span class="nx">sub&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050123&lt;/span> &lt;span class="mi">48892&lt;/span>&lt;span class="nx">c24&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">],&lt;/span> &lt;span class="nx">rbp&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050127&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="nx">d2c24&lt;/span> &lt;span class="nx">lea&lt;/span> &lt;span class="nx">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105012b&lt;/span> &lt;span class="nx">e880000000&lt;/span> &lt;span class="nx">call&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">asmSayHello&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050130&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="nx">b2c24&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050134&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="nx">c408&lt;/span> &lt;span class="nx">add&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050138&lt;/span> &lt;span class="nx">c3&lt;/span> &lt;span class="nx">ret&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050139&lt;/span> &lt;span class="nx">e87288ffff&lt;/span> &lt;span class="nx">call&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">runtime&lt;/span>&lt;span class="p">.&amp;gt;&lt;/span>&lt;span class="nx">morestack_noctxt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105013e&lt;/span> &lt;span class="nx">ebd0&lt;/span> &lt;span class="nx">jmp&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>虽然 main 函数内部只有一行函数调用语句，但是却生成了很多汇编指令。在函数的开头&amp;gt;通过比较 rsp 寄存器判断栈空间是否不足，如果不足则跳转到 0x1050139 地址调用 &amp;gt;runtime.morestack 函数进行栈扩容，然后跳回到 main 函数开始位置重新进行栈空&amp;gt;间测试。而在 asmSayHello 函数调用之前，先扩展 rsp 空间用于临时存储 rbp 寄存&amp;gt;器的状态，在函数返回后通过栈恢复 rbp 的值并回收临时栈空间。通过对比 Go 语言代&amp;gt;码和对应的汇编代码，我们可以加深对 Go 汇编语言的理解。&lt;/p>
+&lt;p>从汇编语言角度深刻 Go 语言各种特性的工作机制对调试工作也是一个很大的帮助。如果&amp;gt;希望在汇编指令层面调试 Go 代码，Delve 还提供了一个 step-instruction 单步执&amp;gt;行汇编指令的命令。&lt;/p>
+&lt;p>现在我们依然用 break 命令在 asmSayHello 函数设置断点，并且输入 continue 命&amp;gt;令让调试器执行到断点位置停下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) break main.asmSayHello
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint 2 set at 0x10501bf for main.asmSayHello() ./main_amd64.&amp;gt;s:10
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) continue
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.asmSayHello() ./main_amd64.s:10 (hits goroutine(1):1 &amp;gt;total:1) (PC: 0x10501bf)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: DATA text&amp;lt;&amp;gt;+0(SB)/8,$&amp;#34;Hello Wo&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6: DATA text&amp;lt;&amp;gt;+8(SB)/8,$&amp;#34;rld!\n&amp;#34;
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: GLOBL text&amp;lt;&amp;gt;(SB),NOPTR,$16
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: // func asmSayHello()
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 10: TEXT ·asmSayHello(SB), $16-0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: NO_LOCAL_POINTERS
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: MOVQ $text&amp;lt;&amp;gt;+0(SB), AX
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: MOVQ AX, (SP)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 14: MOVQ $16, 8(SP)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 15: CALL runtime·printstring(SB)
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>此时我们可以通过 regs 查看全部的寄存器状态：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) regs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rax = 0x0000000001050110
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rbx = 0x0000000000000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rcx = 0x000000c420000300
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rdx = 0x0000000001070be0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rdi = 0x000000c42007c020
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rsi = 0x0000000000000001
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rbp = 0x000000c420049f78
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rsp = 0x000000c420049f70
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r8 = 0x7fffffffffffffff
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r9 = 0xffffffffffffffff
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r10 = 0x0000000000000100
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r11 = 0x0000000000000286
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r12 = 0x000000c41fffff7c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r13 = 0x0000000000000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r14 = 0x0000000000000178
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> r15 = 0x0000000000000004
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rip = 0x00000000010501bf
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rflags = 0x0000000000000206
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>因为 AMD64 的各种寄存器非常多，项目的信息中刻意省略了非通用的寄存器。如果再单步&amp;gt;执行到 13 行时，可以发现 AX 寄存器值的变化。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) regs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rax = 0x00000000010a4060
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rbx = 0x0000000000000000
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rcx = 0x000000c420000300
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>因此我们可以推断汇编程序内部定义的 &lt;code>text&amp;lt;&amp;gt;&lt;/code> 数据的地址为 &amp;gt;0x00000000010a4060。我们可以用过 print 命令来查看该内存内的数据：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) print *(*[5]byte)(uintptr(0x00000000010a4060))
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[5]uint8 [72,101,108,108,111]
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>我们可以发现输出的 &lt;code>[5]uint8 [72,101,108,108,111]&lt;/code> 刚好是对应 “Hello” 字&amp;gt;符串。通过类似的方法，我们可以通过查看 SP 对应的栈指针位置，然后查看栈中局部变&amp;gt;量的值。&lt;/p>
+&lt;p>至此我们就掌握了 Go 汇编程序的简单调试技术。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;/blockquote>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="ebpf与dlv">EBPF与DLV&lt;/h2>
+&lt;p>最近在学习epbf时发现Delve支持ebpf参数.&lt;/p>
+&lt;p>在&lt;code>Ubuntu 20.04.5 LTS&lt;/code>系统下,使用root权限&lt;/p>
+&lt;p>命令如下:&lt;/p>
+&lt;p>&lt;code>/home/lsk/go/bin/dlv trace foo --ebpf&lt;/code>&lt;/p>
+&lt;p>如果不加&lt;code>ebpf&lt;/code>参数则默认使用ptrace参数,关于trace的具体使用方法见:https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_trace.md&lt;/p></description></item><item><title>Github使用Action自动编译发布go项目</title><link>https://60ke.github.io/posts/githubaction/</link><pubDate>Tue, 30 Aug 2022 15:30:59 +0800</pubDate><guid>https://60ke.github.io/posts/githubaction/</guid><description>&lt;h3 id="准备">准备&lt;/h3>
 &lt;ul>
 &lt;li>GitHub personal access
 部署的 Action 需要有对应仓库的权限，因此提前设置好 GitHub personal access（个人访问令牌）。生成教程可以看 GitHub 官方的帮助文档：&lt;a class="link" href="https://docs.github.com/cn/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token" target="_blank" rel="noopener"
