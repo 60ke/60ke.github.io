@@ -228,7 +228,7 @@
 </span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>prerelease</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>title</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;Development Build&#34;</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>files</span><span class=p>:</span><span class=w> </span><span class=p>|</span><span class=sd>
-</span></span></span><span class=line><span class=cl><span class=sd>            </span><span class=w>            </span><span class=l>./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz  </span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=sd>            ./nodeUpgrade-${{ matrix.goos }}-${{ matrix.goarch }}.tgz  </span><span class=w>            
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#     - name: Uploading assets...</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#       # if: ${{ !env.ACT }}</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=c>#       # id: upload-release-asset </span><span class=w>
