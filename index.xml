@@ -1,9 +1,133 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LookForAdmin</title><link>https://60ke.github.io/</link><description>Recent content on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 09 Mar 2023 16:51:29 +0800</lastBuildDate><atom:link href="https://60ke.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>任务计划</title><link>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</link><pubDate>Mon, 11 Apr 2022 10:15:27 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</guid><description>&lt;ul>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>LookForAdmin</title><link>https://60ke.github.io/</link><description>Recent content on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 29 Mar 2023 18:38:04 +0800</lastBuildDate><atom:link href="https://60ke.github.io/index.xml" rel="self" type="application/rss+xml"/><item><title>任务计划</title><link>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</link><pubDate>Mon, 11 Apr 2022 10:15:27 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BB%BB%E5%8A%A1%E8%AE%A1%E5%88%92/</guid><description>&lt;ul>
 &lt;li>布隆过滤器实现&lt;/li>
 &lt;li>goleveldb源码阅读&lt;/li>
 &lt;li>etcd源码阅读&lt;/li>
 &lt;li>simpleraft实现&lt;/li>
-&lt;/ul></description></item><item><title>Go笔记</title><link>https://60ke.github.io/posts/go%E7%AC%94%E8%AE%B0/</link><pubDate>Thu, 09 Mar 2023 16:51:29 +0800</pubDate><guid>https://60ke.github.io/posts/go%E7%AC%94%E8%AE%B0/</guid><description>&lt;div class="highlight">&lt;div class="chroma">
+&lt;/ul></description></item><item><title>Swift</title><link>https://60ke.github.io/posts/swift/</link><pubDate>Wed, 29 Mar 2023 18:38:04 +0800</pubDate><guid>https://60ke.github.io/posts/swift/</guid><description>&lt;h1 id="swift-tutorial">swift tutorial&lt;/h1>
+&lt;h2 id="package使用">package使用&lt;/h2>
+&lt;ul>
+&lt;li>repl
+&lt;a class="link" href="https://www.swift.org/blog/swiftpm-repl-support/" target="_blank" rel="noopener"
+>https://www.swift.org/blog/swiftpm-repl-support/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">$ git clone https://github.com/jpsim/Yams
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ &lt;span class="nb">cd&lt;/span> Yams
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ swift run --repl
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 1&amp;gt; import Yams
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2&amp;gt; &lt;span class="nb">let&lt;/span> &lt;span class="nv">yaml&lt;/span> &lt;span class="o">=&lt;/span> try Yams.dump&lt;span class="o">(&lt;/span>object: &lt;span class="o">[&lt;/span>&lt;span class="s2">&amp;#34;foo&amp;#34;&lt;/span>: &lt;span class="o">[&lt;/span>1, 2, 3, 4&lt;span class="o">]&lt;/span>, &lt;span class="s2">&amp;#34;bar&amp;#34;&lt;/span>: 3&lt;span class="o">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">yaml: &lt;span class="nv">String&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;bar: 3\nfoo:\n- 1\n- 2\n- 3\n- 4\n&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3&amp;gt; print&lt;span class="o">(&lt;/span>yaml&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">bar: &lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">foo:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- &lt;span class="m">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- &lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- &lt;span class="m">4&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>使用swiftpm调用Yams
+&lt;a class="link" href="https://www.swift.org/package-manager/" target="_blank" rel="noopener"
+>https://www.swift.org/package-manager/&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>创建项目文件夹&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>初始化此项目
+&lt;code>swift package init --type=executable&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>调整Package.swift文件&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-swift" data-lang="swift">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// swift-tools-version: 5.7&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// The swift-tools-version declares the minimum version of Swift required to build this package.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">import&lt;/span> &lt;span class="nc">PackageDescription&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">let&lt;/span> &lt;span class="nv">package&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="n">Package&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;swift_tutorial&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">dependencies&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Dependencies declare other packages that this package depends on.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// .package(url: /* package url */, from: &amp;#34;1.0.0&amp;#34;),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// 新增&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">package&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">url&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;https://github.com/jpsim/Yams.git&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">from&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;5.0.5&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">],&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">targets&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Targets are the basic building blocks of a package. A target can define a module or a test suite.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Targets can depend on other targets in this package, and on products in packages this package depends on.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">executableTarget&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;swift_tutorial&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">dependencies&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//新增&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">product&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;Yams&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">package&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;Yams&amp;#34;&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">]),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">.&lt;/span>&lt;span class="n">testTarget&lt;/span>&lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">name&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;swift_tutorialTests&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">dependencies&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s">&amp;#34;swift_tutorial&amp;#34;&lt;/span>&lt;span class="p">]),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>注意上述文件有三处depependency，package,executableTarget都需要添加&lt;/p></description></item><item><title>Go笔记</title><link>https://60ke.github.io/posts/go%E7%AC%94%E8%AE%B0/</link><pubDate>Thu, 09 Mar 2023 16:51:29 +0800</pubDate><guid>https://60ke.github.io/posts/go%E7%AC%94%E8%AE%B0/</guid><description>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
 &lt;/span>&lt;span class="lnt"> 2
@@ -876,92 +1000,42 @@
 &lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">create&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">user&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">admin&lt;/span>&lt;span class="o">@&lt;/span>&lt;span class="n">localhost&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">identified&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">by&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;admins_password&amp;#39;&lt;/span>&lt;span class="w">
 &lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="使用chatgpt的回答">使用chatgpt的回答&lt;/h3>
-&lt;p>To reset the root password in MySQL 8.0, you can follow the below steps:&lt;/p>
-&lt;ol>
-&lt;li>
-&lt;p>Stop the MySQL server.&lt;/p>
-&lt;p>For example, on Ubuntu, you can run:&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">sudo systemctl stop mysql
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;li>
-&lt;p>Start the MySQL server in safe mode with privilege bypass.&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">sudo mysqld_safe --skip-grant-tables --skip-networking &amp;amp;
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;li>
-&lt;p>Connect to the MySQL server as the root user.&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">mysql -u root
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;li>
-&lt;p>Set the new password for the root user.&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">ALTER USER &amp;#39;root&amp;#39;@&amp;#39;localhost&amp;#39; IDENTIFIED WITH caching_sha2_password BY &amp;#39;new_password&amp;#39;;
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>Note that the password should be strong (use a combination of upper and lowercase letters, numbers, and special characters).&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Flush the privileges and exit.&lt;/p>
+&lt;/div>&lt;h3 id="mysql完全卸载">mysql完全卸载&lt;/h3>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
 &lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">FLUSH PRIVILEGES;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">EXIT;
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;li>
-&lt;p>Stop the MySQL server.&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">sudo systemctl stop mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo apt purge mysql-server mysql-client mysql-common mysql-server-core-* mysql-client-core-*
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo rm -rf /etc/mysql /var/lib/mysql /var/log/mysql
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo apt autoremove
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo apt autoclean
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;/li>
+&lt;/div>&lt;h3 id="查看mysql连接情况">查看mysql连接情况&lt;/h3>
+&lt;ul>
 &lt;li>
-&lt;p>Start the MySQL server.&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">sudo systemctl start mysql
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;/ol>
-&lt;p>That&amp;rsquo;s it! The root password should now be reset.&lt;/p></description></item><item><title>Itrustee</title><link>https://60ke.github.io/posts/itrustee/</link><pubDate>Thu, 10 Nov 2022 11:05:53 +0800</pubDate><guid>https://60ke.github.io/posts/itrustee/</guid><description>&lt;p>华为基于TrustZone开发了IturstTEE,一开始是在手机上使用,后来华为出了鲲鹏的服务器,在服务器端也支持了: &lt;a class="link" href="https://www.hikunpeng.com/zh/developer/boostkit/confidential-computing" target="_blank" rel="noopener"
+&lt;p>查看最大连接数
+&lt;code>show variables like 'max_connections';&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>查看当前连接数
+&lt;code>show status like 'max%connections';&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>更改最大连接数
+&lt;code>set GLOBAL max_connections=1000;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Itrustee</title><link>https://60ke.github.io/posts/itrustee/</link><pubDate>Thu, 10 Nov 2022 11:05:53 +0800</pubDate><guid>https://60ke.github.io/posts/itrustee/</guid><description>&lt;p>华为基于TrustZone开发了IturstTEE,一开始是在手机上使用,后来华为出了鲲鹏的服务器,在服务器端也支持了: &lt;a class="link" href="https://www.hikunpeng.com/zh/developer/boostkit/confidential-computing" target="_blank" rel="noopener"
 >https://www.hikunpeng.com/zh/developer/boostkit/confidential-computing&lt;/a>。公司现有有一套泰山服务器搭建好了TEE环境,现记录一下TEE使用过程中遇到的问题。&lt;/p>
 &lt;h3 id="环境部署">环境部署&lt;/h3>
 &lt;p>&lt;a class="link" href="https://support.huawei.com/enterprise/zh/doc/EDOC1100231607/778dd7e" target="_blank" rel="noopener"
