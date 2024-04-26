@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>wasm on LookForAdmin</title><link>https://60ke.github.io/tags/wasm/</link><description>Recent content in wasm on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Tue, 22 Sep 2020 11:05:04 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/wasm/index.xml" rel="self" type="application/rss+xml"/><item><title>ewasm虚拟机开发</title><link>https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/</link><pubDate>Tue, 22 Sep 2020 11:05:04 +0000</pubDate><guid>https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/</guid><description>&lt;h1 id="准备">准备&lt;/h1>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Wasm on LookForAdmin</title><link>https://60ke.github.io/tags/wasm/</link><description>Recent content in Wasm on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Tue, 22 Sep 2020 11:05:04 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/wasm/index.xml" rel="self" type="application/rss+xml"/><item><title>ewasm虚拟机开发</title><link>https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/</link><pubDate>Tue, 22 Sep 2020 11:05:04 +0000</pubDate><guid>https://60ke.github.io/posts/ewasm%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%BC%80%E5%8F%91/</guid><description>&lt;h1 id="准备">准备&lt;/h1>
 &lt;h2 id="解析wasm字节码">解析wasm字节码&lt;/h2>
 &lt;p>&lt;a class="link" href="https://webassembly.github.io/spec/core/intro/overview.html" target="_blank" rel="noopener"
 >wasm概览&lt;/a>
@@ -52,15 +52,15 @@ alt="undefined"
 &lt;/span>&lt;span class="lnt">9
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(module
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (table 0 anyfunc)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (memory $0 1)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (export &amp;#34;memory&amp;#34; (memory $0))
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (export &amp;#34;main&amp;#34; (func $main))
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (func $main (; 0 ;) (result i32)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> (i32.const 42)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> )
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">module&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="n">table&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="n">anyfunc&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="n">memory&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">0&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="k">export&lt;/span> &lt;span class="s2">&amp;#34;memory&amp;#34;&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">memory&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="k">export&lt;/span> &lt;span class="s2">&amp;#34;main&amp;#34;&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="k">func&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="k">func&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">main&lt;/span> &lt;span class="p">(;&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">;)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">result&lt;/span> &lt;span class="n">i32&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">(&lt;/span>&lt;span class="n">i32&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="k">const&lt;/span> &lt;span class="mi">42&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>对应的二进制:

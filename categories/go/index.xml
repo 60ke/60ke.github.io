@@ -1,4 +1,240 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>go on LookForAdmin</title><link>https://60ke.github.io/categories/go/</link><description>Recent content in go on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 09 Mar 2023 10:54:32 +0800</lastBuildDate><atom:link href="https://60ke.github.io/categories/go/index.xml" rel="self" type="application/rss+xml"/><item><title>go代码调试</title><link>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</link><pubDate>Thu, 09 Mar 2023 10:54:32 +0800</pubDate><guid>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</guid><description>&lt;p>Go目前支持&lt;a class="link" href="https://sourceware.org/gdb/current/onlinedocs/gdb/" target="_blank" rel="noopener"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go on LookForAdmin</title><link>https://60ke.github.io/categories/go/</link><description>Recent content in Go on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 26 Apr 2024 11:30:38 +0800</lastBuildDate><atom:link href="https://60ke.github.io/categories/go/index.xml" rel="self" type="application/rss+xml"/><item><title>Go Timer</title><link>https://60ke.github.io/posts/go-timer/</link><pubDate>Fri, 26 Apr 2024 11:30:38 +0800</pubDate><guid>https://60ke.github.io/posts/go-timer/</guid><description>&lt;p>go timer内存泄露问题&lt;/p>
+&lt;p>先看下面代码，考虑是否存在内存泄露&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;runtime&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;time&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">tick&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">NewTicker&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Second&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">var&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="kt">int&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;当前 Goroutine 数量:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">runtime&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">NumGoroutine&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">tick&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">C&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;tick:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">i&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sleep&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Second&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">i&lt;/span>&lt;span class="o">++&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">i&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Now&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">i&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">5&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>tick设置为 1 秒，程序运行时间大于 3 秒，此时是否会造成tick channel 泄露？&lt;/p>
+&lt;p>从程序结果来看并未造成泄露，goroutine 数量一直为 1，说明没有泄露。
+查看&lt;code>go timer.C&lt;/code>的实现：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// A Ticker holds a channel that delivers “ticks” of a clock
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// at intervals.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">type&lt;/span> &lt;span class="nx">Ticker&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">C&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="kd">chan&lt;/span> &lt;span class="nx">Time&lt;/span> &lt;span class="c1">// The channel on which the ticks are delivered.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">r&lt;/span> &lt;span class="nx">runtimeTimer&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// NewTicker returns a new Ticker containing a channel that will send
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// the current time on the channel after each tick. The period of the
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// ticks is specified by the duration argument. The ticker will adjust
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// the time interval or drop ticks to make up for slow receivers.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// The duration d must be greater than zero; if not, NewTicker will
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// panic. Stop the ticker to release associated resources.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">NewTicker&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">d&lt;/span> &lt;span class="nx">Duration&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">Ticker&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">d&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">panic&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;non-positive interval for NewTicker&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Give the channel a 1-element time buffer.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// If the client falls behind while reading, we drop ticks
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// on the floor until the client catches up.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">c&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">chan&lt;/span> &lt;span class="nx">Time&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">Ticker&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">C&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">r&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">runtimeTimer&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">when&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nf">when&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">d&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">period&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">int64&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">d&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">f&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">sendTime&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">arg&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">startTimer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">r&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">t&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>继续查看go runtime的源码，可以看到timer的具体实现:&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;span class="lnt">43
+&lt;/span>&lt;span class="lnt">44
+&lt;/span>&lt;span class="lnt">45
+&lt;/span>&lt;span class="lnt">46
+&lt;/span>&lt;span class="lnt">47
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// /usr/local/Cellar/go/1.21.6/libexec/src/runtime/time.go
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// startTimer adds t to the timer heap.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">//go:linkname startTimer time.startTimer
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">startTimer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">timer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">raceenabled&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">racerelease&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">unsafe&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Pointer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">addtimer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Note: this changes some unsynchronized operations to synchronized operations
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// addtimer adds a timer to the current P.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// This should only be called with a newly created timer.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// That avoids the risk of changing the when field of a timer in some P&amp;#39;s heap,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// which could cause the heap to become unsorted.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span>&lt;span class="kd">func&lt;/span> &lt;span class="nf">addtimer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">t&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">timer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// when must be positive. A negative value will cause runtimer to
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// overflow during its delta calculation and never expire other runtime
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="c1">// timers. Zero will cause checkTimers to fail to notice the timer.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">when&lt;/span> &lt;span class="o">&amp;lt;=&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">throw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;timer when must be positive&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">period&lt;/span> &lt;span class="p">&amp;lt;&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">throw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;timer period must be non-negative&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">status&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Load&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="nx">timerNoStatus&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">throw&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;addtimer called with initialized timer&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">status&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Store&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">timerWaiting&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">when&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">when&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">// Disable preemption while using pp to avoid changing another P&amp;#39;s heap.
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="nx">mp&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">acquirem&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">pp&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">getg&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="nx">m&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">p&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">ptr&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">lock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">pp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">timersLock&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">cleantimers&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">doaddtimer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">pp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">unlock&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">pp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">timersLock&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">wakeNetPoller&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">when&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">releasem&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">mp&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>timer 的chan通道容量大小为 1，会阻塞发送方，直到接收方读取数据，所以不会造成泄露。&lt;/p></description></item><item><title>go代码调试</title><link>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</link><pubDate>Thu, 09 Mar 2023 10:54:32 +0800</pubDate><guid>https://60ke.github.io/posts/go%E4%BB%A3%E7%A0%81%E8%B0%83%E8%AF%95/</guid><description>&lt;p>Go目前支持&lt;a class="link" href="https://sourceware.org/gdb/current/onlinedocs/gdb/" target="_blank" rel="noopener"
 >GDB&lt;/a>,&lt;a class="link" href="https://lldb.llvm.org/use/tutorial.html" target="_blank" rel="noopener"
 >LLDB&lt;/a>,&lt;a class="link" href="https://github.com/go-delve/delve" target="_blank" rel="noopener"
 >Delve&lt;/a>等调试工具.官方出了&lt;a class="link" href="https://go.dev/doc/gdb" target="_blank" rel="noopener"
@@ -111,47 +347,47 @@
 &lt;/span>&lt;span class="lnt">41
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">help&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">The&lt;/span> &lt;span class="nx">following&lt;/span> &lt;span class="nx">commands&lt;/span> &lt;span class="nx">are&lt;/span> &lt;span class="nx">available&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">args&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">function&lt;/span> &lt;span class="nx">arguments&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">b&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Sets&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">breakpoint&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">breakpoints&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">bp&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">active&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">breakpoints&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clear&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Deletes&lt;/span> &lt;span class="nx">breakpoint&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clearall&lt;/span> &lt;span class="o">--------------------&lt;/span> &lt;span class="nx">Deletes&lt;/span> &lt;span class="nx">multiple&lt;/span> &lt;span class="nx">breakpoints&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">condition&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">cond&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">condition&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">config&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Changes&lt;/span> &lt;span class="nx">configuration&lt;/span> &lt;span class="nx">parameters&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">c&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">---------&lt;/span> &lt;span class="nx">Run&lt;/span> &lt;span class="nx">until&lt;/span> &lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="nx">program&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">termination&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">disassemble&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">disass&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="nx">Disassembler&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">down&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Move&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span> &lt;span class="nx">down&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">exit&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">quit&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">q&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------&lt;/span> &lt;span class="nx">Exit&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">debugger&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">frame&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">execute&lt;/span> &lt;span class="nx">command&lt;/span>&lt;span class="o">...&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">funcs&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">functions&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">goroutine&lt;/span> &lt;span class="o">-------------------&lt;/span> &lt;span class="nx">Shows&lt;/span> &lt;span class="nx">or&lt;/span> &lt;span class="nx">changes&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">goroutine&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">goroutines&lt;/span> &lt;span class="o">------------------&lt;/span> &lt;span class="nx">List&lt;/span> &lt;span class="nx">program&lt;/span> &lt;span class="nx">goroutines&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">help&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">h&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Prints&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">help&lt;/span> &lt;span class="nx">message&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">list&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">ls&lt;/span> &lt;span class="p">|&lt;/span> &lt;span class="nx">l&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">--------&lt;/span> &lt;span class="nx">Show&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">code&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">locals&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">local&lt;/span> &lt;span class="nx">variables&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">next&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">n&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Step&lt;/span> &lt;span class="nx">over&lt;/span> &lt;span class="nx">to&lt;/span> &lt;span class="nx">next&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">line&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">on&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="nx">Executes&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">command&lt;/span> &lt;span class="nx">when&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">breakpoint&lt;/span> &lt;span class="nx">is&lt;/span> &lt;span class="nx">hit&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">print&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">p&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Evaluate&lt;/span> &lt;span class="nx">an&lt;/span> &lt;span class="nx">expression&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">regs&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">contents&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">CPU&lt;/span> &lt;span class="nx">registers&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">restart&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="nx">Restart&lt;/span> &lt;span class="nx">process&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">set&lt;/span> &lt;span class="o">-------------------------&lt;/span> &lt;span class="nx">Changes&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">value&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">variable&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">source&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Executes&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">file&lt;/span> &lt;span class="nx">containing&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">delve&lt;/span>&lt;span class="o">...&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sources&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">source&lt;/span> &lt;span class="nx">files&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">stack&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">bt&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">stack&lt;/span> &lt;span class="nx">trace&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">step&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">s&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="nx">Single&lt;/span> &lt;span class="nx">step&lt;/span> &lt;span class="nx">through&lt;/span> &lt;span class="nx">program&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">step&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nf">instruction&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">si&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">Single&lt;/span> &lt;span class="nx">step&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">single&lt;/span> &lt;span class="nx">cpu&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">instruction&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">stepout&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Step&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">function&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">thread&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">tr&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="nx">Switch&lt;/span> &lt;span class="nx">to&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">specified&lt;/span> &lt;span class="nx">thread&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">threads&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">out&lt;/span> &lt;span class="nx">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">every&lt;/span> &lt;span class="nx">traced&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="nx">thread&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">trace&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">t&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="nx">Set&lt;/span> &lt;span class="nx">tracepoint&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">types&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="nx">list&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">types&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">up&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="nx">Move&lt;/span> &lt;span class="nx">the&lt;/span> &lt;span class="nx">current&lt;/span> &lt;span class="nx">frame&lt;/span> &lt;span class="nx">up&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">vars&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="nx">Print&lt;/span> &lt;span class="kn">package&lt;/span> &lt;span class="nx">variables&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">whatis&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="nx">Prints&lt;/span> &lt;span class="kd">type&lt;/span> &lt;span class="nx">of&lt;/span> &lt;span class="nx">an&lt;/span> &lt;span class="nx">expression&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Type&lt;/span> &lt;span class="nx">help&lt;/span> &lt;span class="nx">followed&lt;/span> &lt;span class="nx">by&lt;/span> &lt;span class="nx">a&lt;/span> &lt;span class="nx">command&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">full&lt;/span> &lt;span class="nx">documentation&lt;/span>&lt;span class="p">.&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">help&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">The&lt;/span> &lt;span class="n">following&lt;/span> &lt;span class="n">commands&lt;/span> &lt;span class="n">are&lt;/span> &lt;span class="n">available&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">args&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">function&lt;/span> &lt;span class="n">arguments&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">break&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">b&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="n">Sets&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="k">breakpoint&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">breakpoints&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">bp&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">out&lt;/span> &lt;span class="n">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">active&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">breakpoints&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">clear&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="n">Deletes&lt;/span> &lt;span class="k">breakpoint&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">clearall&lt;/span> &lt;span class="o">--------------------&lt;/span> &lt;span class="n">Deletes&lt;/span> &lt;span class="n">multiple&lt;/span> &lt;span class="n">breakpoints&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">condition&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">cond&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----&lt;/span> &lt;span class="n">Set&lt;/span> &lt;span class="k">breakpoint&lt;/span> &lt;span class="n">condition&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">config&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="n">Changes&lt;/span> &lt;span class="n">configuration&lt;/span> &lt;span class="n">parameters&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">c&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">---------&lt;/span> &lt;span class="n">Run&lt;/span> &lt;span class="n">until&lt;/span> &lt;span class="k">breakpoint&lt;/span> &lt;span class="ow">or&lt;/span> &lt;span class="n">program&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">termination&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">disassemble&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">disass&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-&lt;/span> &lt;span class="n">Disassembler&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">down&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="n">Move&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">current&lt;/span> &lt;span class="n">frame&lt;/span> &lt;span class="n">down&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">exit&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">quit&lt;/span> &lt;span class="o">|&lt;/span> &lt;span class="n">q&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------&lt;/span> &lt;span class="n">Exit&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">debugger&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">frame&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="n">Set&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">current&lt;/span> &lt;span class="n">frame&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="ow">or&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">execute&lt;/span> &lt;span class="n">command&lt;/span>&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">funcs&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">list&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">functions&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">goroutine&lt;/span> &lt;span class="o">-------------------&lt;/span> &lt;span class="n">Shows&lt;/span> &lt;span class="ow">or&lt;/span> &lt;span class="n">changes&lt;/span> &lt;span class="n">current&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">goroutine&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">goroutines&lt;/span> &lt;span class="o">------------------&lt;/span> &lt;span class="n">List&lt;/span> &lt;span class="n">program&lt;/span> &lt;span class="n">goroutines&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">help&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">h&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="n">Prints&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">help&lt;/span> &lt;span class="n">message&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">list&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">ls&lt;/span> &lt;span class="o">|&lt;/span> &lt;span class="n">l&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">--------&lt;/span> &lt;span class="n">Show&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="n">code&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">locals&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">local&lt;/span> &lt;span class="n">variables&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">next&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">n&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="n">Step&lt;/span> &lt;span class="n">over&lt;/span> &lt;span class="n">to&lt;/span> &lt;span class="n">next&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="n">line&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">on&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="n">Executes&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="n">command&lt;/span> &lt;span class="n">when&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="k">breakpoint&lt;/span> &lt;span class="n">is&lt;/span> &lt;span class="n">hit&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">print&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">p&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="n">Evaluate&lt;/span> &lt;span class="n">an&lt;/span> &lt;span class="n">expression&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">regs&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">contents&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">CPU&lt;/span> &lt;span class="n">registers&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">restart&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">r&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="n">Restart&lt;/span> &lt;span class="n">process&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">set&lt;/span> &lt;span class="o">-------------------------&lt;/span> &lt;span class="n">Changes&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">value&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="n">variable&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">source&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="n">Executes&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="n">file&lt;/span> &lt;span class="n">containing&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">list&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">delve&lt;/span>&lt;span class="o">...&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">sources&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">list&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">source&lt;/span> &lt;span class="n">files&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">stack&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">bt&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-----------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">stack&lt;/span> &lt;span class="n">trace&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">step&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">s&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">-------------&lt;/span> &lt;span class="n">Single&lt;/span> &lt;span class="n">step&lt;/span> &lt;span class="n">through&lt;/span> &lt;span class="n">program&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">step&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="n">instruction&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">si&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">Single&lt;/span> &lt;span class="n">step&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="n">single&lt;/span> &lt;span class="n">cpu&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">instruction&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">stepout&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="n">Step&lt;/span> &lt;span class="n">out&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">current&lt;/span> &lt;span class="n">function&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">thread&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">tr&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">----------&lt;/span> &lt;span class="n">Switch&lt;/span> &lt;span class="n">to&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">specified&lt;/span> &lt;span class="n">thread&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">threads&lt;/span> &lt;span class="o">---------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">out&lt;/span> &lt;span class="n">info&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">every&lt;/span> &lt;span class="n">traced&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">thread&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">trace&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">alias&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">t&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">------------&lt;/span> &lt;span class="n">Set&lt;/span> &lt;span class="n">tracepoint&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">types&lt;/span> &lt;span class="o">-----------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">list&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">types&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">up&lt;/span> &lt;span class="o">--------------------------&lt;/span> &lt;span class="n">Move&lt;/span> &lt;span class="n">the&lt;/span> &lt;span class="n">current&lt;/span> &lt;span class="n">frame&lt;/span> &lt;span class="n">up&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">vars&lt;/span> &lt;span class="o">------------------------&lt;/span> &lt;span class="n">Print&lt;/span> &lt;span class="n">package&lt;/span> &lt;span class="n">variables&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">whatis&lt;/span> &lt;span class="o">----------------------&lt;/span> &lt;span class="n">Prints&lt;/span> &lt;span class="n">type&lt;/span> &lt;span class="n">of&lt;/span> &lt;span class="n">an&lt;/span> &lt;span class="n">expression&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Type&lt;/span> &lt;span class="n">help&lt;/span> &lt;span class="n">followed&lt;/span> &lt;span class="n">by&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="n">command&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">full&lt;/span> &lt;span class="n">documentation&lt;/span>&lt;span class="o">.&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>每个 Go 程序的入口是 main.main 函数，我们可以用 break 在此设置一个断点：&lt;/p>
@@ -193,11 +429,11 @@
 &lt;/span>&lt;span class="lnt">5
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) vars main
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">main.initdone· = 2
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">runtime.main_init_done = chan bool 0/0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">runtime.mainStarted = true
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">vars&lt;/span> &lt;span class="n">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">initdone&lt;/span>&lt;span class="err">·&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">runtime&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main_init_done&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">chan&lt;/span> &lt;span class="ne">bool&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">runtime&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">mainStarted&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="bp">true&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>然后就可以通过 continue 命令让程序运行到下一个断点处：&lt;/p>
@@ -219,20 +455,20 @@
 &lt;/span>&lt;span class="lnt">14
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) continue
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:7 (hits goroutine(1):1 total:1) (PC: &amp;gt;0x10ae9b8)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3: import (
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 7: func main() {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">7&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">hits&lt;/span> &lt;span class="n">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="n">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="mh">0x10ae9b8&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">2&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">4&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">6&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="mi">7&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">8&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="n">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="ne">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">9&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">10&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">11&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">12&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">fmt&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>输入 next 命令单步执行进入 main 函数内部：&lt;/p>
@@ -254,20 +490,20 @@
 &lt;/span>&lt;span class="lnt">14
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) next
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:8 (PC: 0x10ae9cf)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 3: import (
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 8: nums := make([]int, 5)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">next&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">8&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mh">0x10ae9cf&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">4&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">6&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">7&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="mi">8&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="n">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="ne">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">9&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">10&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">11&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">12&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">fmt&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">13&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>进入函数之后可以通过 args 和 locals 命令查看函数的参数和局部变量：&lt;/p>
@@ -307,22 +543,22 @@
 &lt;/span>&lt;span class="lnt">16
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) next
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:9 (PC: 0x10aea12)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 4: &amp;#34;fmt&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 9: for i := 0; i &amp;lt;len(nums); i++ {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 10: nums[i] = i * i
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) locals
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nums = []int len: 5, cap: 5, [...]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i = 17601536
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">next&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">9&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mh">0x10aea12&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">4&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">6&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">7&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">8&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="n">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="ne">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="mi">9&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">10&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">11&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">12&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">fmt&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">13&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">locals&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">nums&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="ne">int&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">cap&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="o">...&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">i&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">17601536&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>此时因为调试器已经到了 for 语句行，因此局部变量出现了还未初始化的循环迭代变量 &amp;gt;i。&lt;/p>
@@ -363,23 +599,23 @@
 &lt;/span>&lt;span class="lnt">17
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) continue
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.main() ./main.go:10 (hits goroutine(1):1 total:1) (PC: &amp;gt;0x10aea33)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: )
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: func main() {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8: nums := make([]int, 5)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: for i := 0; i &amp;lt;len(nums); i++ {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 10: nums[i] = i * i
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: fmt.Println(nums)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) locals
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">nums = []int len: 5, cap: 5, [...]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">i = 3
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) print nums
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">[]int len: 5, cap: 5, [0,1,4,0,0]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">10&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">hits&lt;/span> &lt;span class="n">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="n">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="mh">0x10aea33&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">6&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">7&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">8&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="n">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="ne">int&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">9&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="p">:&lt;/span>&lt;span class="o">=&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="n">i&lt;/span>&lt;span class="o">++&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="mi">10&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">nums&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">i&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">11&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">12&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">fmt&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">nums&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">13&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">locals&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">nums&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="ne">int&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">cap&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="o">...&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">i&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nb">print&lt;/span> &lt;span class="n">nums&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[]&lt;/span>&lt;span class="ne">int&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">cap&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">4&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>我们发现当循环变量 i 等于 3 时，nums 切片的前 3 个元素已经正确初始化。&lt;/p>
@@ -489,22 +725,22 @@
 &lt;/span>&lt;span class="lnt">16
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">#include &amp;#34;textflag.h&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">#include &amp;#34;funcdata.h&amp;#34;
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#include &amp;#34;textflag.h&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">#include &amp;#34;funcdata.h&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// &amp;#34;Hello World!\n&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DATA text&amp;lt;&amp;gt;+0(SB)/8,$&amp;#34;Hello Wo&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">DATA text&amp;lt;&amp;gt;+8(SB)/8,$&amp;#34;rld!\n&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">GLOBL text&amp;lt;&amp;gt;(SB),NOPTR,$16
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">//&lt;/span> &lt;span class="s2">&amp;#34;Hello World!&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">DATA&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="s2">&amp;#34;Hello Wo&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">DATA&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="s2">&amp;#34;rld!&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">GLOBL&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="n">NOPTR&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">// func asmSayHello()
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">TEXT ·asmSayHello(SB), $16-0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> NO_LOCAL_POINTERS
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ $text&amp;lt;&amp;gt;+0(SB), AX
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ AX, (SP)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> MOVQ $16, 8(SP)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> CALL runtime·printstring(SB)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> RET
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">//&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">TEXT&lt;/span> &lt;span class="err">·&lt;/span>&lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">NO_LOCAL_POINTERS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">MOVQ&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="n">AX&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">MOVQ&lt;/span> &lt;span class="n">AX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">SP&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">MOVQ&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SP&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">CALL&lt;/span> &lt;span class="n">runtime&lt;/span>&lt;span class="err">·&lt;/span>&lt;span class="n">printstring&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">RET&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>参考前面的调试流程，在执行到 main 函数断点时，可以 disassemble 反汇编命令查&amp;gt;看 main 函数对应的汇编代码：&lt;/p>
@@ -536,30 +772,30 @@
 &lt;/span>&lt;span class="lnt">24
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">break&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">Breakpoint&lt;/span> &lt;span class="mi">1&lt;/span> &lt;span class="nx">set&lt;/span> &lt;span class="nx">at&lt;/span> &lt;span class="mh">0x105011f&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">.&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">&amp;gt;&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">.&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">hits&lt;/span> &lt;span class="nf">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="nx">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="mh">0x105011f&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">1&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">break&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Breakpoint&lt;/span> &lt;span class="mi">1&lt;/span> &lt;span class="n">set&lt;/span> &lt;span class="n">at&lt;/span> &lt;span class="mh">0x105011f&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">hits&lt;/span> &lt;span class="n">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="n">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="mh">0x105011f&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">1&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">package&lt;/span> &lt;span class="n">main&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">2&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">=&amp;gt;&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span> &lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">}&lt;/span>
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">4&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="kd">func&lt;/span> &lt;span class="nf">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nx">disassemble&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">TEXT&lt;/span> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">SB&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span>&lt;span class="nx">path&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">to&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">pkg&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050110&lt;/span> &lt;span class="mi">65488&lt;/span>&lt;span class="nx">b0c25a0080000&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">rcx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="nx">g&lt;/span> &lt;span class="p">&amp;gt;[&lt;/span>&lt;span class="mh">0x8a0&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050119&lt;/span> &lt;span class="mi">483&lt;/span>&lt;span class="nx">b6110&lt;/span> &lt;span class="nx">cmp&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">r&lt;/span> &lt;span class="p">&amp;gt;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mh">0x10&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011d&lt;/span> &lt;span class="mi">761&lt;/span>&lt;span class="nx">a&lt;/span> &lt;span class="nx">jbe&lt;/span> &lt;span class="mh">0x1050139&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">=&amp;gt;&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011f&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="nx">ec08&lt;/span> &lt;span class="nx">sub&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050123&lt;/span> &lt;span class="mi">48892&lt;/span>&lt;span class="nx">c24&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">],&lt;/span> &lt;span class="nx">rbp&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050127&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="nx">d2c24&lt;/span> &lt;span class="nx">lea&lt;/span> &lt;span class="nx">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105012b&lt;/span> &lt;span class="nx">e880000000&lt;/span> &lt;span class="nx">call&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">asmSayHello&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050130&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="nx">b2c24&lt;/span> &lt;span class="nx">mov&lt;/span> &lt;span class="nx">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">qword&lt;/span> &lt;span class="nx">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="nx">rsp&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050134&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="nx">c408&lt;/span> &lt;span class="nx">add&lt;/span> &lt;span class="nx">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050138&lt;/span> &lt;span class="nx">c3&lt;/span> &lt;span class="nx">ret&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050139&lt;/span> &lt;span class="nx">e87288ffff&lt;/span> &lt;span class="nx">call&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">runtime&lt;/span>&lt;span class="p">.&amp;gt;&lt;/span>&lt;span class="nx">morestack_noctxt&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105013e&lt;/span> &lt;span class="nx">ebd0&lt;/span> &lt;span class="nx">jmp&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="nx">main&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="nx">dlv&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="n">disassemble&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">TEXT&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">/&lt;/span>&lt;span class="n">path&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">to&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">pkg&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050110&lt;/span> &lt;span class="mi">65488&lt;/span>&lt;span class="n">b0c25a0080000&lt;/span> &lt;span class="n">mov&lt;/span> &lt;span class="n">rcx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">qword&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="n">g&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="mh">0x8a0&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050119&lt;/span> &lt;span class="mi">483&lt;/span>&lt;span class="n">b6110&lt;/span> &lt;span class="n">cmp&lt;/span> &lt;span class="n">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">qword&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="n">r&lt;/span> &lt;span class="o">&amp;gt;+&lt;/span>&lt;span class="mh">0x10&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011d&lt;/span> &lt;span class="mi">761&lt;/span>&lt;span class="n">a&lt;/span> &lt;span class="n">jbe&lt;/span> &lt;span class="mh">0x1050139&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105011f&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="n">ec08&lt;/span> &lt;span class="n">sub&lt;/span> &lt;span class="n">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050123&lt;/span> &lt;span class="mi">48892&lt;/span>&lt;span class="n">c24&lt;/span> &lt;span class="n">mov&lt;/span> &lt;span class="n">qword&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="n">rsp&lt;/span>&lt;span class="p">],&lt;/span> &lt;span class="n">rbp&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050127&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="n">d2c24&lt;/span> &lt;span class="n">lea&lt;/span> &lt;span class="n">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="n">rsp&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105012b&lt;/span> &lt;span class="n">e880000000&lt;/span> &lt;span class="n">call&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">asmSayHello&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050130&lt;/span> &lt;span class="mi">488&lt;/span>&lt;span class="n">b2c24&lt;/span> &lt;span class="n">mov&lt;/span> &lt;span class="n">rbp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">qword&lt;/span> &lt;span class="n">ptr&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="n">rsp&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050134&lt;/span> &lt;span class="mi">4883&lt;/span>&lt;span class="n">c408&lt;/span> &lt;span class="n">add&lt;/span> &lt;span class="n">rsp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mh">0x8&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050138&lt;/span> &lt;span class="n">c3&lt;/span> &lt;span class="n">ret&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x1050139&lt;/span> &lt;span class="n">e87288ffff&lt;/span> &lt;span class="n">call&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">runtime&lt;/span>&lt;span class="o">.&amp;gt;&lt;/span>&lt;span class="n">morestack_noctxt&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">go&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">3&lt;/span> &lt;span class="mh">0x105013e&lt;/span> &lt;span class="n">ebd0&lt;/span> &lt;span class="n">jmp&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>虽然 main 函数内部只有一行函数调用语句，但是却生成了很多汇编指令。在函数的开头&amp;gt;通过比较 rsp 寄存器判断栈空间是否不足，如果不足则跳转到 0x1050139 地址调用 &amp;gt;runtime.morestack 函数进行栈扩容，然后跳回到 main 函数开始位置重新进行栈空&amp;gt;间测试。而在 asmSayHello 函数调用之前，先扩展 rsp 空间用于临时存储 rbp 寄存&amp;gt;器的状态，在函数返回后通过栈恢复 rbp 的值并回收临时栈空间。通过对比 Go 语言代&amp;gt;码和对应的汇编代码，我们可以加深对 Go 汇编语言的理解。&lt;/p>
@@ -585,22 +821,22 @@
 &lt;/span>&lt;span class="lnt">16
 &lt;/span>&lt;/code>&lt;/pre>&lt;/td>
 &lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">(dlv) break main.asmSayHello
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Breakpoint 2 set at 0x10501bf for main.asmSayHello() ./main_amd64.&amp;gt;s:10
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv) continue
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt; main.asmSayHello() ./main_amd64.s:10 (hits goroutine(1):1 &amp;gt;total:1) (PC: 0x10501bf)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 5: DATA text&amp;lt;&amp;gt;+0(SB)/8,$&amp;#34;Hello Wo&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 6: DATA text&amp;lt;&amp;gt;+8(SB)/8,$&amp;#34;rld!\n&amp;#34;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 7: GLOBL text&amp;lt;&amp;gt;(SB),NOPTR,$16
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 8:
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 9: // func asmSayHello()
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">=&amp;gt; 10: TEXT ·asmSayHello(SB), $16-0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 11: NO_LOCAL_POINTERS
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 12: MOVQ $text&amp;lt;&amp;gt;+0(SB), AX
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 13: MOVQ AX, (SP)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 14: MOVQ $16, 8(SP)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 15: CALL runtime·printstring(SB)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">(dlv)
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-gdscript3" data-lang="gdscript3">&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">break&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">asmSayHello&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Breakpoint&lt;/span> &lt;span class="mi">2&lt;/span> &lt;span class="n">set&lt;/span> &lt;span class="n">at&lt;/span> &lt;span class="mh">0x10501bf&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main_amd64&lt;/span>&lt;span class="o">.&amp;gt;&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">10&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">&amp;gt;&lt;/span> &lt;span class="n">main&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">./&lt;/span>&lt;span class="n">main_amd64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">s&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">10&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">hits&lt;/span> &lt;span class="n">goroutine&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">):&lt;/span>&lt;span class="mi">1&lt;/span> &lt;span class="o">&amp;gt;&lt;/span>&lt;span class="n">total&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">PC&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mh">0x10501bf&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">5&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">DATA&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="s2">&amp;#34;Hello Wo&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">6&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">DATA&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="s2">&amp;#34;rld!&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">7&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">GLOBL&lt;/span> &lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span>&lt;span class="n">NOPTR&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">8&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">9&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="o">//&lt;/span> &lt;span class="k">func&lt;/span> &lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">=&amp;gt;&lt;/span> &lt;span class="mi">10&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">TEXT&lt;/span> &lt;span class="err">·&lt;/span>&lt;span class="n">asmSayHello&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">11&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">NO_LOCAL_POINTERS&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">12&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">MOVQ&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="n">text&lt;/span>&lt;span class="o">&amp;lt;&amp;gt;+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="n">AX&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">13&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">MOVQ&lt;/span> &lt;span class="n">AX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="n">SP&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">14&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">MOVQ&lt;/span> &lt;span class="o">$&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SP&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="mi">15&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="n">CALL&lt;/span> &lt;span class="n">runtime&lt;/span>&lt;span class="err">·&lt;/span>&lt;span class="n">printstring&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">SB&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">(&lt;/span>&lt;span class="n">dlv&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>此时我们可以通过 regs 查看全部的寄存器状态：&lt;/p>
