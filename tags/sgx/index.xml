@@ -1,181 +1,6 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sgx on LookForAdmin</title><link>https://60ke.github.io/tags/sgx/</link><description>Recent content in Sgx on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 17 Jan 2020 16:58:55 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sgx/index.xml" rel="self" type="application/rss+xml"/><item><title>Enclave开发</title><link>https://60ke.github.io/posts/enclave%E5%BC%80%E5%8F%91/</link><pubDate>Fri, 17 Jan 2020 16:58:55 +0000</pubDate><guid>https://60ke.github.io/posts/enclave%E5%BC%80%E5%8F%91/</guid><description>&lt;h1 id="enclave开发包括以下几个步骤">Enclave开发包括以下几个步骤：&lt;/h1>
-&lt;ol>
-&lt;li>使用EDL文件定义不可信app和encalve(飞地)之间的接口(由ecall和ocall来实现)&lt;/li>
-&lt;li>实现app和encalve函数。&lt;/li>
-&lt;li>编译app和enclave。编译中,Edger8r生成可信和不可信的代理/桥函数,enclave签名工具生成enclave的metadata和签名。&lt;a class="link" href="https://github.com/Jianbo-Gao/RegChain/tree/master/TrustNode#%E7%94%9F%E6%88%90enclave_privatepem" target="_blank" rel="noopener"
->需生成Enclave_private.pem&lt;/a>&lt;/li>
-&lt;li>在模拟和硬件模式下运行和调试app,详细看看调试飞地的内容。&lt;/li>
-&lt;li>准备发布app和飞地。&lt;/li>
-&lt;/ol>
-&lt;h2 id="名词解释">名词解释&lt;/h2>
-&lt;ul>
-&lt;li>
-&lt;p>EDL 即 Enclave Defination Language. 因为 Enclave 不同于共享的资源, 其与外部不可信内容的交互需要特定的规则进行限定. Intel SGX 给出了一种语言来抽象地描述 Enclave 内部函数的调用权限和数据的出入方式, 并通过 &lt;a class="link" href="https://github.com/intel/linux-sgx/blob/master/common/inc/sgx_edger8r.h" target="_blank" rel="noopener"
->sgx_edger8r&lt;/a> 翻译成一系列可编译的代码.
-EDL 提出了一种“边规则”(edge routine) 的概念. 一个 edge routine 即是运行于 Enclave 内部或外部的函数和它们与 Enclave 外部或内部的调用关系的总称.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>ecall（Enclave Call） 是 Enclave 内部程序的接口函数.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>ocall （Out Call）是可由 Enclave 内部代码调用的外部函数接口.&lt;/p>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="具体开发实例">具体开发实例&lt;/h2>
-&lt;p>&lt;a class="link" href="https://github.com/60ke/rust_sgx_test/tree/master/ocall_beta" target="_blank" rel="noopener"
->https://github.com/60ke/rust_sgx_test/tree/master/ocall_beta&lt;/a>&lt;/p>
-&lt;p>此实例是基于&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
->incubator-teaclave-sgx-sdk&lt;/a> 即baidu rust sdk开发&lt;/p>
-&lt;p>开发流程：&lt;/p>
-&lt;ol>
-&lt;li>首先需要放置基础依赖&lt;a class="link" href="https://github.com/60ke/rust_sgx_test/tree/master/ocall_beta/common/inc" target="_blank" rel="noopener"
->common/inc&lt;/a>（c的头文件）和 &lt;a class="link" href="https://github.com/60ke/rust_sgx_test/tree/master/ocall_beta/edl" target="_blank" rel="noopener"
->edl&lt;/a>&lt;/li>
-&lt;li>使用&lt;code>rust&lt;/code>编写 app 和 encalve&lt;/li>
-&lt;li>编写Makefile文件(可参考&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/blob/master/samplecode/hello-rust/Makefile" target="_blank" rel="noopener"
->Makefile&lt;/a>)&lt;/li>
-&lt;/ol>
-&lt;p>1 和 3 的开发相对简单,不再具体描述。下面介绍使用&lt;code>rust&lt;/code>编写 app 和 encalve&lt;/p>
-&lt;p>代码结构：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── .vscode-------------------------- vscode配置文件,用于debug
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── Cargo.toml-------------------------- 定义workspace用于debug
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── Makefile-------------------------- 项目编译
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── app
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Cargo.toml-------------------------- app的cargo配置
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── build.rs-------------------------- app的build文件
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ └── src -------------------------- rust代码目录
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ └── main.rs-------------------------- app主函数文件
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── bin-------------------------- 存放编译后的二进制文件夹
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── common-------------------------- 引用自[common/inc](https://github.com/mesalock-linux/adler32-rs-sgx/tree/master/sgx/adler32-rs-sgx-test/common/inc)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── edl-------------------------- 引用自[edl](https://github.com/mesalock-linux/adler32-rs-sgx/tree/master/sgx/adler32-rs-sgx-test/edl)
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── enclave
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Cargo.toml-------------------------- enclave的cargo配置
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Enclave.config.xml--------------定义 Enclave 的内存布局等高级特性
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Enclave.edl--------------Edl文件
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Enclave.lds--------------encalve链接脚本
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Enclave_private.pem------------用户生成的私匙供 sgxsdk 签名使用
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── Makefile -------------------------- Encalve编译
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ └── src -------------------------- rust代码目录
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ └── lib.rs-------------------------- enclave的lib文件
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>首先在encalve的&lt;a class="link" href="https://github.com/60ke/rust_sgx_test/blob/master/ocall_beta/enclave/Enclave.edl" target="_blank" rel="noopener"
->Enclave.edl&lt;/a>中定义ecall和ocall函数&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="n">enclave&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//导入引用
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="n">from&lt;/span> &lt;span class="s">&amp;#34;sgx_tstd.edl&amp;#34;&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">from&lt;/span> &lt;span class="s">&amp;#34;sgx_stdio.edl&amp;#34;&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">from&lt;/span> &lt;span class="s">&amp;#34;sgx_backtrace.edl&amp;#34;&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">from&lt;/span> &lt;span class="s">&amp;#34;sgx_tstdc.edl&amp;#34;&lt;/span> &lt;span class="n">import&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="p">;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">include&lt;/span> &lt;span class="s">&amp;#34;sgx_quote.h&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">trusted&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//定义ecall
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="n">public&lt;/span> &lt;span class="kt">sgx_status_t&lt;/span> &lt;span class="nf">say_something&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="k">const&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">some_string&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">size_t&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">untrusted&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//定义ocall
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">ocall_get_quote&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">key_len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">key&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="kt">uint32_t&lt;/span> &lt;span class="n">key_len&lt;/span>&lt;span class="p">,[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value&lt;/span>&lt;span class="p">,[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value_len&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>ecall的入口在app部分,函数的具体实现在enclave中。先看ecall的edl函数定义：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="n">public&lt;/span> &lt;span class="kt">sgx_status_t&lt;/span> &lt;span class="nf">say_something&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="k">const&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">some_string&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">size_t&lt;/span> &lt;span class="n">len&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>这里ecall的调用传入的是一个c语言的常量字符串,为了便于c与rust的交互我们将char list(常量字符串)转换为ASCII码以指针的形式传递。这里的ecall直接使用&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
->incubator-teaclave-sgx-sdk&lt;/a>中的&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/blob/master/samplecode/hello-rust/enclave/Enclave.edl" target="_blank" rel="noopener"
->Enclave.edl&lt;/a> 首先声明public,返回的数据类型为&lt;code>sgx_status_t&lt;/code> 函数名为&lt;code>say_something&lt;/code>.ecall传入enclave需要用&lt;code>[in]&lt;/code>修饰。由于我们传入的为常量需要加上size的参数&lt;code>size=len&lt;/code> Edl的语法和C语言语法比较接近&lt;code>uint8_t*&lt;/code>和&lt;code>size_t&lt;/code>为数据类型,&lt;code>some_string&lt;/code> 和为变量名&lt;code>len&lt;/code>.&lt;/p>
-&lt;p>enclave的&lt;code>say_something&lt;/code>实现：&lt;a class="link" href="https://github.com/60ke/rust_sgx_test/blob/master/ocall_beta/enclave/src/lib.rs" target="_blank" rel="noopener"
->lib.rs&lt;/a>,然后在app中引入：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="k">extern&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">fn&lt;/span> &lt;span class="nf">say_something&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">eid&lt;/span>: &lt;span class="nc">sgx_enclave_id_t&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">retval&lt;/span>: &lt;span class="o">*&lt;/span>&lt;span class="k">mut&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">sgx_status_t&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">some_string&lt;/span>: &lt;span class="o">*&lt;/span>&lt;span class="k">const&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">u8&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">len&lt;/span>: &lt;span class="kt">usize&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>-&amp;gt; &lt;span class="nc">sgx_status_t&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>然后在&lt;a class="link" href="https://github.com/60ke/rust_sgx_test/blob/master/ocall_beta/app/src/main.rs" target="_blank" rel="noopener"
->main.rs&lt;/a>中的main函数对其调用。&lt;/p>
-&lt;p>ocall的入口在enclave中,函数在app中实现。其Edl部分为：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="nf">ocall_get_quote&lt;/span>&lt;span class="p">([&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">key_len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">key&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="kt">uint32_t&lt;/span> &lt;span class="n">key_len&lt;/span>&lt;span class="p">,[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value&lt;/span>&lt;span class="p">,[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value_len&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>ocall的实现的功能为由enclave传出一个&lt;code>key&lt;/code>到app,然后app生成一个对应的&lt;code>value&lt;/code>再传入enclave。整体流程与ecall类似。需要注意的是,由于value的长度不固定,不能单纯定义为一个常量的类型。我们这里先定义了一个足够大的list（1000）,然后再传递一个变量&lt;code>value_len&lt;/code>来表示value的长度。然后在&lt;code>enclave&lt;/code>对其进行截取来实现value由app到enclave的返回。&lt;/p>
-&lt;h2 id="参考">参考&lt;/h2>
-&lt;p>&lt;a class="link" href="https://blog.lao-yuan.com/2019/02/20/Linux-SGX-Demo.html#edl" target="_blank" rel="noopener"
->https://blog.lao-yuan.com/2019/02/20/Linux-SGX-Demo.html#edl&lt;/a>
-&lt;a class="link" href="https://zhuanlan.zhihu.com/p/39914622" target="_blank" rel="noopener"
->https://zhuanlan.zhihu.com/p/39914622&lt;/a>&lt;/p></description></item><item><title>sgx开发</title><link>https://60ke.github.io/posts/sgx/</link><pubDate>Fri, 17 Jan 2020 16:46:35 +0000</pubDate><guid>https://60ke.github.io/posts/sgx/</guid><description>&lt;h1 id="sgx-开发">sgx 开发&lt;/h1>
-&lt;h2 id="当前项目依赖">当前项目依赖：&lt;/h2>
-&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sgx on LookForAdmin</title><link>https://60ke.github.io/tags/sgx/</link><description>Recent content in Sgx on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 17 Jan 2020 16:46:35 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sgx/index.xml" rel="self" type="application/rss+xml"/><item><title>sgx开发</title><link>https://60ke.github.io/posts/sgx/</link><pubDate>Fri, 17 Jan 2020 16:46:35 +0000</pubDate><guid>https://60ke.github.io/posts/sgx/</guid><description>&lt;h1 id="sgx-开发">sgx 开发
+&lt;/h1>&lt;h2 id="当前项目依赖">当前项目依赖：
+&lt;/h2>&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
 >incubator-teaclave-sgx-sdk&lt;/a> 1.0.9(原baidu rust sgx sdk)&lt;/p>
 &lt;p>Rust nightly-2019-08-01&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/enigmampc/enigma-core" target="_blank" rel="noopener"
@@ -183,13 +8,13 @@ EDL 提出了一种“边规则”(edge routine) 的概念. 一个 edge routine 
 &lt;p>适用于rust sgx的crate：&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/dingelish/sgx-world" target="_blank" rel="noopener"
 >https://github.com/dingelish/sgx-world&lt;/a>&lt;/p>
-&lt;h2 id="项目开发遇到的问题">项目开发遇到的问题&lt;/h2>
-&lt;h3 id="evm读写集的记录">evm读写集的记录：&lt;/h3>
-&lt;p>在sputnikvm的返回结果上添加读写集。可对比 &lt;a class="link" href="https://github.com/60ke/sputnikvm" target="_blank" rel="noopener"
+&lt;h2 id="项目开发遇到的问题">项目开发遇到的问题
+&lt;/h2>&lt;h3 id="evm读写集的记录">evm读写集的记录：
+&lt;/h3>&lt;p>在sputnikvm的返回结果上添加读写集。可对比 &lt;a class="link" href="https://github.com/60ke/sputnikvm" target="_blank" rel="noopener"
 >https://github.com/60ke/sputnikvm&lt;/a> 与 &lt;a class="link" href="https://github.com/enigmampc/sputnikvm/tree/enigma-next" target="_blank" rel="noopener"
 >https://github.com/enigmampc/sputnikvm/tree/enigma-next&lt;/a> 的区别&lt;/p>
-&lt;h3 id="ocall">ocall：&lt;/h3>
-&lt;p>传入address和storage的key来获取storage的value的edl部分的代码：&lt;/p>
+&lt;h3 id="ocall">ocall：
+&lt;/h3>&lt;p>传入address和storage的key来获取storage的value的edl部分的代码：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -206,10 +31,10 @@ EDL 提出了一种“边规则”(edge routine) 的概念. 一个 edge routine 
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">);&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="enclave与外界的数据类型交互">enclave与外界的数据类型交互：&lt;/h3>
-&lt;p>由edl生成c函数,通过指针的方法进行进行交互&lt;/p>
-&lt;h3 id="solidity测试合约">solidity测试合约&lt;/h3>
-&lt;p>regchain wiki中的合约：&lt;/p>
+&lt;/div>&lt;h3 id="enclave与外界的数据类型交互">enclave与外界的数据类型交互：
+&lt;/h3>&lt;p>由edl生成c函数,通过指针的方法进行进行交互&lt;/p>
+&lt;h3 id="solidity测试合约">solidity测试合约
+&lt;/h3>&lt;p>regchain wiki中的合约：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -273,18 +98,18 @@ EDL 提出了一种“边规则”(edge routine) 的概念. 一个 edge routine 
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="利用vscode和sgx-gdb进行调试">利用vscode和sgx-gdb进行调试&lt;/h3>
-&lt;p>教程：&lt;/p>
+&lt;/div>&lt;h3 id="利用vscode和sgx-gdb进行调试">利用vscode和sgx-gdb进行调试
+&lt;/h3>&lt;p>教程：&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/wiki/Setup-gdb-7.11-on-Ubuntu-18.04-for-VSCode---sgx-gdb-remote-debugging" target="_blank" rel="noopener"
 >Setup gdb 7.11 on Ubuntu 18.04 for VSCode sgx gdb remote debugging&lt;/a>&lt;/p>
 &lt;p>对应代码实例：&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/hello-rust-vscode-debug" target="_blank" rel="noopener"
 >hello-rust-vscode-debug&lt;/a>&lt;/p>
-&lt;h3 id="intel远程证实">intel远程证实&lt;/h3>
-&lt;ul>
+&lt;h3 id="intel远程证实">intel远程证实
+&lt;/h3>&lt;ul>
 &lt;li>
-&lt;h4 id="英特尔官方远程证实">英特尔官方远程证实&lt;/h4>
-&lt;p>注册英特尔开发者账号获取spid和key:&lt;/p>
+&lt;h4 id="英特尔官方远程证实">英特尔官方远程证实
+&lt;/h4>&lt;p>注册英特尔开发者账号获取spid和key:&lt;/p>
 &lt;p>&lt;a class="link" href="https://software.intel.com/registration/?lang=zh-cn" target="_blank" rel="noopener"
 >https://software.intel.com/registration/?lang=zh-cn&lt;/a>&lt;/p>
 &lt;p>intel官方实例：https://software.intel.com/zh-cn/articles/code-sample-intel-software-guard-extensions-remote-attestation-end-to-end-example&lt;/p>
@@ -295,15 +120,15 @@ EDL 提出了一种“边规则”(edge routine) 的概念. 一个 edge routine 
 >ue-ra&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;h4 id="第三方远程证实dcap">第三方远程证实（dcap）&lt;/h4>
-&lt;p>&lt;a class="link" href="https://github.com/intel/SGXDataCenterAttestationPrimitives" target="_blank" rel="noopener"
+&lt;h4 id="第三方远程证实dcap">第三方远程证实（dcap）
+&lt;/h4>&lt;p>&lt;a class="link" href="https://github.com/intel/SGXDataCenterAttestationPrimitives" target="_blank" rel="noopener"
 >https://github.com/intel/SGXDataCenterAttestationPrimitives&lt;/a>&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/Jianbo-Gao/RegChain/wiki/Sgx%E7%AC%AC%E4%B8%89%E6%96%B9%E8%BF%9C%E7%A8%8B%E8%AF%81%E5%AE%9E%E7%A1%AC%E4%BB%B6%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener"
 >Sgx第三方远程证实硬件说明&lt;/a>&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;h3 id="arm-trustzone">ARM TrustZone:&lt;/h3>
-&lt;p>&lt;a class="link" href="https://github.com/OP-TEE/optee_os" target="_blank" rel="noopener"
+&lt;h3 id="arm-trustzone">ARM TrustZone:
+&lt;/h3>&lt;p>&lt;a class="link" href="https://github.com/OP-TEE/optee_os" target="_blank" rel="noopener"
 >OP-TEE / optee_os&lt;/a>&lt;/p>
 &lt;p>&lt;a class="link" href="https://github.com/ARMmbed/meta-mbl" target="_blank" rel="noopener"
 >ARMmbed / meta-mbl&lt;/a>&lt;/p>
