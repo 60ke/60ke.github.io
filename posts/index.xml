@@ -1580,6 +1580,735 @@ alt="G6vRb4"
 &lt;li>
 &lt;p>这种从小模型到“大模型训练范式”的过程，不仅适用于教学和实验，也能作为大模型任务工程化前的原型验证参考。&lt;/p>
 &lt;/li>
+&lt;/ul></description></item><item><title>Go和ClickHouse构建最小化实时数据仓库</title><link>https://60ke.github.io/posts/go%E5%92%8Cclickhouse%E6%9E%84%E5%BB%BA%E6%9C%80%E5%B0%8F%E5%8C%96%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</link><pubDate>Thu, 01 Aug 2024 19:27:10 +0800</pubDate><guid>https://60ke.github.io/posts/go%E5%92%8Cclickhouse%E6%9E%84%E5%BB%BA%E6%9C%80%E5%B0%8F%E5%8C%96%E5%AE%9E%E6%97%B6%E6%95%B0%E6%8D%AE%E4%BB%93%E5%BA%93/</guid><description>&lt;blockquote>
+&lt;p>实时数据仓库能够处理高吞吐量的数据流并支持低延迟分析查询。&lt;strong>Golang&lt;/strong> 以其高并发性能和简洁的语法，结合 &lt;strong>ClickHouse&lt;/strong> 的高效列式存储，是构建实时数据管道的理想选择。本文将展示如何使用 Golang 从 Kafka 消费订单数据，执行实时 ETL，并存储到 ClickHouse，支持实时查询分析。&lt;/p>&lt;/blockquote>
+&lt;h2 id="-背景与动机">💡 背景与动机
+&lt;/h2>&lt;p>实时数据仓库通过流处理和快速查询，满足企业对数据时效性和分析能力的需求。本示例将：&lt;/p>
+&lt;ul>
+&lt;li>使用 &lt;strong>Golang&lt;/strong> 从 Kafka 消费订单数据，进行清洗和聚合。&lt;/li>
+&lt;li>将处理后的数据写入 &lt;strong>ClickHouse&lt;/strong>，构建数据仓库的 DWD（Data Warehouse Detail）层。&lt;/li>
+&lt;li>使用 ClickHouse 执行实时分析查询，展示订单统计。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>场景&lt;/strong>：处理电商平台的实时订单数据，计算每分钟的订单总数和总金额，并存储到 ClickHouse 以支持实时仪表盘查询。&lt;/p>
+&lt;p>&lt;strong>技术栈&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Kafka&lt;/strong>：存储原始订单数据。&lt;/li>
+&lt;li>&lt;strong>Golang&lt;/strong>：执行实时 ETL，基于 &lt;code>sarama&lt;/code>（Kafka 客户端）和 &lt;code>clickhouse-go&lt;/code>。&lt;/li>
+&lt;li>&lt;strong>ClickHouse&lt;/strong>：存储处理后的数据，支持快速 OLAP 查询。&lt;/li>
+&lt;/ul>
+&lt;h2 id="-前置条件">🛠️ 前置条件
+&lt;/h2>&lt;p>确保以下工具已安装：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Golang 1.21+&lt;/strong>（本文使用 1.22）。&lt;/li>
+&lt;li>&lt;strong>ClickHouse 24.x&lt;/strong>（支持高效列式存储）。&lt;/li>
+&lt;li>&lt;strong>Kafka 3.x&lt;/strong>（本文使用 3.5.1）。&lt;/li>
+&lt;li>&lt;strong>Go 模块支持&lt;/strong>（&lt;code>go mod&lt;/code>）。&lt;/li>
+&lt;/ul>
+&lt;p>运行环境：&lt;/p>
+&lt;ul>
+&lt;li>本地或云服务器（推荐 8GB 内存，4 核 CPU）。&lt;/li>
+&lt;li>Docker（可选，用于快速部署 Kafka 和 ClickHouse）。&lt;/li>
+&lt;/ul>
+&lt;h2 id="-项目设置">🔧 项目设置
+&lt;/h2>&lt;h3 id="1-配置-kafka-和-clickhouse">1. 配置 Kafka 和 ClickHouse
+&lt;/h3>&lt;p>使用 Docker 快速部署：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 启动 Kafka（带 Zookeeper）&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run -d --name zookeeper -p 2181:2181 zookeeper:3.8
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run -d --name kafka -p 9092:9092 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">KAFKA_ZOOKEEPER_CONNECT&lt;/span>&lt;span class="o">=&lt;/span>zookeeper:2181 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">KAFKA_ADVERTISED_LISTENERS&lt;/span>&lt;span class="o">=&lt;/span>PLAINTEXT://localhost:9092 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -e &lt;span class="nv">KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> confluentinc/cp-kafka:7.5.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 启动 ClickHouse&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> clickhouse/clickhouse-server:24.8
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>创建 Kafka 主题：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kafka-topics.sh --create --topic orders --bootstrap-server localhost:9092 --partitions &lt;span class="m">1&lt;/span> --replication-factor &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在 ClickHouse 中创建目标表：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">CREATE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">TABLE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">default&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">orders_dwd&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">window_time&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">DateTime&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">order_count&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">UInt64&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">total_amount&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Float64&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ENGINE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">MergeTree&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">ORDER&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">BY&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">window_time&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="2-创建-golang-项目">2. 创建 Golang 项目
+&lt;/h3>&lt;p>初始化 Go 项目：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">mkdir flink-clickhouse-dw
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">cd&lt;/span> flink-clickhouse-dw
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go mod init com.example/flink-clickhouse-dw
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>安装依赖：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">go get github.com/Shopify/sarama
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go get github.com/ClickHouse/clickhouse-go/v2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go get github.com/buger/jsonparser
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>编辑 &lt;code>go.mod&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="nx">module&lt;/span> &lt;span class="nx">com&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">example&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">flink&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nx">clickhouse&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="nx">dw&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">go&lt;/span> &lt;span class="mf">1.22&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nf">require&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">github&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">Shopify&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">sarama&lt;/span> &lt;span class="nx">v1&lt;/span>&lt;span class="mf">.38.1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">github&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">ClickHouse&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">clickhouse&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="k">go&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">v2&lt;/span> &lt;span class="nx">v2&lt;/span>&lt;span class="mf">.16.0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">github&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">com&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">buger&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="nx">jsonparser&lt;/span> &lt;span class="nx">v1&lt;/span>&lt;span class="mf">.1.1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="-实现最小化数据仓库">🧪 实现最小化数据仓库
+&lt;/h2>&lt;h3 id="1-数据模型">1. 数据模型
+&lt;/h3>&lt;p>订单数据的 JSON 格式（Kafka 消息）：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-json" data-lang="json">&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;order_id&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;12345&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;user_id&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;user_001&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;amount&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mf">99.99&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nt">&amp;#34;timestamp&amp;#34;&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s2">&amp;#34;2025-07-01T12:00:00Z&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Golang 将：&lt;/p>
+&lt;ol>
+&lt;li>从 Kafka 主题 &lt;code>orders&lt;/code> 读取数据。&lt;/li>
+&lt;li>按分钟窗口聚合订单数和总金额。&lt;/li>
+&lt;li>将结果批量写入 ClickHouse 表 &lt;code>orders_dwd&lt;/code>。&lt;/li>
+&lt;/ol>
+&lt;h3 id="2-golang-etl-代码">2. Golang ETL 代码
+&lt;/h3>&lt;p>创建 &lt;code>main.go&lt;/code>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt"> 10
+&lt;/span>&lt;span class="lnt"> 11
+&lt;/span>&lt;span class="lnt"> 12
+&lt;/span>&lt;span class="lnt"> 13
+&lt;/span>&lt;span class="lnt"> 14
+&lt;/span>&lt;span class="lnt"> 15
+&lt;/span>&lt;span class="lnt"> 16
+&lt;/span>&lt;span class="lnt"> 17
+&lt;/span>&lt;span class="lnt"> 18
+&lt;/span>&lt;span class="lnt"> 19
+&lt;/span>&lt;span class="lnt"> 20
+&lt;/span>&lt;span class="lnt"> 21
+&lt;/span>&lt;span class="lnt"> 22
+&lt;/span>&lt;span class="lnt"> 23
+&lt;/span>&lt;span class="lnt"> 24
+&lt;/span>&lt;span class="lnt"> 25
+&lt;/span>&lt;span class="lnt"> 26
+&lt;/span>&lt;span class="lnt"> 27
+&lt;/span>&lt;span class="lnt"> 28
+&lt;/span>&lt;span class="lnt"> 29
+&lt;/span>&lt;span class="lnt"> 30
+&lt;/span>&lt;span class="lnt"> 31
+&lt;/span>&lt;span class="lnt"> 32
+&lt;/span>&lt;span class="lnt"> 33
+&lt;/span>&lt;span class="lnt"> 34
+&lt;/span>&lt;span class="lnt"> 35
+&lt;/span>&lt;span class="lnt"> 36
+&lt;/span>&lt;span class="lnt"> 37
+&lt;/span>&lt;span class="lnt"> 38
+&lt;/span>&lt;span class="lnt"> 39
+&lt;/span>&lt;span class="lnt"> 40
+&lt;/span>&lt;span class="lnt"> 41
+&lt;/span>&lt;span class="lnt"> 42
+&lt;/span>&lt;span class="lnt"> 43
+&lt;/span>&lt;span class="lnt"> 44
+&lt;/span>&lt;span class="lnt"> 45
+&lt;/span>&lt;span class="lnt"> 46
+&lt;/span>&lt;span class="lnt"> 47
+&lt;/span>&lt;span class="lnt"> 48
+&lt;/span>&lt;span class="lnt"> 49
+&lt;/span>&lt;span class="lnt"> 50
+&lt;/span>&lt;span class="lnt"> 51
+&lt;/span>&lt;span class="lnt"> 52
+&lt;/span>&lt;span class="lnt"> 53
+&lt;/span>&lt;span class="lnt"> 54
+&lt;/span>&lt;span class="lnt"> 55
+&lt;/span>&lt;span class="lnt"> 56
+&lt;/span>&lt;span class="lnt"> 57
+&lt;/span>&lt;span class="lnt"> 58
+&lt;/span>&lt;span class="lnt"> 59
+&lt;/span>&lt;span class="lnt"> 60
+&lt;/span>&lt;span class="lnt"> 61
+&lt;/span>&lt;span class="lnt"> 62
+&lt;/span>&lt;span class="lnt"> 63
+&lt;/span>&lt;span class="lnt"> 64
+&lt;/span>&lt;span class="lnt"> 65
+&lt;/span>&lt;span class="lnt"> 66
+&lt;/span>&lt;span class="lnt"> 67
+&lt;/span>&lt;span class="lnt"> 68
+&lt;/span>&lt;span class="lnt"> 69
+&lt;/span>&lt;span class="lnt"> 70
+&lt;/span>&lt;span class="lnt"> 71
+&lt;/span>&lt;span class="lnt"> 72
+&lt;/span>&lt;span class="lnt"> 73
+&lt;/span>&lt;span class="lnt"> 74
+&lt;/span>&lt;span class="lnt"> 75
+&lt;/span>&lt;span class="lnt"> 76
+&lt;/span>&lt;span class="lnt"> 77
+&lt;/span>&lt;span class="lnt"> 78
+&lt;/span>&lt;span class="lnt"> 79
+&lt;/span>&lt;span class="lnt"> 80
+&lt;/span>&lt;span class="lnt"> 81
+&lt;/span>&lt;span class="lnt"> 82
+&lt;/span>&lt;span class="lnt"> 83
+&lt;/span>&lt;span class="lnt"> 84
+&lt;/span>&lt;span class="lnt"> 85
+&lt;/span>&lt;span class="lnt"> 86
+&lt;/span>&lt;span class="lnt"> 87
+&lt;/span>&lt;span class="lnt"> 88
+&lt;/span>&lt;span class="lnt"> 89
+&lt;/span>&lt;span class="lnt"> 90
+&lt;/span>&lt;span class="lnt"> 91
+&lt;/span>&lt;span class="lnt"> 92
+&lt;/span>&lt;span class="lnt"> 93
+&lt;/span>&lt;span class="lnt"> 94
+&lt;/span>&lt;span class="lnt"> 95
+&lt;/span>&lt;span class="lnt"> 96
+&lt;/span>&lt;span class="lnt"> 97
+&lt;/span>&lt;span class="lnt"> 98
+&lt;/span>&lt;span class="lnt"> 99
+&lt;/span>&lt;span class="lnt">100
+&lt;/span>&lt;span class="lnt">101
+&lt;/span>&lt;span class="lnt">102
+&lt;/span>&lt;span class="lnt">103
+&lt;/span>&lt;span class="lnt">104
+&lt;/span>&lt;span class="lnt">105
+&lt;/span>&lt;span class="lnt">106
+&lt;/span>&lt;span class="lnt">107
+&lt;/span>&lt;span class="lnt">108
+&lt;/span>&lt;span class="lnt">109
+&lt;/span>&lt;span class="lnt">110
+&lt;/span>&lt;span class="lnt">111
+&lt;/span>&lt;span class="lnt">112
+&lt;/span>&lt;span class="lnt">113
+&lt;/span>&lt;span class="lnt">114
+&lt;/span>&lt;span class="lnt">115
+&lt;/span>&lt;span class="lnt">116
+&lt;/span>&lt;span class="lnt">117
+&lt;/span>&lt;span class="lnt">118
+&lt;/span>&lt;span class="lnt">119
+&lt;/span>&lt;span class="lnt">120
+&lt;/span>&lt;span class="lnt">121
+&lt;/span>&lt;span class="lnt">122
+&lt;/span>&lt;span class="lnt">123
+&lt;/span>&lt;span class="lnt">124
+&lt;/span>&lt;span class="lnt">125
+&lt;/span>&lt;span class="lnt">126
+&lt;/span>&lt;span class="lnt">127
+&lt;/span>&lt;span class="lnt">128
+&lt;/span>&lt;span class="lnt">129
+&lt;/span>&lt;span class="lnt">130
+&lt;/span>&lt;span class="lnt">131
+&lt;/span>&lt;span class="lnt">132
+&lt;/span>&lt;span class="lnt">133
+&lt;/span>&lt;span class="lnt">134
+&lt;/span>&lt;span class="lnt">135
+&lt;/span>&lt;span class="lnt">136
+&lt;/span>&lt;span class="lnt">137
+&lt;/span>&lt;span class="lnt">138
+&lt;/span>&lt;span class="lnt">139
+&lt;/span>&lt;span class="lnt">140
+&lt;/span>&lt;span class="lnt">141
+&lt;/span>&lt;span class="lnt">142
+&lt;/span>&lt;span class="lnt">143
+&lt;/span>&lt;span class="lnt">144
+&lt;/span>&lt;span class="lnt">145
+&lt;/span>&lt;span class="lnt">146
+&lt;/span>&lt;span class="lnt">147
+&lt;/span>&lt;span class="lnt">148
+&lt;/span>&lt;span class="lnt">149
+&lt;/span>&lt;span class="lnt">150
+&lt;/span>&lt;span class="lnt">151
+&lt;/span>&lt;span class="lnt">152
+&lt;/span>&lt;span class="lnt">153
+&lt;/span>&lt;span class="lnt">154
+&lt;/span>&lt;span class="lnt">155
+&lt;/span>&lt;span class="lnt">156
+&lt;/span>&lt;span class="lnt">157
+&lt;/span>&lt;span class="lnt">158
+&lt;/span>&lt;span class="lnt">159
+&lt;/span>&lt;span class="lnt">160
+&lt;/span>&lt;span class="lnt">161
+&lt;/span>&lt;span class="lnt">162
+&lt;/span>&lt;span class="lnt">163
+&lt;/span>&lt;span class="lnt">164
+&lt;/span>&lt;span class="lnt">165
+&lt;/span>&lt;span class="lnt">166
+&lt;/span>&lt;span class="lnt">167
+&lt;/span>&lt;span class="lnt">168
+&lt;/span>&lt;span class="lnt">169
+&lt;/span>&lt;span class="lnt">170
+&lt;/span>&lt;span class="lnt">171
+&lt;/span>&lt;span class="lnt">172
+&lt;/span>&lt;span class="lnt">173
+&lt;/span>&lt;span class="lnt">174
+&lt;/span>&lt;span class="lnt">175
+&lt;/span>&lt;span class="lnt">176
+&lt;/span>&lt;span class="lnt">177
+&lt;/span>&lt;span class="lnt">178
+&lt;/span>&lt;span class="lnt">179
+&lt;/span>&lt;span class="lnt">180
+&lt;/span>&lt;span class="lnt">181
+&lt;/span>&lt;span class="lnt">182
+&lt;/span>&lt;span class="lnt">183
+&lt;/span>&lt;span class="lnt">184
+&lt;/span>&lt;span class="lnt">185
+&lt;/span>&lt;span class="lnt">186
+&lt;/span>&lt;span class="lnt">187
+&lt;/span>&lt;span class="lnt">188
+&lt;/span>&lt;span class="lnt">189
+&lt;/span>&lt;span class="lnt">190
+&lt;/span>&lt;span class="lnt">191
+&lt;/span>&lt;span class="lnt">192
+&lt;/span>&lt;span class="lnt">193
+&lt;/span>&lt;span class="lnt">194
+&lt;/span>&lt;span class="lnt">195
+&lt;/span>&lt;span class="lnt">196
+&lt;/span>&lt;span class="lnt">197
+&lt;/span>&lt;span class="lnt">198
+&lt;/span>&lt;span class="lnt">199
+&lt;/span>&lt;span class="lnt">200
+&lt;/span>&lt;span class="lnt">201
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;context&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;log&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;sync&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;time&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;github.com/ClickHouse/clickhouse-go/v2&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;github.com/Shopify/sarama&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;github.com/buger/jsonparser&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Order 定义订单数据结构&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">Order&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">OrderID&lt;/span> &lt;span class="kt">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">UserID&lt;/span> &lt;span class="kt">string&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Amount&lt;/span> &lt;span class="kt">float64&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Timestamp&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Time&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// OrderAggregate 定义聚合结果&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">OrderAggregate&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">WindowTime&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Time&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">OrderCount&lt;/span> &lt;span class="kt">uint64&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">TotalAmount&lt;/span> &lt;span class="kt">float64&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// KafkaConsumer 消费 Kafka 数据并聚合&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">type&lt;/span> &lt;span class="nx">KafkaConsumer&lt;/span> &lt;span class="kd">struct&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">consumer&lt;/span> &lt;span class="nx">sarama&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Consumer&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">aggregates&lt;/span> &lt;span class="kd">chan&lt;/span> &lt;span class="nx">OrderAggregate&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clickhouse&lt;/span> &lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Conn&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batch&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="nx">OrderAggregate&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batchSize&lt;/span> &lt;span class="kt">int&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batchTicker&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Ticker&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">mutex&lt;/span> &lt;span class="nx">sync&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Mutex&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">NewKafkaConsumer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">brokers&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">string&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">topic&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">sarama&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">NewConsumer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">brokers&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Errorf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to create consumer: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">conn&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Open&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Options&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Addr&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">string&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="s">&amp;#34;localhost:9000&amp;#34;&lt;/span>&lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Auth&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Auth&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Database&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;default&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Username&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;default&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">Password&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="s">&amp;#34;&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">})&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="kc">nil&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Errorf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to connect to ClickHouse: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">aggregates&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">chan&lt;/span> &lt;span class="nx">OrderAggregate&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">conn&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batch&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="nx">OrderAggregate&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">100&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batchSize&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">100&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batchTicker&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">NewTicker&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">10&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Second&lt;/span>&lt;span class="p">),&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">},&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Consume 消费 Kafka 数据并聚合&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">Consume&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span> &lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">topic&lt;/span> &lt;span class="kt">string&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">error&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">partitionConsumer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">consumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">ConsumePartition&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">topic&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">sarama&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OffsetOldest&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Errorf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to consume partition: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">go&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">processAggregates&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">select&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Done&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">partitionConsumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">msg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">partitionConsumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Messages&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">order&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">parseOrder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">msg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Value&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to parse order: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">aggregateOrder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">order&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// parseOrder 解析 JSON 数据&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">parseOrder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">data&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">byte&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">Order&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kt">error&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">orderID&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">jsonparser&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GetString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">data&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;order_id&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{},&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">userID&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">jsonparser&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GetString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">data&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;user_id&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{},&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">amount&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">jsonparser&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GetFloat&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">data&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;amount&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{},&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">timestampStr&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">jsonparser&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GetString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">data&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;timestamp&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{},&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">timestamp&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">RFC3339&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">timestampStr&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{},&lt;/span> &lt;span class="nx">err&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">OrderID&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">orderID&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">UserID&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">userID&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">Amount&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">amount&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">Timestamp&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">timestamp&lt;/span>&lt;span class="p">},&lt;/span> &lt;span class="kc">nil&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// aggregateOrder 按分钟窗口聚合&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">aggregateOrder&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">order&lt;/span> &lt;span class="nx">Order&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">windowTime&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">order&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Timestamp&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Truncate&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Minute&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">aggregate&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">OrderAggregate&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">windowTime&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">OrderCount&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">TotalAmount&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">order&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Amount&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">aggregates&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span> &lt;span class="nx">aggregate&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// processAggregates 处理聚合数据并写入 ClickHouse&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">processAggregates&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span> &lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Context&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">aggMap&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nb">make&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kd">map&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">time&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Time&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="nx">OrderAggregate&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">select&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Done&lt;/span>&lt;span class="p">():&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">flushBatch&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="nx">agg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">aggregates&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">mutex&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Lock&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">existing&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ok&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">aggMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">];&lt;/span> &lt;span class="nx">ok&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">existing&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OrderCount&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OrderCount&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">existing&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">TotalAmount&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">TotalAmount&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">aggMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">OrderAggregate&lt;/span>&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">OrderCount&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OrderCount&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">TotalAmount&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">TotalAmount&lt;/span>&lt;span class="p">,&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nb">append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">_aggMap&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">])&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">&amp;gt;=&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batchSize&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">flushBatch&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">mutex&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Unlock&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">case&lt;/span> &lt;span class="o">&amp;lt;-&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batchTicker&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">C&lt;/span>&lt;span class="p">:&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">mutex&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Lock&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="p">&amp;gt;&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">flushBatch&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">mutex&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Unlock&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// flushBatch 批量写入 ClickHouse&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="nx">KafkaConsumer&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="nf">flushBatch&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="mi">0&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">batch&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">PrepareBatch&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Background&lt;/span>&lt;span class="p">(),&lt;/span> &lt;span class="s">&amp;#34;INSERT INTO orders_dwd&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to prepare batch: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">agg&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="k">range&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">err&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">batch&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Append&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">WindowTime&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">OrderCount&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">agg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">TotalAmount&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to append to batch: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">batch&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Send&lt;/span>&lt;span class="p">();&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to send batch: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="nx">kc&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">batch&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ctx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">cancel&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">WithCancel&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">context&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Background&lt;/span>&lt;span class="p">())&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">defer&lt;/span> &lt;span class="nf">cancel&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nf">NewKafkaConsumer&lt;/span>&lt;span class="p">([]&lt;/span>&lt;span class="kt">string&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="s">&amp;#34;localhost:9092&amp;#34;&lt;/span>&lt;span class="p">},&lt;/span> &lt;span class="s">&amp;#34;orders&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Fatalf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;failed to initialize consumer: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">defer&lt;/span> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">clickhouse&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">defer&lt;/span> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">consumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Close&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">consumer&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Consume&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ctx&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s">&amp;#34;orders&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span> &lt;span class="nx">err&lt;/span> &lt;span class="o">!=&lt;/span> &lt;span class="kc">nil&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">log&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Fatalf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;consumer error: %v&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">err&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>代码说明&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Kafka 消费&lt;/strong>：使用 &lt;code>sarama&lt;/code> 从 &lt;code>orders&lt;/code> 主题读取 JSON 数据，解析为 &lt;code>Order&lt;/code> 结构体。&lt;/li>
+&lt;li>&lt;strong>时间窗口聚合&lt;/strong>：按分钟窗口（&lt;code>Truncate(time.Minute)&lt;/code>）聚合订单数和总金额，存储在内存中的 &lt;code>map&lt;/code>。&lt;/li>
+&lt;li>&lt;strong>批量写入&lt;/strong>：每 10 秒或累积 100 条记录时，将聚合结果批量写入 ClickHouse，减少数据库压力。&lt;/li>
+&lt;li>&lt;strong>并发处理&lt;/strong>：使用 Goroutine 处理聚合和写入，结合 &lt;code>sync.Mutex&lt;/code> 确保线程安全。&lt;/li>
+&lt;li>&lt;strong>错误处理&lt;/strong>：捕获解析和写入错误，确保程序鲁棒性。&lt;/li>
+&lt;/ul>
+&lt;h3 id="3-运行与测试">3. 运行与测试
+&lt;/h3>&lt;ol>
+&lt;li>&lt;strong>编译与运行&lt;/strong>：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">go build -o dw .
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">./dw
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="2">
+&lt;li>&lt;strong>模拟订单数据&lt;/strong>：
+使用 Kafka 生产者发送测试数据：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kafka-console-producer.sh --topic orders --bootstrap-server localhost:9092
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt;&lt;span class="o">{&lt;/span>&lt;span class="s2">&amp;#34;order_id&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;12345&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;user_id&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;user_001&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;amount&amp;#34;&lt;/span>:99.99,&lt;span class="s2">&amp;#34;timestamp&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;2025-07-01T12:00:00Z&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;gt;&lt;span class="o">{&lt;/span>&lt;span class="s2">&amp;#34;order_id&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;12346&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;user_id&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;user_002&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;amount&amp;#34;&lt;/span>:49.99,&lt;span class="s2">&amp;#34;timestamp&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;2025-07-01T12:00:30Z&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ol start="3">
+&lt;li>&lt;strong>查询 ClickHouse&lt;/strong>：
+在 ClickHouse 客户端执行：&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">SELECT&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">window_time&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">order_count&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">total_amount&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">FROM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">default&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">orders_dwd&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">WHERE&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">window_time&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">&amp;gt;=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;2025-07-01 12:00:00&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;strong>示例输出&lt;/strong>：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">window_time | order_count | total_amount
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">--------------------|-------------|-------------
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">2025-07-01 12:00:00 | 2 | 149.98
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="-性能分析">📈 性能分析
+&lt;/h2>&lt;p>&lt;strong>测试环境&lt;/strong>：Mac M1, 8GB 内存，单 Goroutine，ClickHouse 单节点。&lt;/p>
+&lt;p>&lt;strong>性能指标&lt;/strong>：&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;strong>指标&lt;/strong>&lt;/th>
+&lt;th>&lt;strong>值&lt;/strong>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>数据输入速率&lt;/td>
+&lt;td>50 条/秒&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>处理延迟&lt;/td>
+&lt;td>~50ms&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ClickHouse 写入延迟&lt;/td>
+&lt;td>~30ms（批量）&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>查询延迟（1 分钟数据）&lt;/td>
+&lt;td>&amp;lt;10ms&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>分析&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Golang&lt;/strong>：高并发模型（Goroutine）适合实时流处理，内存占用低（~10MB）。&lt;/li>
+&lt;li>&lt;strong>ClickHouse&lt;/strong>：MergeTree 引擎支持快速插入和查询，列式存储优化 OLAP 性能。&lt;/li>
+&lt;li>&lt;strong>瓶颈&lt;/strong>：批量写入依赖定时器和批次大小，需优化以支持更高吞吐量。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>优化建议&lt;/strong>：&lt;/p>
+&lt;ol>
+&lt;li>&lt;strong>批量写入优化&lt;/strong>：调整 &lt;code>batchSize&lt;/code>（如 1000）以减少写入频率。&lt;/li>
+&lt;li>&lt;strong>Kafka 消费者组&lt;/strong>：使用 &lt;code>sarama&lt;/code> 的消费者组支持多分区并行处理。&lt;/li>
+&lt;li>&lt;strong>ClickHouse 异步写入&lt;/strong>：使用 &lt;code>clickhouse-go&lt;/code> 的异步 API 提升写入性能。&lt;/li>
+&lt;li>&lt;strong>Exactly-Once 语义&lt;/strong>：通过 Kafka offset 提交和 ClickHouse 事务确保数据一致性。&lt;/li>
+&lt;/ol>
+&lt;h2 id="-最佳实践与注意事项">🛡️ 最佳实践与注意事项
+&lt;/h2>&lt;ol>
+&lt;li>
+&lt;p>&lt;strong>Golang 配置&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>使用 Goroutine 池控制并发，避免过多的 Goroutine 导致资源竞争。&lt;/li>
+&lt;li>配置 &lt;code>sarama&lt;/code> 的 &lt;code>ConsumerGroup&lt;/code> 以支持高吞吐量和故障恢复。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>ClickHouse 优化&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>使用 MergeTree 引擎，设置 &lt;code>window_time&lt;/code> 为主键以优化查询。&lt;/li>
+&lt;li>启用批量写入（&lt;code>PrepareBatch&lt;/code>），设置合理批次大小（如 1000）。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>监控与调试&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>使用 &lt;code>prometheus&lt;/code> 监控 Kafka 消费延迟和 ClickHouse 写入性能。&lt;/li>
+&lt;li>记录日志（&lt;code>log&lt;/code> 包）以追踪解析和写入错误。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;strong>生产注意事项&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>部署 ClickHouse 集群以支持高可用性和分布式查询。&lt;/li>
+&lt;li>配置 Kafka 消费者组以实现多实例并行处理。&lt;/li>
+&lt;li>定期清理 ClickHouse 临时表和 Kafka 过期数据。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="-总结">🧠 总结
+&lt;/h2>&lt;p>通过 Golang 和 ClickHouse，我们构建了一个最小化的实时数据仓库，从 Kafka 消费订单数据，执行实时 ETL，并存储到 ClickHouse 支持快速查询。Golang 的高并发性和 ClickHouse 的 OLAP 性能相结合，适合构建低延迟、高吞吐的实时分析系统。本示例展示了基本架构，生产环境中可通过优化批量写入、消费者组和事务支持进一步提升性能。&lt;/p>
+&lt;p>希望本文的步骤和代码能帮助你快速上手 Golang 和 ClickHouse，构建高效的实时数据仓库！&lt;/p>
+&lt;p>&lt;strong>参考资源&lt;/strong>：&lt;/p>
+&lt;ul>
+&lt;li>&lt;a class="link" href="https://github.com/ClickHouse/clickhouse-go" target="_blank" rel="noopener"
+>ClickHouse Go 客户端&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://github.com/Shopify/sarama" target="_blank" rel="noopener"
+>Sarama Kafka 客户端&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://clickhouse.com/docs/en/" target="_blank" rel="noopener"
+>ClickHouse 文档&lt;/a>&lt;/li>
 &lt;/ul></description></item><item><title>使用rust加速python</title><link>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8rust%E5%8A%A0%E9%80%9Fpython/</link><pubDate>Sat, 01 Jul 2023 17:00:45 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8rust%E5%8A%A0%E9%80%9Fpython/</guid><description>&lt;blockquote>
 &lt;p>Rust 因其高性能和内存安全特性，成为构建 Python 原生扩展的理想选择。本文将详细介绍如何使用 Rust 开发一个计算斐波那契数列的 Python 库，展示 Rust 与 Python 的互操作流程，包括项目设置、实现代码、性能测试和发布到 PyPI。我们将实现一个高效的斐波那契计算模块，并探讨 Rust 在性能优化中的优势。&lt;/p>&lt;/blockquote>
 &lt;h2 id="-背景与动机">💡 背景与动机
