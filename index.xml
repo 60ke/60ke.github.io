@@ -2777,444 +2777,11 @@ alt="G6vRb4"
 &lt;/ol>
 &lt;h2 id="-总结">🧠 总结
 &lt;/h2>&lt;p>通过 &lt;code>PyO3&lt;/code> 和 &lt;code>maturin&lt;/code>，我们成功使用 Rust 构建了一个高效的 Python 斐波那契计算库 &lt;code>fibonacci_rs&lt;/code>，提供了递归、迭代和记忆化三种实现。性能测试表明，Rust 版本比纯 Python 实现快 4-60 倍，特别适合高性能计算场景。结合记忆化等优化，Rust 可以在保持 Python 生态便利性的同时，提供接近 C 的性能。&lt;/p>
-&lt;p>希望本文的步骤和案例能帮助你在项目中结合 Rust 和 Python，构建高性能的原生扩展库！&lt;/p></description></item><item><title>如何构建一个支持千万级交易量的数据中台系统</title><link>https://60ke.github.io/posts/%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81%E5%8D%83%E4%B8%87%E7%BA%A7%E4%BA%A4%E6%98%93%E9%87%8F%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%E7%B3%BB%E7%BB%9F/</link><pubDate>Sat, 01 Jul 2023 15:11:47 +0800</pubDate><guid>https://60ke.github.io/posts/%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%94%AF%E6%8C%81%E5%8D%83%E4%B8%87%E7%BA%A7%E4%BA%A4%E6%98%93%E9%87%8F%E7%9A%84%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%8F%B0%E7%B3%BB%E7%BB%9F/</guid><description>&lt;h1 id="如何构建一个支持千万级交易量的数据中台系统">如何构建一个支持千万级交易量的数据中台系统
-&lt;/h1>&lt;blockquote>
-&lt;p>随着企业业务复杂度增长，交易、订单、账户、资金等数据来源日益多样化，如何高效汇聚这些高频数据、统一建模、支持多维查询，并在性能、一致性与扩展性之间取得平衡，是数据中台设计的核心挑战。&lt;/p>
-&lt;p>本文结合实际项目经验，分享我们如何构建一个支持&lt;strong>千万级日交易量&lt;/strong>的数据中台系统，涵盖需求分析、技术实现、算法优化、性能优化、稳定性保障、成本控制与未来演进方向，希望为读者提供实用参考。&lt;/p>&lt;/blockquote>
-&lt;hr>
-&lt;h2 id="业务需求与场景分析">业务需求与场景分析
-&lt;/h2>&lt;p>在设计数据中台之前，明确业务需求和场景至关重要。以下是我们项目中面临的典型场景及其技术要求：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>场景&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>需求&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>技术挑战&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;strong>高频支付处理&lt;/strong>&lt;/td>
-&lt;td>亚秒级查询响应，强一致性&lt;/td>
-&lt;td>高并发写入，低延迟查询&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>财务对账&lt;/strong>&lt;/td>
-&lt;td>强一致性，数据可追溯&lt;/td>
-&lt;td>数据完整性，审计日志管理&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>运营看板&lt;/strong>&lt;/td>
-&lt;td>多维度聚合，支持分钟级刷新&lt;/td>
-&lt;td>高性能 OLAP 查询，缓存优化&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>跨境结算&lt;/strong>&lt;/td>
-&lt;td>多币种支持，国际化时间格式&lt;/td>
-&lt;td>汇率转换精度，合规性（如 GDPR）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>风控分析&lt;/strong>&lt;/td>
-&lt;td>实时异常检测，秒级响应&lt;/td>
-&lt;td>流式计算，实时机器学习支持&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>优先级&lt;/strong>：&lt;/p>
-&lt;ol>
-&lt;li>&lt;strong>实时性&lt;/strong>：支付和风控场景要求亚秒级响应。&lt;/li>
-&lt;li>&lt;strong>一致性&lt;/strong>：财务对账要求强一致性，运营看板可接受最终一致性。&lt;/li>
-&lt;li>&lt;strong>扩展性&lt;/strong>：支持数据量增长（如亿级交易）和新场景（如多云部署）。&lt;/li>
-&lt;/ol>
-&lt;p>这些需求决定了数据中台需要同时支持实时与离线计算、强一致性与高性能查询，并具备良好的扩展性和合规性。&lt;/p>
-&lt;hr>
-&lt;h2 id="为什么需要数据中台">为什么需要数据中台？
-&lt;/h2>&lt;p>在一个典型的大型业务系统中，交易数据分散在多个系统或微服务中：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>用户下单&lt;/strong>：存储在电商系统；&lt;/li>
-&lt;li>&lt;strong>支付记录&lt;/strong>：由支付网关服务管理；&lt;/li>
-&lt;li>&lt;strong>结算数据&lt;/strong>：归属资金系统；&lt;/li>
-&lt;li>&lt;strong>退款记录&lt;/strong>：由售后系统处理。&lt;/li>
-&lt;/ul>
-&lt;p>如果各业务团队独立采集、存储和计算数据，会导致以下问题：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>重复开发&lt;/strong>：不同团队重复实现数据处理逻辑，资源浪费；&lt;/li>
-&lt;li>&lt;strong>口径不一致&lt;/strong>：同一指标定义不同，导致数据冲突；&lt;/li>
-&lt;li>&lt;strong>查询性能差&lt;/strong>：分散数据难以高效整合，查询响应慢；&lt;/li>
-&lt;li>&lt;strong>数据混乱&lt;/strong>：缺乏统一管理，完整性和一致性难以保障。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>数据中台的核心价值&lt;/strong>在于：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>多源数据统一&lt;/strong>：汇聚分散的交易数据；&lt;/li>
-&lt;li>&lt;strong>标准化建模&lt;/strong>：提供一致的数据定义和结构；&lt;/li>
-&lt;li>&lt;strong>混合计算&lt;/strong>：支持实时查询和离线分析；&lt;/li>
-&lt;li>&lt;strong>业务赋能&lt;/strong>：满足账务分析、资金追踪、报表生成、审计回查等多场景需求。&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="系统总体架构设计">系统总体架构设计
-&lt;/h2>&lt;p>以下是数据中台的架构示意图，展示数据流转和模块协作：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">flowchart TD
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> A[交易系统] --&amp;gt;|Kafka| B[数据采集层]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> C[支付系统] --&amp;gt;|Kafka| B
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> D[退款系统] --&amp;gt;|HTTP API| B
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> E[结算系统] --&amp;gt;|Binlog| B
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> B --&amp;gt; F[数据处理层]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; G[标准化交易模型]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; H[聚合指标计算]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; I[异常数据修复]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> G --&amp;gt; J[MySQL 分库分表]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> H --&amp;gt; K[ClickHouse 分布式集群]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> I --&amp;gt; L[审计日志表]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> subgraph 存储层
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> J
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> K
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> L
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> M[Redis 集群]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> end
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> J --&amp;gt; N[接口服务层]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> K --&amp;gt; N
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> L --&amp;gt; N
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> M --&amp;gt; N
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> N --&amp;gt; O1[报表查询 API]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> N --&amp;gt; O2[资金追踪 API]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> N --&amp;gt; O3[运营看板 API]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> N --&amp;gt; P[多租户权限校验模块]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> subgraph 运维监控
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Q[任务调度中心]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> R[Prometheus + Grafana]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> S[故障恢复与告警]
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> end
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> F --&amp;gt; Q
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> N --&amp;gt; R
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Q --&amp;gt; S
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="主要模块说明">主要模块说明
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>模块&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>作用&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;strong>数据采集层&lt;/strong>&lt;/td>
-&lt;td>通过 Kafka、Binlog、HTTP 等方式从多系统采集数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>数据处理层&lt;/strong>&lt;/td>
-&lt;td>负责标准化建模、聚合计算、异常数据修正&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>存储层&lt;/strong>&lt;/td>
-&lt;td>MySQL 分库分表 + ClickHouse 分布式集群 + Redis 集群&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>接口服务层&lt;/strong>&lt;/td>
-&lt;td>提供 REST / gRPC 接口，供业务系统查询&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>任务调度层&lt;/strong>&lt;/td>
-&lt;td>支持 T+0、T+1 报表生成、数据对账和异常处理任务&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;hr>
-&lt;h2 id="关键技术实现细节">关键技术实现细节
-&lt;/h2>&lt;h3 id="多源交易数据接入">多源交易数据接入
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>Kafka 主通道&lt;/strong>：各系统通过 Kafka 的 &lt;code>trade-topic&lt;/code> 投递事件，单分区支持高吞吐量（&amp;gt;10万 QPS）。使用一致性哈希算法分配分区键（基于 &lt;code>user_id&lt;/code>），确保数据均匀分布，防止热点分区。&lt;/li>
-&lt;li>&lt;strong>补充方式&lt;/strong>：第三方结算平台数据通过 Airflow 调度的定时任务拉取，或通过 HTTP API 异步对接。&lt;/li>
-&lt;li>&lt;strong>一致性保障&lt;/strong>：Kafka 消费者使用事务提交，确保消息消费幂等性；对于 Binlog，采用 Canal 解析 MySQL 日志，结合时间戳排序算法（基于事件时间）确保数据顺序一致。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>算法优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>一致性哈希&lt;/strong>：在 Kafka 分区分配中，使用一致性哈希算法减少数据迁移成本，支持动态扩容（从 16 分区扩展到 64 分区）。&lt;/li>
-&lt;li>&lt;strong>布隆过滤器&lt;/strong>：在消费者端使用布隆过滤器快速检测重复消息，降低重复处理概率（误判率 &amp;lt; 0.01%）。&lt;/li>
-&lt;/ul>
-&lt;h3 id="标准化交易建模">标准化交易建模
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>统一模型&lt;/strong>：将订单、退款、转账等交易类型映射为“交易事件 + 账户变化”模型，核心字段包括：
-&lt;ul>
-&lt;li>交易 ID（全局唯一，UUID v4 生成）&lt;/li>
-&lt;li>账户 ID&lt;/li>
-&lt;li>交易时间（支持 UTC 和本地化格式）&lt;/li>
-&lt;li>交易金额（支持多币种，精度到 6 位小数）&lt;/li>
-&lt;li>交易方向（收入/支出）&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;strong>国际化支持&lt;/strong>：金额字段存储原始币种和汇率换算后的统一币种（如 USD）；时间字段支持多时区格式，采用 ISO 8601 标准。&lt;/li>
-&lt;li>&lt;strong>合规性&lt;/strong>：敏感字段（如账户 ID）使用 AES-256 加密存储，审计日志保留 7 年，符合 GDPR 和金融监管要求。&lt;/li>
-&lt;/ul>
-&lt;h3 id="数据清洗与合并策略">数据清洗与合并策略
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>事件时间排序&lt;/strong>：以事件时间为主轴，使用归并排序算法（Merge Sort）合并多源数据流，确保资金流转链条的逻辑一致性，时间复杂度 O(n log n)。&lt;/li>
-&lt;li>&lt;strong>异常处理&lt;/strong>：金额缺失、重复交易等异常数据进入审计表。采用基于规则的异常检测算法（结合阈值和模式匹配）识别问题数据，支持人工修正或自动回补（基于 Saga 模式）。&lt;/li>
-&lt;li>&lt;strong>聚合支持&lt;/strong>：生成按天、按月、按账户维度的聚合表，存储在 ClickHouse，使用 HyperLogLog 算法进行近似计数，减少存储和计算开销。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>算法优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>HyperLogLog&lt;/strong>：在聚合计算中，使用 HyperLogLog 算法估算唯一交易数，误差 &amp;lt; 1%，内存占用降低 80%。&lt;/li>
-&lt;li>&lt;strong>滑动窗口&lt;/strong>：对于实时异常检测，使用滑动窗口算法（时间窗口 5 分钟）分析高频交易行为，降低误报率。&lt;/li>
-&lt;/ul>
-&lt;h3 id="分库分表与扩展性">分库分表与扩展性
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>分表规则&lt;/strong>：主交易表按 &lt;code>user_id % 256&lt;/code> 分表，使用一致性哈希算法支持动态扩容，减少数据迁移成本。&lt;/li>
-&lt;li>&lt;strong>索引优化&lt;/strong>：建立联合索引（&lt;code>user_id + 交易时间&lt;/code>），采用 B+ 树索引结构，支持高效分页和跳页查询。&lt;/li>
-&lt;li>&lt;strong>扩展性设计&lt;/strong>：
-&lt;ul>
-&lt;li>MySQL：通过 ProxySQL 实现读写分离，支持动态新增分片。&lt;/li>
-&lt;li>ClickHouse：采用分布式集群（3 分片 + 2 副本），支持亿级数据量。&lt;/li>
-&lt;li>Redis：使用集群模式，自动分片，防止单点瓶颈。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>算法优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>一致性哈希&lt;/strong>：分库分表动态扩容时，使用一致性哈希算法最小化数据迁移，迁移量从全量迁移降至 &amp;lt; 10%。&lt;/li>
-&lt;li>&lt;strong>前缀索引&lt;/strong>：在 MySQL 联合索引中，针对高选择性字段（如 &lt;code>user_id&lt;/code>）使用前缀索引，减少索引存储空间 30%。&lt;/li>
-&lt;/ul>
-&lt;h3 id="5-缓存与延迟聚合">5️⃣ 缓存与延迟聚合
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>缓存设计&lt;/strong>：高频查询（如账户余额、最近 30 天流水）存储在 Redis 集群（Hash 结构），TTL 设置为 24 小时。使用 LRU（最近最少使用）算法管理缓存淘汰。&lt;/li>
-&lt;li>&lt;strong>聚合调度&lt;/strong>：T+0 数据每小时更新，T+1 数据次日全量刷新，使用 Airflow 调度离线任务。聚合计算采用 MapReduce 模型，分布式处理多维度统计。&lt;/li>
-&lt;li>&lt;strong>结果存储&lt;/strong>：多维聚合结果写入 ClickHouse，支持 BI 看板和报表导出（CSV/Excel）。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>算法优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>LRU 缓存&lt;/strong>：Redis 使用 LRU 算法管理缓存，命中率提升至 95%，减少数据库压力。&lt;/li>
-&lt;li>&lt;strong>近似聚合&lt;/strong>：在 ClickHouse 中，使用 HyperLogLog 和 QuantileTDigest 算法进行近似聚合，计算速度提升 3 倍，存储空间节省 50%。&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="性能优化实践">性能优化实践
-&lt;/h2>&lt;p>针对千万级交易量的性能挑战，我们实施了以下优化，结合具体算法提升效率：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>问题&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>解决方案&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>算法/优化&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>效果&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;strong>主表数据量大，慢 SQL 多&lt;/strong>&lt;/td>
-&lt;td>分区表 + 联合索引 + 查询重写（如倒排页）&lt;/td>
-&lt;td>B+ 树索引 + 查询优化器&lt;/td>
-&lt;td>查询响应从 10s 降至 1s 以内&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>同一账号高频访问&lt;/strong>&lt;/td>
-&lt;td>Redis 集群缓存（Hash 结构） + 缓存预热&lt;/td>
-&lt;td>LRU 算法 + 布隆过滤器&lt;/td>
-&lt;td>缓存命中率 &amp;gt; 95%&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>多租户权限切换&lt;/strong>&lt;/td>
-&lt;td>租户 ID 下推到 SQL + RBAC 权限校验&lt;/td>
-&lt;td>哈希表权限校验&lt;/td>
-&lt;td>数据隔离，响应时间 &amp;lt; 150ms&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>聚合任务影响在线查询&lt;/strong>&lt;/td>
-&lt;td>离线任务优先级隔离 + 异步任务链（Airflow）&lt;/td>
-&lt;td>MapReduce 分布式计算&lt;/td>
-&lt;td>在线查询稳定，延迟 &amp;lt; 150ms&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>异常交易检测延迟&lt;/strong>&lt;/td>
-&lt;td>实时流式处理（Flink） + 滑动窗口异常检测&lt;/td>
-&lt;td>滑动窗口 + 基于规则的异常检测 ℓ&lt;/td>
-&lt;td>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>性能成果&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>日交易处理能力&lt;/strong>：&amp;gt; 1.2 亿条，写入延迟 3~5 秒。&lt;/li>
-&lt;li>&lt;strong>查询性能&lt;/strong>：接口平均响应时间 &amp;lt; 150ms，95% 请求命中缓存。&lt;/li>
-&lt;li>&lt;strong>异常检测&lt;/strong>：实时风控场景下，异常交易检测延迟 &amp;lt; 1 秒，误报率 &amp;lt; 0.5%。&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="稳定性与安全保障">稳定性与安全保障
-&lt;/h2>&lt;h3 id="稳定性保障">稳定性保障
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>任务监控&lt;/strong>：ETL 和聚合任务由 Airflow 调度，监控执行时间、成功率，异常触发告警。&lt;/li>
-&lt;li>&lt;strong>链路监控&lt;/strong>：Prometheus + Grafana 覆盖数据采集、处理、存储、查询全链路，实时监控 QPS、延迟、错误率。&lt;/li>
-&lt;li>&lt;strong>故障恢复&lt;/strong>：
-&lt;ul>
-&lt;li>MySQL 主从切换（&amp;lt; 30 秒），支持跨区域容灾。&lt;/li>
-&lt;li>Kafka 和 ClickHouse 副本机制，确保数据高可用。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;strong>SLA 保障&lt;/strong>：系统可用性达 99.99%，查询响应时间目标 &amp;lt; 200ms。&lt;/li>
-&lt;li>&lt;strong>流量峰值应对&lt;/strong>：通过 Nginx 限流、熔断机制和降级策略（如只读缓存），应对突发流量。&lt;/li>
-&lt;/ul>
-&lt;h3 id="安全性设计">安全性设计
-&lt;/h3>&lt;ul>
-&lt;li>&lt;strong>权限控制&lt;/strong>：基于 RBAC 模型，租户 ID 下推到 SQL 层，使用哈希表快速校验权限，防止越权访问。&lt;/li>
-&lt;li>&lt;strong>数据加密&lt;/strong>：敏感数据（如账户 ID、金额）使用 AES-256 加密存储。&lt;/li>
-&lt;li>&lt;strong>合规性&lt;/strong>：审计日志保留 7 年，满足 GDPR 和金融监管要求；支持数据匿名化处理。&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="成本优化">成本优化
-&lt;/h2>&lt;p>为平衡性能与成本，我们采取以下措施：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>冷热分离&lt;/strong>：
-&lt;ul>
-&lt;li>热数据（最近 30 天）：存 Redis 和 ClickHouse。&lt;/li>
-&lt;li>温数据（1 年内）：存 ClickHouse 分布式集群。&lt;/li>
-&lt;li>冷数据（&amp;gt; 1 年）：归档到廉价存储（如 AWS S3）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>&lt;strong>Kafka 优化&lt;/strong>：设置消息 7 天过期，启用 LZ4 压缩，降低存储成本 40%。&lt;/li>
-&lt;li>&lt;strong>云服务&lt;/strong>：评估 AWS RDS（MySQL）、Elasticache（Redis）等云服务，减少运维开销。&lt;/li>
-&lt;li>&lt;strong>硬件估算&lt;/strong>：
-&lt;ul>
-&lt;li>MySQL：10 台 16 核 64GB 服务器。&lt;/li>
-&lt;li>ClickHouse：6 台 32 核 128GB 服务器（3 分片 + 2 副本）。&lt;/li>
-&lt;li>Redis：4 台 8 核 32GB 服务器（集群模式）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>成果&lt;/strong>：在日交易量 1.2 亿条场景下，月存储成本控制在 2 万美元以内。&lt;/p>
-&lt;hr>
-&lt;h2 id="踩坑与解决案例">踩坑与解决案例
-&lt;/h2>&lt;h3 id="案例-1kafka-消费延迟">案例 1：Kafka 消费延迟
-&lt;/h3>&lt;p>&lt;strong>问题&lt;/strong>：高峰期 Kafka 消费者滞后，延迟达 10 秒。
-&lt;strong>原因&lt;/strong>：单消费者组处理能力不足，部分分区数据倾斜。
-&lt;strong>解决&lt;/strong>：&lt;/p>
-&lt;ol>
-&lt;li>增加消费者组分区数（从 16 到 64）。&lt;/li>
-&lt;li>使用一致性哈希算法优化分区键（基于 &lt;code>user_id&lt;/code>），平衡数据分布。&lt;/li>
-&lt;li>引入布隆过滤器检测重复消息，降低处理开销。
-&lt;strong>效果&lt;/strong>：消费延迟降至 1 秒以内，吞吐量提升 2 倍。&lt;/li>
-&lt;/ol>
-&lt;h3 id="案例-2clickhouse-热点查询瓶颈">案例 2：ClickHouse 热点查询瓶颈
-&lt;/h3>&lt;p>&lt;strong>问题&lt;/strong>：高频账户余额查询导致 ClickHouse 单节点负载过高。
-&lt;strong>原因&lt;/strong>：热点数据集中在单一分片。
-&lt;strong>解决&lt;/strong>：&lt;/p>
-&lt;ol>
-&lt;li>启用 ClickHouse 分布式表，数据均匀分片。&lt;/li>
-&lt;li>增加 Redis 缓存，使用 LRU 算法管理，降低数据库压力。&lt;/li>
-&lt;li>使用 QuantileTDigest 算法优化聚合查询，减少全表扫描。
-&lt;strong>效果&lt;/strong>：查询响应时间从 2 秒降至 200ms，负载均衡。&lt;/li>
-&lt;/ol>
-&lt;hr>
-&lt;h2 id="技术选型理由">技术选型理由
-&lt;/h2>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>技术&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>选型理由&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>替代方案对比&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;strong>Kafka&lt;/strong>&lt;/td>
-&lt;td>高吞吐量，分布式架构，支持消息回溯&lt;/td>
-&lt;td>RocketMQ（部署复杂），RabbitMQ（吞吐量较低）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>MySQL&lt;/strong>&lt;/td>
-&lt;td>成熟稳定，生态丰富，适合结构化交易数据&lt;/td>
-&lt;td>PostgreSQL（复杂查询稍慢）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>ClickHouse&lt;/strong>&lt;/td>
-&lt;td>高性能 OLAP，支持多维聚合，分布式扩展性强&lt;/td>
-&lt;td>Elasticsearch（存储成本高）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;strong>Redis&lt;/strong>&lt;/td>
-&lt;td>高性能 KV 存储，适合缓存高频数据&lt;/td>
-&lt;td>Memcached（功能较弱）&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>权衡&lt;/strong>：优先选择成熟、社区活跃的技术，确保长期维护性和生态支持；同时考虑成本与性能平衡，避免过度依赖单一技术。&lt;/p>
-&lt;hr>
-&lt;h2 id="后续迭代">后续迭代
-&lt;/h2>&lt;p>为支持业务增长和技术趋势，我们预留了以下演进空间：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>实时机器学习&lt;/strong>：集成 Flink，支持实时风控（如异常交易检测）和个性化推荐，使用 XGBoost 或 Isolation Forest 算法进行异常检测。&lt;/li>
-&lt;li>&lt;strong>数据湖集成&lt;/strong>：通过 Delta Lake 整合中台数据，支持复杂分析和 AI 训练。&lt;/li>
-&lt;li>&lt;strong>多云部署&lt;/strong>：设计兼容 AWS、Azure 和阿里云的架构，支持跨云迁移。&lt;/li>
-&lt;li>&lt;strong>技术升级&lt;/strong>：评估替换 MySQL 为 TiDB（分布式 SQL），Redis 为 KeyDB（更高性能）。&lt;/li>
-&lt;/ul>
-&lt;hr>
-&lt;h2 id="总结">总结
-&lt;/h2>&lt;p>构建一个支持千万级交易量的数据中台系统，需要综合考虑以下挑战：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>流量承载力&lt;/strong>：高并发、高吞吐的数据处理能力；&lt;/li>
-&lt;li>&lt;strong>数据一致性&lt;/strong>：多源数据整合与强一致性保障；&lt;/li>
-&lt;li>&lt;strong>扩展性&lt;/strong>：支持亿级数据量和国际化场景；&lt;/li>
-&lt;li>&lt;strong>算法优化&lt;/strong>：使用一致性哈希、布隆过滤器、HyperLogLog 等算法提升效率；&lt;/li>
-&lt;li>&lt;strong>安全性与合规性&lt;/strong>：多租户隔离与监管要求；&lt;/li>
-&lt;li>&lt;strong>成本效率&lt;/strong>：性能与资源成本的平衡；&lt;/li>
-&lt;li>&lt;strong>可观测性&lt;/strong>：全链路监控与快速故障恢复。&lt;/li>
-&lt;/ul></description></item><item><title>go汇编</title><link>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</guid><description>&lt;p>&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
+&lt;p>希望本文的步骤和案例能帮助你在项目中结合 Rust 和 Python，构建高性能的原生扩展库！&lt;/p></description></item><item><title>go汇编</title><link>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</guid><description>&lt;p>&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
 >go汇编传送门:&lt;/a>&lt;/p>
 &lt;blockquote>
 &lt;p>Go 汇编（基于 Plan 9 风格的伪汇编）是 Go 语言底层优化的重要工具，尤其在性能敏感场景（如高频计算、系统调用）中发挥作用。本文结合实际案例，深入探讨 Go 汇编的基本概念、伪汇编输出解析、算法优化、性能分析以及最佳实践，旨在帮助开发者理解和应用 Go 汇编。&lt;/p>&lt;/blockquote>
-&lt;h2 id="-背景与动机">💡 背景与动机
+&lt;h2 id="背景与动机">背景与动机
 &lt;/h2>&lt;p>Go 语言以简洁和高性能著称，其编译器直接生成机器码，性能接近 C/C++。然而，在某些场景下（如高频计算、内存密集型操作或与硬件交互），Go 的标准实现可能无法满足极致性能需求。这时，Go 汇编（基于 Plan 9 汇编）提供了直接操作底层指令的能力，允许开发者优化关键代码路径。&lt;/p>
 &lt;p>&lt;strong>Go 汇编的特性&lt;/strong>：&lt;/p>
 &lt;ul>
@@ -3237,7 +2804,7 @@ alt="G6vRb4"
 &lt;li>&lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
 >DWARF 标准&lt;/a>&lt;/li>
 &lt;/ul>
-&lt;h2 id="-为什么需要-go-汇编">🧠 为什么需要 Go 汇编？
+&lt;h2 id="为什么需要-go-汇编">为什么需要 Go 汇编？
 &lt;/h2>&lt;p>Go 编译器通常生成高效的机器码，但仍有一些场景需要手动优化：&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>性能瓶颈&lt;/strong>：高频调用的函数（如加密、排序）可能因通用实现而效率不足。&lt;/li>
@@ -3245,7 +2812,7 @@ alt="G6vRb4"
 &lt;li>&lt;strong>调试与分析&lt;/strong>：通过查看编译器生成的汇编代码，了解优化空间或发现 bug。&lt;/li>
 &lt;/ul>
 &lt;p>Go 汇编基于 Plan 9 风格，具有跨平台性（支持 x86、ARM64 等），通过 &lt;code>go tool compile -S&lt;/code> 查看伪汇编输出是学习和优化的起点。&lt;/p>
-&lt;h2 id="-查看-go-汇编输出">🔍 查看 Go 汇编输出
+&lt;h2 id="查看-go-汇编输出">查看 Go 汇编输出
 &lt;/h2>&lt;p>以下是一个简单的 Go 程序 &lt;code>pkg.go&lt;/code>，用于演示汇编输出：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
@@ -3381,7 +2948,7 @@ DWARF（Debugging With Attributed Record Formats）是一种标准化调试数�
 &lt;li>ARM64 输出更复杂，包含额外元数据（如 &lt;code>go.info&lt;/code> 调试信息），因为 ARM64 架构需要更多指令对齐和元数据支持。&lt;/li>
 &lt;li>AMD64 输出更简洁，部分调试信息可能被优化省略。&lt;/li>
 &lt;/ul>
-&lt;h2 id="-go-汇编在算法优化中的应用">🛠️ Go 汇编在算法优化中的应用
+&lt;h2 id="go-汇编在算法优化中的应用">Go 汇编在算法优化中的应用
 &lt;/h2>&lt;p>Go 汇编可用于优化性能敏感的算法，如高频数学计算。以下是一个简单的汇编实现，计算两个 &lt;code>int64&lt;/code> 值的和，展示如何用汇编优化加法操作。&lt;/p>
 &lt;h3 id="汇编代码示例">汇编代码示例
 &lt;/h3>&lt;p>创建文件 &lt;code>sum_amd64.s&lt;/code>（针对 AMD64 架构）：&lt;/p>
@@ -3633,57 +3200,7 @@ DWARF（Debugging With Attributed Record Formats）是一种标准化调试数�
 &lt;li>&lt;strong>减少指令&lt;/strong>：汇编版本直接操作指针和寄存器，减少 Go 编译器的循环开销（如边界检查）。&lt;/li>
 &lt;li>&lt;strong>性能提升&lt;/strong>：约 14% 的性能提升，适合高频调用场景。&lt;/li>
 &lt;li>&lt;strong>局限性&lt;/strong>：汇编代码需针对特定架构编写（如 AMD64），跨平台需重写。&lt;/li>
-&lt;/ul>
-&lt;h2 id="-最佳实践与注意事项">🛡️ 最佳实践与注意事项
-&lt;/h2>&lt;ol>
-&lt;li>
-&lt;p>&lt;strong>明确使用场景&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>仅在性能瓶颈处使用汇编（如高频计算、内存操作）。&lt;/li>
-&lt;li>避免在简单逻辑中使用，增加维护成本。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>架构适配&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>为每种架构（如 AMD64、ARM64）编写对应的汇编代码。&lt;/li>
-&lt;li>使用 &lt;code>+build&lt;/code> 标签区分平台：
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// +build amd64&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>调试与测试&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>使用 &lt;code>go tool objdump&lt;/code> 查看生成的目标代码，验证汇编实现。&lt;/li>
-&lt;li>编写单元测试，确保汇编与 Go 逻辑一致。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>注意事项&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>栈管理&lt;/strong>：确保正确处理栈帧，避免栈溢出。&lt;/li>
-&lt;li>&lt;strong>符号冲突&lt;/strong>：使用 &lt;code>·&lt;/code> 前缀（如 &lt;code>·Sum&lt;/code>）避免符号冲突。&lt;/li>
-&lt;li>&lt;strong>DWARF 调试&lt;/strong>：确保汇编代码包含足够调试信息，支持 Delve 调试。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>性能监控&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>使用 &lt;code>go test -bench&lt;/code> 测量性能，确保汇编优化有效。&lt;/li>
-&lt;li>结合 &lt;code>pprof&lt;/code> 分析 CPU 和内存使用情况。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ol>
-&lt;h2 id="总结">总结
-&lt;/h2>&lt;p>Go 汇编通过 Plan 9 伪汇编提供底层优化能力，适合性能敏感场景（如高频计算、系统调用）。本文通过分析伪汇编输出、实现简单加法和数组求和算法，展示了 Go 汇编的实际应用。性能测试表明，汇编可减少约 10-15% 的执行时间，但需权衡开发和维护成本。结合 DWARF 调试信息和最佳实践，开发者可以在适当场景下利用 Go 汇编提升性能，同时保持代码可维护性。&lt;/p></description></item><item><title>使用 Go 和 goyacc 实现 Yacc 风格的计算器</title><link>https://60ke.github.io/drafts/go-yacc%E8%AE%A1%E7%AE%97%E5%99%A8/</link><pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/drafts/go-yacc%E8%AE%A1%E7%AE%97%E5%99%A8/</guid><description>&lt;blockquote>
+&lt;/ul></description></item><item><title>使用 Go 和 goyacc 实现 Yacc 风格的计算器</title><link>https://60ke.github.io/drafts/go-yacc%E8%AE%A1%E7%AE%97%E5%99%A8/</link><pubDate>Sat, 01 May 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/drafts/go-yacc%E8%AE%A1%E7%AE%97%E5%99%A8/</guid><description>&lt;blockquote>
 &lt;p>Yacc（Yet Another Compiler Compiler）是一种经典的解析器生成工具，广泛用于构建编译器和解释器。本文将展示如何使用 Go 和 &lt;code>goyacc&lt;/code>（Go 的 Yacc 实现）开发一个简单的算术表达式计算器，支持加、减、乘、除和括号运算。文章提供完整的实现代码，结合词法分析（Lexer）、语法解析（Parser）和执行逻辑，分析性能并总结最佳实践。&lt;/p>&lt;/blockquote>
 &lt;h2 id="-背景与动机">💡 背景与动机
 &lt;/h2>&lt;p>Yacc 是一种基于 LALR(1) 解析算法的工具，通过定义语法规则和语义动作，自动生成解析器。Go 社区的 &lt;code>goyacc&lt;/code> 工具继承了 Yacc 的设计理念，结合 Go 的简洁性和高性能，适合构建高效的解析器。本项目实现一个简单的计算器，能够解析以下表达式：&lt;/p>
@@ -4213,7 +3730,555 @@ DWARF（Debugging With Attributed Record Formats）是一种标准化调试数�
 >goyacc 文档&lt;/a>&lt;/li>
 &lt;li>&lt;a class="link" href="https://www.gnu.org/software/bison/manual/" target="_blank" rel="noopener"
 >Yacc 官方文档&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>使用 Go 实现简化的 Lua 解释器</title><link>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</link><pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</guid><description>&lt;blockquote>
+&lt;/ul></description></item><item><title>go调用RUST</title><link>https://60ke.github.io/posts/go%E8%B0%83%E7%94%A8rust/</link><pubDate>Tue, 06 Apr 2021 10:46:59 +0000</pubDate><guid>https://60ke.github.io/posts/go%E8%B0%83%E7%94%A8rust/</guid><description>&lt;h2 id="无参函数调用">无参函数调用
+&lt;/h2>&lt;p>先写一个rust的lib项目生成动态库&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">cargo new --lib embed
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>Cargo.toml&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-toml" data-lang="toml">&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">package&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">name&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;embed&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">version&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;0.1.0&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">authors&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;k &amp;lt;2589788697@qq.com&amp;gt;&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">edition&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;2018&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c"># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">dependencies&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="nx">lib&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">name&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;embed&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">crate-type&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="s2">&amp;#34;dylib&amp;#34;&lt;/span>&lt;span class="p">]&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>lib.rs&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">std&lt;/span>::&lt;span class="n">thread&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="cp">#[no_mangle]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">fn&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(){&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>:&lt;span class="nb">Vec&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">&amp;gt;=&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">..=&lt;/span>&lt;span class="mi">10&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>::&lt;span class="n">spawn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">||&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">mut&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">..&lt;/span>&lt;span class="mi">5000000&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="n">collect&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread finished with count=&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">map_err&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="s">&amp;#34;could not join a thread&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>编译
+运行 &lt;code>cargo build --release&lt;/code>得到&lt;code>libembed.dylib&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>将文件按照如下放置&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">├── Cargo.lock
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── Cargo.toml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">├── src
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── a.out
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── interface.h
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── lib.rs
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── libembed.dylib
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ ├── main.c
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">│ └── test.go
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>interface.h&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>main.c&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#include&lt;/span> &lt;span class="cpf">&amp;#34;interface.h&amp;#34;&lt;/span>&lt;span class="cp">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">int&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">(){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">process&lt;/span>&lt;span class="p">();&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>编译运行C
+&lt;code>gcc main.c -L. -lembed &amp;amp;&amp;amp; ./a.out&lt;/code>
+PS:linux下编译&lt;code>gcc main.c -L. -lembed -Wl,-rpath=./&lt;/code>
+&lt;code>-Wl,-rpath=./&lt;/code>用于指定程序运行寻找库的路径
+运行结果&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">thread finished with &lt;span class="nv">count&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="m">5000000&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>test.go&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">/*
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#cgo LDFLAGS: -L./ -lembed
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#include &amp;#34;interface.h&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">process&lt;/span>&lt;span class="p">()&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>go run test.go&lt;/code>结果与C运行一致&lt;/p>
+&lt;h2 id="有参函数调用">有参函数调用
+&lt;/h2>&lt;ul>
+&lt;li>lib.rs&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#[repr(C)]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">pub&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">struct&lt;/span> &lt;span class="nc">Test&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">a&lt;/span>:&lt;span class="kt">u32&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">b&lt;/span>:&lt;span class="kt">u32&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="cp">#[no_mangle]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">pub&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">extern&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">fn&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">test&lt;/span>:&lt;span class="o">*&lt;/span>&lt;span class="k">const&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Test&lt;/span>&lt;span class="p">){&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">unsafe&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">test&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">a&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,(&lt;/span>&lt;span class="o">*&lt;/span>&lt;span class="n">test&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">b&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>cargo build --release --out-dir . -Z unstable-options&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>main.c&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="k">struct&lt;/span> &lt;span class="n">Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">int&lt;/span> &lt;span class="n">a&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">int&lt;/span> &lt;span class="n">b&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">extern&lt;/span> &lt;span class="kt">void&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">struct&lt;/span> &lt;span class="n">Test&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">test&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">int&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">(){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">struct&lt;/span> &lt;span class="n">Test&lt;/span> &lt;span class="n">test&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="mi">4&lt;/span>&lt;span class="p">};&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="n">test&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;code>gcc main.c -L. -lembed -Wl,-rpath=./ &amp;amp;&amp;amp; ./a.out&lt;/code>&lt;/p>
+&lt;p>output&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="m">3&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="m">4&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>interface.h&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="k">typedef&lt;/span> &lt;span class="k">struct&lt;/span> &lt;span class="n">Test&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">int&lt;/span> &lt;span class="n">a&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kt">int&lt;/span> &lt;span class="n">b&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span> &lt;span class="n">Test&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">struct&lt;/span> &lt;span class="n">Test&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">test&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>test.go&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">/*
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#cgo LDFLAGS: -L./ -lembed -Wl,-rpath=./
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#include &amp;#34;interface.h&amp;#34; //非标准c头文件,所以用引号
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">typedef struct Test
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">{
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> int a;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm"> int b;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">} Test; #可以放但是不建议(建议放入interface.h)
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">test&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nx">Test&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">b&lt;/span>&lt;span class="p">:&lt;/span> &lt;span class="mi">4&lt;/span>&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">&amp;amp;&lt;/span>&lt;span class="nx">test&lt;/span>&lt;span class="p">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="字符串指针返回">字符串指针返回
+&lt;/h2>&lt;p>很多数据结构在跨语言调用,得在各个语言来回解析,比较麻烦,我们直接以json字符串传递解析可以极大的简化问题的处理&lt;/p>
+&lt;ul>
+&lt;li>lib.rs&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;span class="lnt">41
+&lt;/span>&lt;span class="lnt">42
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-rust" data-lang="rust">&lt;span class="line">&lt;span class="cl">&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">std&lt;/span>::&lt;span class="n">thread&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">libc&lt;/span>::&lt;span class="n">c_int&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">libc&lt;/span>::&lt;span class="n">c_char&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">std&lt;/span>::&lt;span class="n">ffi&lt;/span>::&lt;span class="p">{&lt;/span>&lt;span class="n">CStr&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">CString&lt;/span>&lt;span class="p">};&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">use&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">json&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="cp">#[no_mangle]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">pub&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">extern&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">fn&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">a&lt;/span>:&lt;span class="nc">c_int&lt;/span>&lt;span class="p">){&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>:&lt;span class="nb">Vec&lt;/span>&lt;span class="o">&amp;lt;&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">&amp;gt;=&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">..=&lt;/span>&lt;span class="mi">10&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">map&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">thread&lt;/span>::&lt;span class="n">spawn&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">||&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">mut&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">..&lt;/span>&lt;span class="mi">5000000&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">+=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">})&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}).&lt;/span>&lt;span class="n">collect&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="k">for&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">in&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">handles&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;thread finished with count=&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">h&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="n">join&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">map_err&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="n">_&lt;/span>&lt;span class="o">|&lt;/span>&lt;span class="s">&amp;#34;could not join a thread&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">());&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s"> have done&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">a&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="cp">#[no_mangle]&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="k">pub&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">extern&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">fn&lt;/span> &lt;span class="nf">json_parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">c_buf&lt;/span>:&lt;span class="o">*&lt;/span>&lt;span class="k">const&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c_char&lt;/span>&lt;span class="p">)&lt;/span>-&amp;gt; &lt;span class="o">*&lt;/span>&lt;span class="k">const&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c_char&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c_str&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">unsafe&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">CStr&lt;/span>::&lt;span class="n">from_ptr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">c_buf&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">}.&lt;/span>&lt;span class="n">to_str&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">parsed&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">json&lt;/span>::&lt;span class="n">parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">c_str&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="fm">println!&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="si">{}&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">parsed&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="s">&amp;#34;a&amp;#34;&lt;/span>&lt;span class="p">]);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">let&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="sa">r&lt;/span>&lt;span class="s">#&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> {
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> &amp;#34;name&amp;#34;: &amp;#34;John Doe&amp;#34;,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> &amp;#34;age&amp;#34;: 43,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> &amp;#34;phones&amp;#34;: [
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> &amp;#34;+44 1234567&amp;#34;,
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> &amp;#34;+44 2345678&amp;#34;
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> ]
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s"> }&amp;#34;#&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">CString&lt;/span>::&lt;span class="n">new&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">data&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="n">unwrap&lt;/span>&lt;span class="p">().&lt;/span>&lt;span class="n">into_raw&lt;/span>&lt;span class="p">()&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>main.c&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#include&lt;/span> &lt;span class="cpf">&amp;#34;interface.h&amp;#34;&lt;/span>&lt;span class="cp">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#include&lt;/span> &lt;span class="cpf">&amp;lt;stdio.h&amp;gt;&lt;/span>&lt;span class="cp">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kt">int&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">(){&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="kt">char&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">str&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s">&amp;#34;{&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="s">a&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="s">: 3}&amp;#34;&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">const&lt;/span> &lt;span class="kt">char&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">ret_str&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nf">json_parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">str&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">printf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;%s&lt;/span>&lt;span class="se">\n&lt;/span>&lt;span class="s">&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">ret_str&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="mi">0&lt;/span>&lt;span class="p">;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>interface.h&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kt">int&lt;/span> &lt;span class="n">a&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">const&lt;/span> &lt;span class="kt">char&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="nf">json_parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">const&lt;/span> &lt;span class="kt">char&lt;/span> &lt;span class="o">*&lt;/span>&lt;span class="n">c_buf&lt;/span>&lt;span class="p">);&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;ul>
+&lt;li>test.go&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">/*
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#cgo LDFLAGS: -L./ -lembed
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">#include &amp;#34;interface.h&amp;#34; //非标准c头文件,所以用引号
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cm">*/&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;C&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">process&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nb">int&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">3&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ret_ptr&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">json_parse&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">CString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">`{&amp;#34;a&amp;#34;:3}`&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">C&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">GoString&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">ret_ptr&lt;/span>&lt;span class="p">))&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div></description></item><item><title>使用 Go 实现简化的 Lua 解释器</title><link>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</link><pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</guid><description>&lt;blockquote>
 &lt;p>Lua 是一种轻量、嵌入式的脚本语言，广泛用于游戏开发和嵌入式系统。实现一个 Lua 解释器是学习编译原理和 Go 语言的绝佳实践。本文将展示如何使用 Go 开发一个简化的 Lua 解释器，支持变量赋值、基本算术运算和函数调用。文章将涵盖词法分析、语法解析、执行逻辑。&lt;/p>&lt;/blockquote>
 &lt;h2 id="背景与动机">背景与动机
 &lt;/h2>&lt;p>Lua 解释器以其简单高效的设计而闻名，核心功能包括词法分析（Lexing）、语法解析（Parsing）和执行（Execution）。本项目旨在实现一个最小化的 Lua 解释器，专注于以下特性：&lt;/p>
