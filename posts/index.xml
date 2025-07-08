@@ -1536,12 +1536,9 @@ alt="G6vRb4"
 &lt;li>
 &lt;p>多轮对话理解能力的训练方法。&lt;/p>
 &lt;/li>
-&lt;li>
-&lt;p>这种从小模型到“大模型训练范式”的过程，不仅适用于教学和实验，也能作为大模型任务工程化前的原型验证参考。&lt;/p>
-&lt;/li>
 &lt;/ul></description></item><item><title>使用rust加速python</title><link>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8rust%E5%8A%A0%E9%80%9Fpython/</link><pubDate>Sat, 01 Jul 2023 17:00:45 +0800</pubDate><guid>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8rust%E5%8A%A0%E9%80%9Fpython/</guid><description>&lt;blockquote>
 &lt;p>Rust 因其高性能和内存安全特性，成为构建 Python 原生扩展的理想选择。本文将详细介绍如何使用 Rust 开发一个计算斐波那契数列的 Python 库，展示 Rust 与 Python 的互操作流程，包括项目设置、实现代码、性能测试和发布到 PyPI。我们将实现一个高效的斐波那契计算模块，并探讨 Rust 在性能优化中的优势。&lt;/p>&lt;/blockquote>
-&lt;h2 id="-背景与动机">💡 背景与动机
+&lt;h2 id="背景与动机">背景与动机
 &lt;/h2>&lt;p>Python 因其简洁性和生态丰富而广泛用于数据科学、Web 开发等领域，但在性能敏感场景（如数值计算）中，CPython 的解释执行可能导致效率瓶颈。Rust 作为一门高性能、内存安全的系统编程语言，通过 FFI（Foreign Function Interface）与 Python 结合，可以显著提升计算密集型任务的性能。&lt;/p>
 &lt;p>&lt;strong>为什么选择 Rust 构建 Python 库？&lt;/strong>&lt;/p>
 &lt;ul>
@@ -1550,7 +1547,7 @@ alt="G6vRb4"
 &lt;li>&lt;strong>生态支持&lt;/strong>：通过 &lt;code>PyO3&lt;/code> 和 &lt;code>maturin&lt;/code>，Rust 提供了与 Python 无缝集成的工具链。&lt;/li>
 &lt;/ul>
 &lt;p>&lt;strong>本文目标&lt;/strong>：使用 Rust 开发一个 Python 库 &lt;code>fibonacci_rs&lt;/code>，提供斐波那契数列计算功能，支持递归和迭代两种实现，并与纯 Python 实现进行性能对比。&lt;/p>
-&lt;h2 id="-项目设置">🛠️ 项目设置
+&lt;h2 id="项目设置">项目设置
 &lt;/h2>&lt;p>以下是开发环境的设置步骤，确保你已安装以下工具：&lt;/p>
 &lt;ul>
 &lt;li>Rust（通过 &lt;code>rustup&lt;/code> 安装，推荐最新稳定版，如 1.80.0）。&lt;/li>
@@ -1646,7 +1643,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">build-backend&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="s2">&amp;#34;maturin&amp;#34;&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h2 id="-实现斐波那契计算">🔧 实现斐波那契计算
+&lt;/div>&lt;h2 id="实现斐波那契计算">实现斐波那契计算
 &lt;/h2>&lt;p>我们将实现两种斐波那契计算方法：&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>递归实现&lt;/strong>：展示 Rust 的递归优化。&lt;/li>
@@ -1772,7 +1769,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>&lt;strong>注意&lt;/strong>：递归实现对大 &lt;code>n&lt;/code>（如 &lt;code>n &amp;gt; 40&lt;/code>）可能导致栈溢出，建议使用迭代实现。&lt;/p>
-&lt;h2 id="-性能分析">📈 性能分析
+&lt;h2 id="性能分析">性能分析
 &lt;/h2>&lt;p>为对比 Rust 和 Python 的性能，我们实现一个纯 Python 版本的斐波那契计算：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
