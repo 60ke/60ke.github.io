@@ -1,18 +1,12 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Compiler on LookForAdmin</title><link>https://60ke.github.io/tags/compiler/</link><description>Recent content in Compiler on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 01 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/compiler/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Go 实现简化的 Lua 解释器</title><link>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</link><pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/posts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</guid><description>&lt;blockquote>
-&lt;p>Lua 是一种轻量、嵌入式的脚本语言，广泛用于游戏开发和嵌入式系统。实现一个 Lua 解释器是学习编译原理和 Go 语言的绝佳实践。本文将展示如何使用 Go 开发一个简化的 Lua 解释器，支持变量赋值、基本算术运算和函数调用。文章将涵盖词法分析、语法解析、执行逻辑，并提供完整的代码示例和性能分析，帮助开发者快速上手。&lt;/p>&lt;/blockquote>
-&lt;h2 id="-背景与动机">💡 背景与动机
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Compiler on LookForAdmin</title><link>https://60ke.github.io/tags/compiler/</link><description>Recent content in Compiler on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 01 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/compiler/index.xml" rel="self" type="application/rss+xml"/><item><title>使用 Go 实现简化的 Lua 解释器</title><link>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</link><pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate><guid>https://60ke.github.io/drafts/%E4%BD%BF%E7%94%A8go%E5%AE%9E%E7%8E%B0%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84%E8%A7%A3%E9%87%8A%E5%99%A8/</guid><description>&lt;blockquote>
+&lt;p>Lua 是一种轻量、嵌入式的脚本语言，广泛用于游戏开发和嵌入式系统。实现一个 Lua 解释器是学习编译原理和 Go 语言的绝佳实践。本文将展示如何使用 Go 开发一个简化的 Lua 解释器，支持变量赋值、基本算术运算和函数调用。文章将涵盖词法分析、语法解析、执行逻辑。&lt;/p>&lt;/blockquote>
+&lt;h2 id="背景与动机">背景与动机
 &lt;/h2>&lt;p>Lua 解释器以其简单高效的设计而闻名，核心功能包括词法分析（Lexing）、语法解析（Parsing）和执行（Execution）。本项目旨在实现一个最小化的 Lua 解释器，专注于以下特性：&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>变量赋值&lt;/strong>：支持 &lt;code>a = 42&lt;/code> 形式的赋值。&lt;/li>
 &lt;li>&lt;strong>算术运算&lt;/strong>：支持加减乘除（如 &lt;code>a = 1 + 2 * 3&lt;/code>）。&lt;/li>
 &lt;li>&lt;strong>函数调用&lt;/strong>：支持简单内置函数（如 &lt;code>print&lt;/code>）。&lt;/li>
 &lt;li>&lt;strong>错误处理&lt;/strong>：捕获语法错误和运行时错误。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>为什么用 Go？&lt;/strong>&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>高性能&lt;/strong>：Go 的编译速度和运行时性能适合构建解释器。&lt;/li>
-&lt;li>&lt;strong>并发支持&lt;/strong>：Goroutine 可用于并行解析或执行。&lt;/li>
-&lt;li>&lt;strong>标准库&lt;/strong>：提供强大的字符串处理和错误管理工具。&lt;/li>
 &lt;/ul>
 &lt;h2 id="-项目设计">🛠️ 项目设计
 &lt;/h2>&lt;h3 id="1-架构概述">1. 架构概述
@@ -833,108 +827,10 @@
 &lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">62
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h2 id="-性能分析">📈 性能分析
-&lt;/h2>&lt;p>&lt;strong>测试环境&lt;/strong>：Mac M1, 8GB 内存，Go 1.22。&lt;/p>
-&lt;p>&lt;strong>测试脚本&lt;/strong>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-lua" data-lang="lua">&lt;span class="line">&lt;span class="cl">&lt;span class="n">a&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">10&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">b&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="mi">20&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="mi">3&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">print&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">b&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>性能指标&lt;/strong>：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>阶段&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>执行时间&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>内存占用&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>词法分析&lt;/td>
-&lt;td>0.012ms&lt;/td>
-&lt;td>~10KB&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>语法解析&lt;/td>
-&lt;td>0.008ms&lt;/td>
-&lt;td>~15KB&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>执行&lt;/td>
-&lt;td>0.005ms&lt;/td>
-&lt;td>~5KB&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>分析&lt;/strong>：&lt;/p>
+&lt;/div>&lt;p>&lt;strong>参考资源&lt;/strong>：&lt;/p>
 &lt;ul>
-&lt;li>&lt;strong>词法分析&lt;/strong>：线性扫描，性能瓶颈为字符串处理，适合小脚本。&lt;/li>
-&lt;li>&lt;strong>语法解析&lt;/strong>：递归下降解析高效，AST 构建内存占用低。&lt;/li>
-&lt;li>&lt;strong>执行&lt;/strong>：变量查找使用 &lt;code>map&lt;/code>，时间复杂度 O(1)，适合简单场景。&lt;/li>
-&lt;li>&lt;strong>优化空间&lt;/strong>：
-&lt;ul>
-&lt;li>使用 &lt;code>sync.Pool&lt;/code> 复用 Token 和 Node，减少内存分配。&lt;/li>
-&lt;li>实现字节码编译（而非直接 AST 执行），提升复杂脚本性能。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="-最佳实践与注意事项">🛡️ 最佳实践与注意事项
-&lt;/h2>&lt;ol>
-&lt;li>
-&lt;p>&lt;strong>模块化设计&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>将 Lexer、Parser 和 Evaluator 分离，便于维护和扩展。&lt;/li>
-&lt;li>使用接口定义模块行为，支持替换实现（如字节码解释器）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>错误处理&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>提供详细的错误信息（如行号、列号），便于调试。&lt;/li>
-&lt;li>使用 Go 的 &lt;code>error&lt;/code> 类型统一错误管理。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>性能优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>使用 &lt;code>strings.Builder&lt;/code> 优化字符串拼接。&lt;/li>
-&lt;li>缓存频繁使用的 Token 或 AST 节点，减少分配开销。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>扩展性&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>添加更多 Lua 语法支持（如表、循环、条件语句）。&lt;/li>
-&lt;li>实现标准库函数（如 &lt;code>math.sin&lt;/code>、&lt;code>string.len&lt;/code>）。&lt;/li>
-&lt;li>支持并发执行，使用 Goroutine 隔离脚本运行。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>测试&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>编写单元测试覆盖 Lexer、Parser 和 Evaluator。&lt;/li>
-&lt;li>使用 &lt;code>go test -bench&lt;/code> 测量性能，优化瓶颈。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ol>
-&lt;h2 id="-总结">🧠 总结
-&lt;/h2>&lt;p>通过 Go 实现了一个简化的 Lua 解释器，支持变量赋值、算术运算和 &lt;code>print&lt;/code> 函数调用。核心模块包括词法分析器（基于 FSM）、语法解析器（递归下降）和执行器（AST 遍历）。性能测试表明，该实现适合小型脚本，执行效率高且内存占用低。通过模块化设计和 Go 的并发能力，可进一步扩展为完整的 Lua 解释器。&lt;/p>
-&lt;p>希望本文的代码和分析能帮助你理解解释器开发原理，并在 Go 项目中实践编译技术！&lt;/p>
-&lt;p>&lt;strong>参考资源&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://www.lua.org/manual/5.4/" target="_blank" rel="noopener"
->Lua 5.4 参考手册&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://pkg.go.dev/std" target="_blank" rel="noopener"
->Go 标准库&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://www.lua.org" target="_blank" rel="noopener"
+>Lua&lt;/a>&lt;/li>
 &lt;li>&lt;a class="link" href="https://interpreterbook.com/" target="_blank" rel="noopener"
 >Writing an Interpreter in Go&lt;/a>&lt;/li>
 &lt;/ul></description></item></channel></rss>
