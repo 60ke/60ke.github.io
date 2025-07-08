@@ -974,7 +974,7 @@ alt="G6vRb4"
 &lt;/div>
 &lt;/div>&lt;h3 id="第一阶段构建最小可用模型mlp">第一阶段：构建最小可用模型（MLP）
 &lt;/h3>&lt;p>使用 PyTorch 实现一个最简单的神经网络模型，直接对 [a, b] 输入进行处理。&lt;/p>
-&lt;h4 id="-数据生成">📦 数据生成
+&lt;h4 id="数据生成">数据生成
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1028,7 +1028,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="bp">self&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">model&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h4 id="-模型训练">🚀 模型训练
+&lt;/div>&lt;h4 id="模型训练">模型训练
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1063,7 +1063,7 @@ alt="G6vRb4"
 &lt;p>分类头&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;h4 id="-模型结构-1">🔧 模型结构
+&lt;h4 id="模型结构">模型结构
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -1108,7 +1108,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="bp">self&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">classifier&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">x&lt;/span>&lt;span class="p">)&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h3 id="-第三阶段模型微调fine-tuning">🔁 第三阶段：模型微调（Fine-tuning）
+&lt;/div>&lt;h3 id="第三阶段模型微调fine-tuning">第三阶段：模型微调（Fine-tuning）
 &lt;/h3>&lt;p>我们以“判断两个数是否相等”的任务为例，对已经训练好的模型进行微调。&lt;/p>
 &lt;h4 id="新任务数据">新任务数据
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
@@ -1123,7 +1123,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">label&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">1&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="n">a&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="n">b&lt;/span> &lt;span class="k">else&lt;/span> &lt;span class="mi">0&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h4 id="-微调步骤">♻️ 微调步骤
+&lt;/div>&lt;h4 id="微调步骤">微调步骤
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1141,10 +1141,10 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
 &lt;/div>&lt;p>经过几轮微调，模型可以很好地迁移到新任务，例如从“大小比较” → “相等判断”。&lt;/p>
-&lt;h4 id="-第四阶段支持多轮训练对话上下文">🔄 第四阶段：支持多轮训练（对话上下文）
+&lt;h4 id="第四阶段支持多轮训练对话上下文">第四阶段：支持多轮训练（对话上下文）
 &lt;/h4>&lt;p>我们进一步升级模型为支持“上下文记忆”，模拟多轮对话任务：&lt;/p>
 &lt;p>&lt;code>3 &amp;gt; 7? → No; 7 &amp;gt; 5? → ?&lt;/code>&lt;/p>
-&lt;h4 id="-构造序列数据">📦 构造序列数据
+&lt;h4 id="构造序列数据">构造序列数据
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1176,7 +1176,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">torch&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">sigmoid&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="bp">self&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">classifier&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">[:,&lt;/span> &lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="p">:]))&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h4 id="-tokenizer--padding">✏️ Tokenizer + Padding
+&lt;/div>&lt;h4 id="tokenizer--padding">Tokenizer + Padding
 &lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
@@ -1187,7 +1187,7 @@ alt="G6vRb4"
 &lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="p">[&lt;/span>&lt;span class="n">char2idx&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">ch&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="k">for&lt;/span> &lt;span class="n">ch&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">text&lt;/span> &lt;span class="k">if&lt;/span> &lt;span class="n">ch&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">char2idx&lt;/span>&lt;span class="p">]&lt;/span>
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
 &lt;/div>
-&lt;/div>&lt;h4 id="-多轮训练结果">🚀 多轮训练结果
+&lt;/div>&lt;h4 id="多轮训练结果">多轮训练结果
 &lt;/h4>&lt;p>训练后，模型能理解上下文并输出合理判断：&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
