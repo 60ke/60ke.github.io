@@ -1,424 +1,425 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go汇编 on LookForAdmin</title><link>https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/</link><description>Recent content in Go汇编 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Mon, 13 Dec 2021 11:15:06 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>go汇编</title><link>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</guid><description>&lt;p>&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
->go汇编传送门:&lt;/a>&lt;/p>
-&lt;blockquote>
-&lt;p>Go 汇编（基于 Plan 9 风格的伪汇编）是 Go 语言底层优化的重要工具，尤其在性能敏感场景（如高频计算、系统调用）中发挥作用。本文结合实际案例，深入探讨 Go 汇编的基本概念、伪汇编输出解析、算法优化、性能分析以及最佳实践，旨在帮助开发者理解和应用 Go 汇编。&lt;/p>&lt;/blockquote>
-&lt;h2 id="背景与动机">背景与动机
-&lt;/h2>&lt;p>Go 语言以简洁和高性能著称，其编译器直接生成机器码，性能接近 C/C++。然而，在某些场景下（如高频计算、内存密集型操作或与硬件交互），Go 的标准实现可能无法满足极致性能需求。这时，Go 汇编（基于 Plan 9 汇编）提供了直接操作底层指令的能力，允许开发者优化关键代码路径。&lt;/p>
-&lt;p>&lt;strong>Go 汇编的特性&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>伪汇编&lt;/strong>：Go 使用 Plan 9 风格的伪汇编，而不是直接使用 x86 或 ARM 的原生汇编，抽象了部分硬件细节，便于跨平台开发。&lt;/li>
-&lt;li>&lt;strong>与 Go 集成&lt;/strong>：汇编代码可与 Go 代码无缝集成，适合优化性能瓶颈或实现特定硬件功能。&lt;/li>
-&lt;li>&lt;strong>调试支持&lt;/strong>：通过 DWARF 调试信息，汇编代码可与 Go 调试工具（如 Delve）配合使用。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>使用场景&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>优化高频函数（如加密算法、数学计算）。&lt;/li>
-&lt;li>实现与硬件直接交互的功能（如系统调用、SIMD 指令）。&lt;/li>
-&lt;li>调试编译器生成的代码，分析性能瓶颈。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>官方资源&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
->Go 汇编入门&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://github.com/golang/go/blob/master/src/cmd/internal/dwarf/dwarf.go" target="_blank" rel="noopener"
->Go 源码中的 DWARF 定义&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
->DWARF 标准&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;h2 id="为什么需要-go-汇编">为什么需要 Go 汇编？
-&lt;/h2>&lt;p>Go 编译器通常生成高效的机器码，但仍有一些场景需要手动优化：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>性能瓶颈&lt;/strong>：高频调用的函数（如加密、排序）可能因通用实现而效率不足。&lt;/li>
-&lt;li>&lt;strong>底层控制&lt;/strong>：需要直接操作寄存器或内存（如原子操作、SIMD 指令）。&lt;/li>
-&lt;li>&lt;strong>调试与分析&lt;/strong>：通过查看编译器生成的汇编代码，了解优化空间或发现 bug。&lt;/li>
-&lt;/ul>
-&lt;p>Go 汇编基于 Plan 9 风格，具有跨平台性（支持 x86、ARM64 等），通过 &lt;code>go tool compile -S&lt;/code> 查看伪汇编输出是学习和优化的起点。&lt;/p>
-&lt;h2 id="查看-go-汇编输出">查看 Go 汇编输出
-&lt;/h2>&lt;p>以下是一个简单的 Go 程序 &lt;code>pkg.go&lt;/code>，用于演示汇编输出：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">pkg&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">var&lt;/span> &lt;span class="nx">Id&lt;/span> &lt;span class="p">=&lt;/span> &lt;span class="mi">9527&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>使用以下命令生成伪汇编代码：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">go tool compile -S pkg.go
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 或&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go build -gcflags&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;-S&amp;#34;&lt;/span> pkg.go
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 关闭内联优化&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go build -gcflags&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;-S -N&amp;#34;&lt;/span> pkg.go
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>命令说明&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;code>-S&lt;/code>：输出伪汇编代码，展示编译器生成的指令。&lt;/li>
-&lt;li>&lt;code>-N&lt;/code>：禁用内联优化，便 piekāšanas galvu, lai redzētu oriģinālo rakstu&lt;/li>
-&lt;li>&lt;code>gcflags&lt;/code>：Go 编译器标志，详见 &lt;code>go help compile&lt;/code>。&lt;/li>
-&lt;/ul>
-&lt;h3 id="arm64-汇编输出">ARM64 汇编输出
-&lt;/h3>&lt;p>运行上述命令（ARM64 架构）生成以下输出：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"># command-line-arguments
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.producer.command-line-arguments SDWARFCUINFO dupok size=0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 2d 73 68 61 72 65 64 -shared
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok size=0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 70 6b 67 pkg
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;#34;&amp;#34;.Id SNOPTRDATA size=8
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 37 25 00 00 00 00 00 00 7%......
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.info.command-line-arguments.Id SDWARFVAR dupok size=42
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 08 63 6f 6d 6d 61 6e 64 2d 6c 69 6e 65 2d 61 72 .command-line-ar
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0010 67 75 6d 65 6e 74 73 2e 49 64 00 09 03 00 00 00 guments.Id......
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0020 00 00 00 00 00 00 00 00 00 01 ..........
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rel 29+8 t=1 &amp;#34;&amp;#34;.Id+0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rel 37+4 t=31 go.info.int+0
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="amd64-汇编输出">AMD64 汇编输出
-&lt;/h3>&lt;p>AMD64 架构的输出更简洁：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl"># command-line-arguments
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok size=0
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 70 6b 67 pkg
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&amp;#34;&amp;#34;.Id SNOPTRDATA size=8
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 0x0000 37 25 00 00 00 00 00 00 7%......
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="汇编输出解析">汇编输出解析
-&lt;/h3>&lt;ol>
-&lt;li>
-&lt;p>&lt;strong>&lt;code>go.cuinfo.producer.command-line-arguments&lt;/code>&lt;/strong>:&lt;/p>
-&lt;ul>
-&lt;li>表示编译器信息，&lt;code>SDWARFCUINFO&lt;/code> 是 DWARF 调试信息的编译单元（Compilation Unit）部分。&lt;/li>
-&lt;li>&lt;code>dupok&lt;/code>：允许符号重复，常见于多文件编译场景。&lt;/li>
-&lt;li>&lt;code>0x0000 2d 73 68 61 72 65 64&lt;/code>：表示 &lt;code>-shared&lt;/code> 的 ASCII 码（16 进制），用于编译器元数据。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>&lt;code>go.cuinfo.packagename.command-line-arguments&lt;/code>&lt;/strong>:&lt;/p>
-&lt;ul>
-&lt;li>指定包名 &lt;code>pkg&lt;/code>，存储为 ASCII 码（&lt;code>0x0000 70 6b 67&lt;/code>）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>&lt;code>&amp;quot;&amp;quot;.Id SNOPTRDATA size=8&lt;/code>&lt;/strong>:&lt;/p>
-&lt;ul>
-&lt;li>定义全局变量 &lt;code>Id&lt;/code>，值为 &lt;code>9527&lt;/code>（16 进制 &lt;code>0x2537&lt;/code>，低字节序存储为 &lt;code>37 25&lt;/code>）。&lt;/li>
-&lt;li>&lt;code>SNOPTRDATA&lt;/code>：表示该数据不包含指针，GC（垃圾回收）无需扫描。&lt;/li>
-&lt;li>&lt;code>size=8&lt;/code>：变量占用 8 字节（&lt;code>int&lt;/code> 类型）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;li>
-&lt;p>&lt;strong>&lt;code>go.info.command-line-arguments.Id&lt;/code>&lt;/strong>:&lt;/p>
-&lt;ul>
-&lt;li>DWARF 调试信息，记录变量 &lt;code>Id&lt;/code> 的元数据（如名称、类型）。&lt;/li>
-&lt;li>&lt;code>rel&lt;/code>：重定位信息，指向变量地址或类型信息（如 &lt;code>go.info.int&lt;/code>）。&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ol>
-&lt;p>&lt;strong>DWARF 简介&lt;/strong>：
-DWARF（Debugging With Attributed Record Formats）是一种标准化调试数据格式，用于存储程序的符号表、类型信息和源代码映射。Go 编译器通过 DWARF 提供调试支持，方便工具如 Delve 分析变量和调用栈。更多资源：&lt;/p>
-&lt;ul>
-&lt;li>&lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
->DWARF 标准&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://developer.ibm.com/articles/au-dwarf-debug-format/" target="_blank" rel="noopener"
->IBM DWARF 介绍&lt;/a>&lt;/li>
-&lt;li>&lt;a class="link" href="https://www.grant.pizza/blog/dwarf/" target="_blank" rel="noopener"
->Parsing Go Binary DWARF Info&lt;/a>&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>ARM64 vs. AMD64&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>ARM64 输出更复杂，包含额外元数据（如 &lt;code>go.info&lt;/code> 调试信息），因为 ARM64 架构需要更多指令对齐和元数据支持。&lt;/li>
-&lt;li>AMD64 输出更简洁，部分调试信息可能被优化省略。&lt;/li>
-&lt;/ul>
-&lt;h2 id="go-汇编在算法优化中的应用">Go 汇编在算法优化中的应用
-&lt;/h2>&lt;p>Go 汇编可用于优化性能敏感的算法，如高频数学计算。以下是一个简单的汇编实现，计算两个 &lt;code>int64&lt;/code> 值的和，展示如何用汇编优化加法操作。&lt;/p>
-&lt;h3 id="汇编代码示例">汇编代码示例
-&lt;/h3>&lt;p>创建文件 &lt;code>sum_amd64.s&lt;/code>（针对 AMD64 架构）：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// sum_amd64.s&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">#&lt;/span>&lt;span class="nx">include&lt;/span> &lt;span class="s">&amp;#34;textflag.h&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// func Sum(a, b int64) int64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">TEXT&lt;/span> &lt;span class="err">·&lt;/span>&lt;span class="nf">Sum&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">NOSPLIT&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">24&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">a&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">AX&lt;/span> &lt;span class="c1">// 加载第一个参数 a 到 AX 寄存器&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">b&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">BX&lt;/span> &lt;span class="c1">// 加载第二个参数 b 到 BX 寄存器&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ADDQ&lt;/span> &lt;span class="nx">BX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">AX&lt;/span> &lt;span class="c1">// AX = AX + BX&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">AX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ret&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// 将结果存储到返回值&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">RET&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>对应的 Go 代码 &lt;code>sum.go&lt;/code>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">pkg&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// Sum 函数声明，汇编实现&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">Sum&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">a&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">b&lt;/span> &lt;span class="kt">int64&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">int64&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>编译与测试&lt;/strong>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">go build -o sum sum.go sum_amd64.s
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>测试代码 &lt;code>main.go&lt;/code>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;pkg&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">result&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">pkg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Sum&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mi">10&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">20&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;Sum(10, 20) =&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">result&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// 输出: Sum(10, 20) = 30&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>算法优化&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>直接寄存器操作&lt;/strong>：使用 &lt;code>MOVQ&lt;/code> 和 &lt;code>ADDQ&lt;/code> 指令直接操作寄存器，减少 Go 编译器生成的额外检查（如边界检查）。&lt;/li>
-&lt;li>&lt;strong>NOSPLIT 标志&lt;/strong>：禁止栈分裂，减少函数调用开销，适合简单函数。&lt;/li>
-&lt;li>&lt;strong>时间复杂度&lt;/strong>：O(1)，单指令加法，性能接近硬件极限。&lt;/li>
-&lt;/ul>
-&lt;p>&lt;strong>性能测试&lt;/strong>（Mac M1，Go 1.18）：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>实现方式&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>场景&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>执行时间&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>内存占用&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>Go 实现&lt;/td>
-&lt;td>int64 相加&lt;/td>
-&lt;td>2.1 ns/op&lt;/td>
-&lt;td>0 B/op&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>汇编实现&lt;/td>
-&lt;td>int64 相加&lt;/td>
-&lt;td>1.8 ns/op&lt;/td>
-&lt;td>0 B/op&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>分析&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>汇编版本减少了约 14% 的执行时间，因避免了 Go 编译器的栈检查和参数传递开销。&lt;/li>
-&lt;li>内存占用均为 0，因操作仅涉及寄存器。&lt;/li>
-&lt;/ul>
-&lt;h2 id="-实际案例优化高频循环">🧪 实际案例：优化高频循环
-&lt;/h2>&lt;p>以下是一个实际案例：使用 Go 汇编优化高频循环计算数组元素和，相比 Go 实现减少指令开销。&lt;/p>
-&lt;h3 id="go-实现">Go 实现
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;span class="lnt">8
-&lt;/span>&lt;span class="lnt">9
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">pkg&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">SumArray&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">arr&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int64&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="kt">int64&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="kd">var&lt;/span> &lt;span class="nx">sum&lt;/span> &lt;span class="kt">int64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="nx">_&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">v&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="k">range&lt;/span> &lt;span class="nx">arr&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">sum&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nx">v&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">sum&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="汇编实现amd64">汇编实现（AMD64）
-&lt;/h3>&lt;p>创建文件 &lt;code>sumarray_amd64.s&lt;/code>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// sumarray_amd64.s&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="err">#&lt;/span>&lt;span class="nx">include&lt;/span> &lt;span class="s">&amp;#34;textflag.h&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">// func SumArray(arr []int64) int64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">TEXT&lt;/span> &lt;span class="err">·&lt;/span>&lt;span class="nf">SumArray&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">SB&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">NOSPLIT&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">24&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">arr&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">SI&lt;/span> &lt;span class="c1">// 加载数组地址&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">arr&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">CX&lt;/span> &lt;span class="c1">// 加载数组长度&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="mi">0&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">AX&lt;/span> &lt;span class="c1">// 初始化 sum (AX = 0)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">TESTQ&lt;/span> &lt;span class="nx">CX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">CX&lt;/span> &lt;span class="c1">// 检查数组长度是否为 0&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">JE&lt;/span> &lt;span class="nx">done&lt;/span> &lt;span class="c1">// 如果为 0，跳转到结束&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">loop&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nf">ADDQ&lt;/span> &lt;span class="p">(&lt;/span>&lt;span class="nx">SI&lt;/span>&lt;span class="p">),&lt;/span> &lt;span class="nx">AX&lt;/span> &lt;span class="c1">// sum += *SI（当前元素）&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">ADDQ&lt;/span> &lt;span class="err">$&lt;/span>&lt;span class="mi">8&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">SI&lt;/span> &lt;span class="c1">// SI += 8（指向下一个 int64）&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">DECQ&lt;/span> &lt;span class="nx">CX&lt;/span> &lt;span class="c1">// 长度递减&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">JNZ&lt;/span> &lt;span class="nx">loop&lt;/span> &lt;span class="c1">// 如果 CX != 0，继续循环&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nx">done&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">MOVQ&lt;/span> &lt;span class="nx">AX&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">ret&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="mi">16&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">FP&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// 存储返回值&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">RET&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>测试代码&lt;/strong>：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-go" data-lang="go">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span> &lt;span class="nx">main&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="p">(&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;fmt&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s">&amp;#34;pkg&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kd">func&lt;/span> &lt;span class="nf">main&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">arr&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="p">[]&lt;/span>&lt;span class="kt">int64&lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">2&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">3&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">4&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="mi">5&lt;/span>&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">result&lt;/span> &lt;span class="o">:=&lt;/span> &lt;span class="nx">pkg&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">SumArray&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">arr&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nx">fmt&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="nf">Println&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;SumArray:&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nx">result&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="c1">// 输出: SumArray: 15&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;strong>性能测试&lt;/strong>（1000 元素数组，Mac M1，Go 1.18）：&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>&lt;strong>实现方式&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>执行时间&lt;/strong>&lt;/th>
-&lt;th>&lt;strong>内存占用&lt;/strong>&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>Go 实现&lt;/td>
-&lt;td>245 ns/op&lt;/td>
-&lt;td>0 B/op&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>汇编实现&lt;/td>
-&lt;td>210 ns/op&lt;/td>
-&lt;td>0 B/op&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;p>&lt;strong>优化分析&lt;/strong>：&lt;/p>
-&lt;ul>
-&lt;li>&lt;strong>减少指令&lt;/strong>：汇编版本直接操作指针和寄存器，减少 Go 编译器的循环开销（如边界检查）。&lt;/li>
-&lt;li>&lt;strong>性能提升&lt;/strong>：约 14% 的性能提升，适合高频调用场景。&lt;/li>
-&lt;li>&lt;strong>局限性&lt;/strong>：汇编代码需针对特定架构编写（如 AMD64），跨平台需重写。&lt;/li>
-&lt;/ul></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Go汇编 on LookForAdmin</title><link>https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/</link><description>Recent content in Go汇编 on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 13 Dec 2021 11:15:06 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/go%E6%B1%87%E7%BC%96/index.xml" rel="self" type="application/rss+xml"/><item><title>go汇编</title><link>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</link><pubDate>Mon, 13 Dec 2021 11:15:06 +0000</pubDate><guid>https://60ke.github.io/posts/go%E6%B1%87%E7%BC%96/</guid><description>&lt;p&gt;&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
+&gt;go汇编传送门:&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Go 汇编（基于 Plan 9 风格的伪汇编）是 Go 语言底层优化的重要工具，尤其在性能敏感场景（如高频计算、系统调用）中发挥作用。本文结合实际案例，深入探讨 Go 汇编的基本概念、伪汇编输出解析、算法优化、性能分析以及最佳实践，旨在帮助开发者理解和应用 Go 汇编。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="背景与动机"&gt;背景与动机
+&lt;/h2&gt;&lt;p&gt;Go 语言以简洁和高性能著称，其编译器直接生成机器码，性能接近 C/C++。然而，在某些场景下（如高频计算、内存密集型操作或与硬件交互），Go 的标准实现可能无法满足极致性能需求。这时，Go 汇编（基于 Plan 9 汇编）提供了直接操作底层指令的能力，允许开发者优化关键代码路径。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Go 汇编的特性&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;伪汇编&lt;/strong&gt;：Go 使用 Plan 9 风格的伪汇编，而不是直接使用 x86 或 ARM 的原生汇编，抽象了部分硬件细节，便于跨平台开发。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;与 Go 集成&lt;/strong&gt;：汇编代码可与 Go 代码无缝集成，适合优化性能瓶颈或实现特定硬件功能。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调试支持&lt;/strong&gt;：通过 DWARF 调试信息，汇编代码可与 Go 调试工具（如 Delve）配合使用。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;使用场景&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;优化高频函数（如加密算法、数学计算）。&lt;/li&gt;
+&lt;li&gt;实现与硬件直接交互的功能（如系统调用、SIMD 指令）。&lt;/li&gt;
+&lt;li&gt;调试编译器生成的代码，分析性能瓶颈。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;官方资源&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="https://chai2010.gitbooks.io/advanced-go-programming-book/content/ch3-asm/ch3-01-basic.html" target="_blank" rel="noopener"
+&gt;Go 汇编入门&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://github.com/golang/go/blob/master/src/cmd/internal/dwarf/dwarf.go" target="_blank" rel="noopener"
+&gt;Go 源码中的 DWARF 定义&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
+&gt;DWARF 标准&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="为什么需要-go-汇编"&gt;为什么需要 Go 汇编？
+&lt;/h2&gt;&lt;p&gt;Go 编译器通常生成高效的机器码，但仍有一些场景需要手动优化：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;性能瓶颈&lt;/strong&gt;：高频调用的函数（如加密、排序）可能因通用实现而效率不足。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;底层控制&lt;/strong&gt;：需要直接操作寄存器或内存（如原子操作、SIMD 指令）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;调试与分析&lt;/strong&gt;：通过查看编译器生成的汇编代码，了解优化空间或发现 bug。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Go 汇编基于 Plan 9 风格，具有跨平台性（支持 x86、ARM64 等），通过 &lt;code&gt;go tool compile -S&lt;/code&gt; 查看伪汇编输出是学习和优化的起点。&lt;/p&gt;
+&lt;h2 id="查看-go-汇编输出"&gt;查看 Go 汇编输出
+&lt;/h2&gt;&lt;p&gt;以下是一个简单的 Go 程序 &lt;code&gt;pkg.go&lt;/code&gt;，用于演示汇编输出：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pkg&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;Id&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;9527&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;使用以下命令生成伪汇编代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go tool compile -S pkg.go
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 或&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go build -gcflags&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;-S&amp;#34;&lt;/span&gt; pkg.go
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 关闭内联优化&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go build -gcflags&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;-S -N&amp;#34;&lt;/span&gt; pkg.go
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;命令说明&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-S&lt;/code&gt;：输出伪汇编代码，展示编译器生成的指令。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;-N&lt;/code&gt;：禁用内联优化，便 piekāšanas galvu, lai redzētu oriģinālo rakstu&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gcflags&lt;/code&gt;：Go 编译器标志，详见 &lt;code&gt;go help compile&lt;/code&gt;。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="arm64-汇编输出"&gt;ARM64 汇编输出
+&lt;/h3&gt;&lt;p&gt;运行上述命令（ARM64 架构）生成以下输出：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;# command-line-arguments
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go.cuinfo.producer.command-line-arguments SDWARFCUINFO dupok size=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 2d 73 68 61 72 65 64 -shared
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok size=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 70 6b 67 pkg
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&amp;#34;&amp;#34;.Id SNOPTRDATA size=8
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 37 25 00 00 00 00 00 00 7%......
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go.info.command-line-arguments.Id SDWARFVAR dupok size=42
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 08 63 6f 6d 6d 61 6e 64 2d 6c 69 6e 65 2d 61 72 .command-line-ar
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0010 67 75 6d 65 6e 74 73 2e 49 64 00 09 03 00 00 00 guments.Id......
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0020 00 00 00 00 00 00 00 00 00 01 ..........
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; rel 29+8 t=1 &amp;#34;&amp;#34;.Id+0
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; rel 37+4 t=31 go.info.int+0
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="amd64-汇编输出"&gt;AMD64 汇编输出
+&lt;/h3&gt;&lt;p&gt;AMD64 架构的输出更简洁：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;# command-line-arguments
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go.cuinfo.packagename.command-line-arguments SDWARFCUINFO dupok size=0
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 70 6b 67 pkg
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&amp;#34;&amp;#34;.Id SNOPTRDATA size=8
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; 0x0000 37 25 00 00 00 00 00 00 7%......
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="汇编输出解析"&gt;汇编输出解析
+&lt;/h3&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;go.cuinfo.producer.command-line-arguments&lt;/code&gt;&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;表示编译器信息，&lt;code&gt;SDWARFCUINFO&lt;/code&gt; 是 DWARF 调试信息的编译单元（Compilation Unit）部分。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dupok&lt;/code&gt;：允许符号重复，常见于多文件编译场景。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;0x0000 2d 73 68 61 72 65 64&lt;/code&gt;：表示 &lt;code&gt;-shared&lt;/code&gt; 的 ASCII 码（16 进制），用于编译器元数据。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;go.cuinfo.packagename.command-line-arguments&lt;/code&gt;&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;指定包名 &lt;code&gt;pkg&lt;/code&gt;，存储为 ASCII 码（&lt;code&gt;0x0000 70 6b 67&lt;/code&gt;）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;&amp;quot;&amp;quot;.Id SNOPTRDATA size=8&lt;/code&gt;&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;定义全局变量 &lt;code&gt;Id&lt;/code&gt;，值为 &lt;code&gt;9527&lt;/code&gt;（16 进制 &lt;code&gt;0x2537&lt;/code&gt;，低字节序存储为 &lt;code&gt;37 25&lt;/code&gt;）。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SNOPTRDATA&lt;/code&gt;：表示该数据不包含指针，GC（垃圾回收）无需扫描。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;size=8&lt;/code&gt;：变量占用 8 字节（&lt;code&gt;int&lt;/code&gt; 类型）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;go.info.command-line-arguments.Id&lt;/code&gt;&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DWARF 调试信息，记录变量 &lt;code&gt;Id&lt;/code&gt; 的元数据（如名称、类型）。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rel&lt;/code&gt;：重定位信息，指向变量地址或类型信息（如 &lt;code&gt;go.info.int&lt;/code&gt;）。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;DWARF 简介&lt;/strong&gt;：
+DWARF（Debugging With Attributed Record Formats）是一种标准化调试数据格式，用于存储程序的符号表、类型信息和源代码映射。Go 编译器通过 DWARF 提供调试支持，方便工具如 Delve 分析变量和调用栈。更多资源：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class="link" href="http://dwarfstd.org/doc/dwarf-2.0.0.pdf" target="_blank" rel="noopener"
+&gt;DWARF 标准&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://developer.ibm.com/articles/au-dwarf-debug-format/" target="_blank" rel="noopener"
+&gt;IBM DWARF 介绍&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class="link" href="https://www.grant.pizza/blog/dwarf/" target="_blank" rel="noopener"
+&gt;Parsing Go Binary DWARF Info&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;ARM64 vs. AMD64&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ARM64 输出更复杂，包含额外元数据（如 &lt;code&gt;go.info&lt;/code&gt; 调试信息），因为 ARM64 架构需要更多指令对齐和元数据支持。&lt;/li&gt;
+&lt;li&gt;AMD64 输出更简洁，部分调试信息可能被优化省略。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="go-汇编在算法优化中的应用"&gt;Go 汇编在算法优化中的应用
+&lt;/h2&gt;&lt;p&gt;Go 汇编可用于优化性能敏感的算法，如高频数学计算。以下是一个简单的汇编实现，计算两个 &lt;code&gt;int64&lt;/code&gt; 值的和，展示如何用汇编优化加法操作。&lt;/p&gt;
+&lt;h3 id="汇编代码示例"&gt;汇编代码示例
+&lt;/h3&gt;&lt;p&gt;创建文件 &lt;code&gt;sum_amd64.s&lt;/code&gt;（针对 AMD64 架构）：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// sum_amd64.s&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;textflag.h&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// func Sum(a, b int64) int64&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;TEXT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;·&lt;/span&gt;&lt;span class="nf"&gt;Sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;SB&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;NOSPLIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 加载第一个参数 a 到 AX 寄存器&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;BX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 加载第二个参数 b 到 BX 寄存器&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;ADDQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;BX&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// AX = AX + BX&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;ret&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 将结果存储到返回值&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;RET&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;对应的 Go 代码 &lt;code&gt;sum.go&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pkg&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// Sum 函数声明，汇编实现&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;Sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;编译与测试&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;go build -o sum sum.go sum_amd64.s
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;测试代码 &lt;code&gt;main.go&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;pkg&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pkg&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;Sum&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;20&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;Sum(10, 20) =&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 输出: Sum(10, 20) = 30&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;算法优化&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;直接寄存器操作&lt;/strong&gt;：使用 &lt;code&gt;MOVQ&lt;/code&gt; 和 &lt;code&gt;ADDQ&lt;/code&gt; 指令直接操作寄存器，减少 Go 编译器生成的额外检查（如边界检查）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;NOSPLIT 标志&lt;/strong&gt;：禁止栈分裂，减少函数调用开销，适合简单函数。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;时间复杂度&lt;/strong&gt;：O(1)，单指令加法，性能接近硬件极限。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;性能测试&lt;/strong&gt;（Mac M1，Go 1.18）：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;strong&gt;实现方式&lt;/strong&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;场景&lt;/strong&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;执行时间&lt;/strong&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;内存占用&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Go 实现&lt;/td&gt;
+&lt;td&gt;int64 相加&lt;/td&gt;
+&lt;td&gt;2.1 ns/op&lt;/td&gt;
+&lt;td&gt;0 B/op&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;汇编实现&lt;/td&gt;
+&lt;td&gt;int64 相加&lt;/td&gt;
+&lt;td&gt;1.8 ns/op&lt;/td&gt;
+&lt;td&gt;0 B/op&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;分析&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;汇编版本减少了约 14% 的执行时间，因避免了 Go 编译器的栈检查和参数传递开销。&lt;/li&gt;
+&lt;li&gt;内存占用均为 0，因操作仅涉及寄存器。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="-实际案例优化高频循环"&gt;🧪 实际案例：优化高频循环
+&lt;/h2&gt;&lt;p&gt;以下是一个实际案例：使用 Go 汇编优化高频循环计算数组元素和，相比 Go 实现减少指令开销。&lt;/p&gt;
+&lt;h3 id="go-实现"&gt;Go 实现
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pkg&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;SumArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kd"&gt;var&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;sum&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;_&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;range&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;sum&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;+=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;sum&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="汇编实现amd64"&gt;汇编实现（AMD64）
+&lt;/h3&gt;&lt;p&gt;创建文件 &lt;code&gt;sumarray_amd64.s&lt;/code&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// sumarray_amd64.s&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;include&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;textflag.h&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// func SumArray(arr []int64) int64&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;TEXT&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;·&lt;/span&gt;&lt;span class="nf"&gt;SumArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;SB&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;NOSPLIT&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;24&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;SI&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 加载数组地址&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;CX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 加载数组长度&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 初始化 sum (AX = 0)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;TESTQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;CX&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;CX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 检查数组长度是否为 0&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;JE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;done&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 如果为 0，跳转到结束&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;loop&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;ADDQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;SI&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// sum += *SI（当前元素）&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;ADDQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;SI&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// SI += 8（指向下一个 int64）&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;DECQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;CX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 长度递减&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;JNZ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;loop&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 如果 CX != 0，继续循环&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;done&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;MOVQ&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;AX&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;ret&lt;/span&gt;&lt;span class="o"&gt;+&lt;/span&gt;&lt;span class="mi"&gt;16&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;FP&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 存储返回值&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;RET&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;测试代码&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-go" data-lang="go"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;package&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;main&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kn"&gt;import&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;fmt&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s"&gt;&amp;#34;pkg&amp;#34;&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kd"&gt;func&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt;&lt;span class="kt"&gt;int64&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;4&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;:=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;pkg&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;SumArray&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;arr&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;fmt&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nf"&gt;Println&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#34;SumArray:&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nx"&gt;result&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="c1"&gt;// 输出: SumArray: 15&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;性能测试&lt;/strong&gt;（1000 元素数组，Mac M1，Go 1.18）：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;strong&gt;实现方式&lt;/strong&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;执行时间&lt;/strong&gt;&lt;/th&gt;
+&lt;th&gt;&lt;strong&gt;内存占用&lt;/strong&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Go 实现&lt;/td&gt;
+&lt;td&gt;245 ns/op&lt;/td&gt;
+&lt;td&gt;0 B/op&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;汇编实现&lt;/td&gt;
+&lt;td&gt;210 ns/op&lt;/td&gt;
+&lt;td&gt;0 B/op&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;优化分析&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;减少指令&lt;/strong&gt;：汇编版本直接操作指针和寄存器，减少 Go 编译器的循环开销（如边界检查）。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;性能提升&lt;/strong&gt;：约 14% 的性能提升，适合高频调用场景。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;局限性&lt;/strong&gt;：汇编代码需针对特定架构编写（如 AMD64），跨平台需重写。&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>

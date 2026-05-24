@@ -1,136 +1,136 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sgx on LookForAdmin</title><link>https://60ke.github.io/tags/sgx/</link><description>Recent content in Sgx on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><lastBuildDate>Fri, 17 Jan 2020 16:46:35 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sgx/index.xml" rel="self" type="application/rss+xml"/><item><title>sgx开发</title><link>https://60ke.github.io/posts/sgx/</link><pubDate>Fri, 17 Jan 2020 16:46:35 +0000</pubDate><guid>https://60ke.github.io/posts/sgx/</guid><description>&lt;h1 id="sgx-开发">sgx 开发
-&lt;/h1>&lt;h2 id="当前项目依赖">当前项目依赖：
-&lt;/h2>&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
->incubator-teaclave-sgx-sdk&lt;/a> 1.0.9(原baidu rust sgx sdk)&lt;/p>
-&lt;p>Rust nightly-2019-08-01&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/enigmampc/enigma-core" target="_blank" rel="noopener"
->https://github.com/enigmampc/enigma-core&lt;/a> 的一些crate(后续开发剔除)&lt;/p>
-&lt;p>适用于rust sgx的crate：&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/dingelish/sgx-world" target="_blank" rel="noopener"
->https://github.com/dingelish/sgx-world&lt;/a>&lt;/p>
-&lt;h2 id="项目开发遇到的问题">项目开发遇到的问题
-&lt;/h2>&lt;h3 id="evm读写集的记录">evm读写集的记录：
-&lt;/h3>&lt;p>在sputnikvm的返回结果上添加读写集。可对比 &lt;a class="link" href="https://github.com/60ke/sputnikvm" target="_blank" rel="noopener"
->https://github.com/60ke/sputnikvm&lt;/a> 与 &lt;a class="link" href="https://github.com/enigmampc/sputnikvm/tree/enigma-next" target="_blank" rel="noopener"
->https://github.com/enigmampc/sputnikvm/tree/enigma-next&lt;/a> 的区别&lt;/p>
-&lt;h3 id="ocall">ocall：
-&lt;/h3>&lt;p>传入address和storage的key来获取storage的value的edl部分的代码：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-c" data-lang="c">&lt;span class="line">&lt;span class="cl">&lt;span class="kt">void&lt;/span> &lt;span class="nf">ocall_get_storage&lt;/span>&lt;span class="p">(&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">addr_len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">addr&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="kt">uint8_t&lt;/span> &lt;span class="n">addr_len&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="n">in&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">index_len&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span> &lt;span class="o">*&lt;/span> &lt;span class="n">index&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="kt">uint8_t&lt;/span> &lt;span class="n">index_len&lt;/span>&lt;span class="p">,&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="n">size&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="mi">1000&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value&lt;/span>&lt;span class="p">,[&lt;/span>&lt;span class="n">out&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="kt">uint8_t&lt;/span>&lt;span class="o">*&lt;/span> &lt;span class="n">value_len&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="enclave与外界的数据类型交互">enclave与外界的数据类型交互：
-&lt;/h3>&lt;p>由edl生成c函数,通过指针的方法进行进行交互&lt;/p>
-&lt;h3 id="solidity测试合约">solidity测试合约
-&lt;/h3>&lt;p>regchain wiki中的合约：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;span class="lnt">8
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">pragma solidity ^0.4.24;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">contract sample {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> uint256 a = 0;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> function add() payable public returns (uint256) {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> a = a + msg.value;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return a;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>需要操作storage的合约：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">pragma solidity ^0.4.24;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">contract MyContract {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> uint[] array = [1,2,3,4,5];
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> function removeAtIndex(uint index) returns (uint[]) {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> if (index &amp;gt;= array.length) return;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> for (uint i = index; i &amp;lt; array.length-1; i++) {
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> array[i] = array[i+1];
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> delete array[array.length-1];
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> array.length--;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> return array;
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> }
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">}
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="利用vscode和sgx-gdb进行调试">利用vscode和sgx-gdb进行调试
-&lt;/h3>&lt;p>教程：&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/wiki/Setup-gdb-7.11-on-Ubuntu-18.04-for-VSCode---sgx-gdb-remote-debugging" target="_blank" rel="noopener"
->Setup gdb 7.11 on Ubuntu 18.04 for VSCode sgx gdb remote debugging&lt;/a>&lt;/p>
-&lt;p>对应代码实例：&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/hello-rust-vscode-debug" target="_blank" rel="noopener"
->hello-rust-vscode-debug&lt;/a>&lt;/p>
-&lt;h3 id="intel远程证实">intel远程证实
-&lt;/h3>&lt;ul>
-&lt;li>
-&lt;h4 id="英特尔官方远程证实">英特尔官方远程证实
-&lt;/h4>&lt;p>注册英特尔开发者账号获取spid和key:&lt;/p>
-&lt;p>&lt;a class="link" href="https://software.intel.com/registration/?lang=zh-cn" target="_blank" rel="noopener"
->https://software.intel.com/registration/?lang=zh-cn&lt;/a>&lt;/p>
-&lt;p>intel官方实例：https://software.intel.com/zh-cn/articles/code-sample-intel-software-guard-extensions-remote-attestation-end-to-end-example&lt;/p>
-&lt;p>Rust sgx相关代码实例：&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/mutual-ra" target="_blank" rel="noopener"
->mutual-ra&lt;/a>&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/ue-ra" target="_blank" rel="noopener"
->ue-ra&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;h4 id="第三方远程证实dcap">第三方远程证实（dcap）
-&lt;/h4>&lt;p>&lt;a class="link" href="https://github.com/intel/SGXDataCenterAttestationPrimitives" target="_blank" rel="noopener"
->https://github.com/intel/SGXDataCenterAttestationPrimitives&lt;/a>&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/Jianbo-Gao/RegChain/wiki/Sgx%E7%AC%AC%E4%B8%89%E6%96%B9%E8%BF%9C%E7%A8%8B%E8%AF%81%E5%AE%9E%E7%A1%AC%E4%BB%B6%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener"
->Sgx第三方远程证实硬件说明&lt;/a>&lt;/p>
-&lt;/li>
-&lt;/ul>
-&lt;h3 id="arm-trustzone">ARM TrustZone:
-&lt;/h3>&lt;p>&lt;a class="link" href="https://github.com/OP-TEE/optee_os" target="_blank" rel="noopener"
->OP-TEE / optee_os&lt;/a>&lt;/p>
-&lt;p>&lt;a class="link" href="https://github.com/ARMmbed/meta-mbl" target="_blank" rel="noopener"
->ARMmbed / meta-mbl&lt;/a>&lt;/p>
-&lt;p>&lt;a class="link" href="https://blog.csdn.net/shuaifengyun/article/details/73716352" target="_blank" rel="noopener"
->https://blog.csdn.net/shuaifengyun/article/details/73716352&lt;/a>&lt;/p></description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Sgx on LookForAdmin</title><link>https://60ke.github.io/tags/sgx/</link><description>Recent content in Sgx on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Fri, 17 Jan 2020 16:46:35 +0000</lastBuildDate><atom:link href="https://60ke.github.io/tags/sgx/index.xml" rel="self" type="application/rss+xml"/><item><title>sgx开发</title><link>https://60ke.github.io/posts/sgx/</link><pubDate>Fri, 17 Jan 2020 16:46:35 +0000</pubDate><guid>https://60ke.github.io/posts/sgx/</guid><description>&lt;h1 id="sgx-开发"&gt;sgx 开发
+&lt;/h1&gt;&lt;h2 id="当前项目依赖"&gt;当前项目依赖：
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk" target="_blank" rel="noopener"
+&gt;incubator-teaclave-sgx-sdk&lt;/a&gt; 1.0.9(原baidu rust sgx sdk)&lt;/p&gt;
+&lt;p&gt;Rust nightly-2019-08-01&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/enigmampc/enigma-core" target="_blank" rel="noopener"
+&gt;https://github.com/enigmampc/enigma-core&lt;/a&gt; 的一些crate(后续开发剔除)&lt;/p&gt;
+&lt;p&gt;适用于rust sgx的crate：&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/dingelish/sgx-world" target="_blank" rel="noopener"
+&gt;https://github.com/dingelish/sgx-world&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id="项目开发遇到的问题"&gt;项目开发遇到的问题
+&lt;/h2&gt;&lt;h3 id="evm读写集的记录"&gt;evm读写集的记录：
+&lt;/h3&gt;&lt;p&gt;在sputnikvm的返回结果上添加读写集。可对比 &lt;a class="link" href="https://github.com/60ke/sputnikvm" target="_blank" rel="noopener"
+&gt;https://github.com/60ke/sputnikvm&lt;/a&gt; 与 &lt;a class="link" href="https://github.com/enigmampc/sputnikvm/tree/enigma-next" target="_blank" rel="noopener"
+&gt;https://github.com/enigmampc/sputnikvm/tree/enigma-next&lt;/a&gt; 的区别&lt;/p&gt;
+&lt;h3 id="ocall"&gt;ocall：
+&lt;/h3&gt;&lt;p&gt;传入address和storage的key来获取storage的value的edl部分的代码：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-c" data-lang="c"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;ocall_get_storage&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;in&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;addr_len&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;addr&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="n"&gt;addr_len&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;in&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;index_len&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;index&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="kt"&gt;uint8_t&lt;/span&gt; &lt;span class="n"&gt;index_len&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;out&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="n"&gt;size&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1000&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="kt"&gt;uint8_t&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;value&lt;/span&gt;&lt;span class="p"&gt;,[&lt;/span&gt;&lt;span class="n"&gt;out&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="kt"&gt;uint8_t&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;value_len&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="enclave与外界的数据类型交互"&gt;enclave与外界的数据类型交互：
+&lt;/h3&gt;&lt;p&gt;由edl生成c函数,通过指针的方法进行进行交互&lt;/p&gt;
+&lt;h3 id="solidity测试合约"&gt;solidity测试合约
+&lt;/h3&gt;&lt;p&gt;regchain wiki中的合约：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pragma solidity ^0.4.24;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;contract sample {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; uint256 a = 0;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; function add() payable public returns (uint256) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; a = a + msg.value;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; return a;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;需要操作storage的合约：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pragma solidity ^0.4.24;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;contract MyContract {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; uint[] array = [1,2,3,4,5];
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; function removeAtIndex(uint index) returns (uint[]) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; if (index &amp;gt;= array.length) return;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; for (uint i = index; i &amp;lt; array.length-1; i++) {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; array[i] = array[i+1];
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; delete array[array.length-1];
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; array.length--;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; return array;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="利用vscode和sgx-gdb进行调试"&gt;利用vscode和sgx-gdb进行调试
+&lt;/h3&gt;&lt;p&gt;教程：&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/wiki/Setup-gdb-7.11-on-Ubuntu-18.04-for-VSCode---sgx-gdb-remote-debugging" target="_blank" rel="noopener"
+&gt;Setup gdb 7.11 on Ubuntu 18.04 for VSCode sgx gdb remote debugging&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;对应代码实例：&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/hello-rust-vscode-debug" target="_blank" rel="noopener"
+&gt;hello-rust-vscode-debug&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id="intel远程证实"&gt;intel远程证实
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;h4 id="英特尔官方远程证实"&gt;英特尔官方远程证实
+&lt;/h4&gt;&lt;p&gt;注册英特尔开发者账号获取spid和key:&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://software.intel.com/registration/?lang=zh-cn" target="_blank" rel="noopener"
+&gt;https://software.intel.com/registration/?lang=zh-cn&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;intel官方实例：https://software.intel.com/zh-cn/articles/code-sample-intel-software-guard-extensions-remote-attestation-end-to-end-example&lt;/p&gt;
+&lt;p&gt;Rust sgx相关代码实例：&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/mutual-ra" target="_blank" rel="noopener"
+&gt;mutual-ra&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/apache/incubator-teaclave-sgx-sdk/tree/master/samplecode/ue-ra" target="_blank" rel="noopener"
+&gt;ue-ra&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;h4 id="第三方远程证实dcap"&gt;第三方远程证实（dcap）
+&lt;/h4&gt;&lt;p&gt;&lt;a class="link" href="https://github.com/intel/SGXDataCenterAttestationPrimitives" target="_blank" rel="noopener"
+&gt;https://github.com/intel/SGXDataCenterAttestationPrimitives&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/Jianbo-Gao/RegChain/wiki/Sgx%E7%AC%AC%E4%B8%89%E6%96%B9%E8%BF%9C%E7%A8%8B%E8%AF%81%E5%AE%9E%E7%A1%AC%E4%BB%B6%E8%AF%B4%E6%98%8E" target="_blank" rel="noopener"
+&gt;Sgx第三方远程证实硬件说明&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="arm-trustzone"&gt;ARM TrustZone:
+&lt;/h3&gt;&lt;p&gt;&lt;a class="link" href="https://github.com/OP-TEE/optee_os" target="_blank" rel="noopener"
+&gt;OP-TEE / optee_os&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://github.com/ARMmbed/meta-mbl" target="_blank" rel="noopener"
+&gt;ARMmbed / meta-mbl&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://blog.csdn.net/shuaifengyun/article/details/73716352" target="_blank" rel="noopener"
+&gt;https://blog.csdn.net/shuaifengyun/article/details/73716352&lt;/a&gt;&lt;/p&gt;</description></item></channel></rss>
