@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Typescript on LookForAdmin</title><link>https://60ke.github.io/tags/typescript/</link><description>Recent content in Typescript on LookForAdmin</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 25 May 2026 14:00:00 +0800</lastBuildDate><atom:link href="https://60ke.github.io/tags/typescript/index.xml" rel="self" type="application/rss+xml"/><item><title>OpenBridge 开发设计与实现：构建一个开放的 AI 浏览器桥</title><link>https://60ke.github.io/posts/openbridge-development-design/</link><pubDate>Mon, 25 May 2026 14:00:00 +0800</pubDate><guid>https://60ke.github.io/posts/openbridge-development-design/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;OpenBridge 是一个开源的本地浏览器桥，让 AI Agent（Codex、Claude Code、Cursor 等）可以控制用户真实的 Chrome 浏览器。它采用三层架构（守护进程 + Chrome 扩展 + MCP），支持 19 个浏览器工具，从标签管理到 CDP 自动化一应俱全。本文将完整介绍其设计动机、架构决策、核心技术实现与踩坑记录。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id="1-背景ai-agent-为什么要控制浏览器"&gt;1. 背景：AI Agent 为什么要控制浏览器？
+&lt;/h2&gt;&lt;p&gt;AI 编程工具（Cursor、Claude Code、Codex、Windsurf 等）越来越需要与浏览器交互——调试前端页面、填写表单、截图验证 UI、跑自动化测试、抓取信息等。但现有方案各有局限：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;方案&lt;/th&gt;
+&lt;th&gt;问题&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Chrome DevTools MCP&lt;/strong&gt;（Google 官方）&lt;/td&gt;
+&lt;td&gt;Puppeteer 启动全新 Chrome，无法访问用户已有的登录态和 Cookie&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;CodeX&lt;/strong&gt;（OpenAI）&lt;/td&gt;
+&lt;td&gt;封闭生态，Native Messaging Host ID 硬编码，只有 CodeX CLI 能连&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;BrowserTools MCP&lt;/strong&gt;（AgentDeskAI）&lt;/td&gt;
+&lt;td&gt;四层架构过于冗余，且已停更&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;核心矛盾：&lt;strong&gt;我想让 AI 控制&amp;quot;我正在用的&amp;quot;这个浏览器，而不是开一个新的。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这就是 OpenBridge 要解决的问题——一个开放的、标准化的、能复用用户登录态和上下文的浏览器控制方案。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="2-架构设计为什么是三层"&gt;2. 架构设计：为什么是三层？
+&lt;/h2&gt;&lt;p&gt;经过对 CodeX（两层：CLI ↔ Extension）和 Kimi WebBridge（三层：AI ↔ Daemon ↔ Extension）的深入调研，我们做出了核心决策：&lt;/p&gt;
+&lt;h3 id="21-两个硬约束"&gt;2.1 两个硬约束
+&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;第一，必须有 Chrome Extension。&lt;/strong&gt;
+要控制用户正在使用的浏览器，唯一合法的方式是通过 &lt;code&gt;chrome.debugger&lt;/code&gt; API 获取 CDP 控制权。Puppeteer 只能控制全新实例，无法接入用户的标签页、Cookie、登录态。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;第二，必须有中间守护进程（Daemon）。&lt;/strong&gt;
+MCP 协议基于 stdio 传输，而 Chrome Extension 没有 stdin/stdout，无法直接实现 MCP Server。需要一个中间进程：对上作为 MCP Server 与 AI 工具通信，对下通过 WebSocket 与 Extension 通信。&lt;/p&gt;
+&lt;p&gt;所以三层架构是必然选择，不是偏好。&lt;/p&gt;
+&lt;h3 id="22-最终架构"&gt;2.2 最终架构
+&lt;/h3&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;AI 客户端 / MCP 客户端 / Codex skill
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │ stdio MCP 或本地 HTTP API
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;OpenBridge Daemon (Node.js)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │ ws://127.0.0.1:10087/bridge
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;OpenBridge Chrome Extension (WXT + MV3)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; │ chrome.debugger (CDP)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ▼
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;用户真实 Chrome 标签页
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;三层职责分明：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;层&lt;/th&gt;
+&lt;th&gt;职责&lt;/th&gt;
+&lt;th&gt;技术栈&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Daemon&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;WebSocket Server、MCP Server、会话管理、工具调度、配对授权&lt;/td&gt;
+&lt;td&gt;Node.js + TypeScript&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Extension&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;CDP 执行器、工具注册表、光标覆盖层、内容脚本&lt;/td&gt;
+&lt;td&gt;WXT + Chrome MV3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;strong&gt;Shared&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;协议定义、错误码、工具 Schema&lt;/td&gt;
+&lt;td&gt;TypeScript&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="23-为什么不选-native-messaging"&gt;2.3 为什么不选 Native Messaging？
+&lt;/h3&gt;&lt;p&gt;CodeX 用的是 Native Messaging，优点是沙箱隔离、无端口暴露、更安全。但缺点也很致命：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Native Host ID 硬编码&lt;/strong&gt;，只有特定 CLI 能连接，违背&amp;quot;开放接入&amp;quot;目标&lt;/li&gt;
+&lt;li&gt;部署复杂，需在系统中注册 Native Messaging Host 配置文件&lt;/li&gt;
+&lt;li&gt;与 MCP 生态不兼容（MCP 用 stdio，Native Messaging 也用 stdio，两者冲突）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;WebSocket 方案虽然需要用户信任 &lt;code&gt;ws://127.0.0.1&lt;/code&gt; 连接，但部署更简单、扩展性更好。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="3-核心机制逐个拆解"&gt;3. 核心机制：逐个拆解
+&lt;/h2&gt;&lt;h3 id="31-配对授权pairing"&gt;3.1 配对授权（Pairing）
+&lt;/h3&gt;&lt;p&gt;因为 WebSocket 绑在 loopback 上，理论上本机任何进程都能连。所以需要一个配对机制：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Extension → hello → Daemon
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Daemon → pair_challenge(challenge=randomString) → Extension
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Extension → pair_confirm(challenge, signature) → Daemon
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Daemon 验证 → 返回 hello_ack(authorized=true, token=signedToken)
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Extension 存 token 到 chrome.storage.local
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;后续连接时，Extension 直接带 token 发 &lt;code&gt;hello(token=xxx)&lt;/code&gt;，Daemon 验证签名后直接授权，不再弹出 challenge。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;设计要点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Token 用 HMAC 签名，防篡改&lt;/li&gt;
+&lt;li&gt;Token 存放在 &lt;code&gt;chrome.storage.local&lt;/code&gt;（不是 session，Service Worker 重启不丢失）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;reset_pairing&lt;/code&gt; 清空 token + 断开连接，安全重置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="32-工具注册表tool-registry"&gt;3.2 工具注册表（Tool Registry）
+&lt;/h3&gt;&lt;p&gt;借鉴 Kimi WebBridge 的模块化设计，每个浏览器工具都是独立的 Handler 类，暴露统一接口：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;interface&lt;/span&gt; &lt;span class="nx"&gt;ToolHandler&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;name&lt;/span&gt;: &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;args&lt;/span&gt;: &lt;span class="kt"&gt;Record&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="na"&gt;any&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;)&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="nx"&gt;Promise&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;data?&lt;/span&gt;: &lt;span class="kt"&gt;any&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="nx"&gt;error?&lt;/span&gt;: &lt;span class="kt"&gt;...&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;新增一个工具只需：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;写一个 Handler 类&lt;/li&gt;
+&lt;li&gt;注册到 &lt;code&gt;toolHandlers&lt;/code&gt; 数组&lt;/li&gt;
+&lt;li&gt;在 &lt;code&gt;schemas.ts&lt;/code&gt; 里加 Schema&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="33-snapshot-compact-mode"&gt;3.3 Snapshot Compact Mode
+&lt;/h3&gt;&lt;p&gt;Snapshot 是把页面的可访问性树（AXTree）返回给 AI，让 AI 知道页面上有什么、能点击什么。但原始 AXTree 体积很大（约 39KB），对 token 消耗不友好。&lt;/p&gt;
+&lt;p&gt;Compact Mode 做了三件事：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;1. 过滤无关节点&lt;/strong&gt;：只保留可交互元素（button、link、textbox 等）和结构元素（heading、list 等），去掉大量无用的 generic/statictext 节点。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;2. 稳定 Ref 格式&lt;/strong&gt;：用 &lt;code&gt;backend-{backendDOMNodeId}&lt;/code&gt; 作为 ref，直接对应 CDP 的 &lt;code&gt;backendNodeId&lt;/code&gt;。click 工具收到这个 ref 后，通过 &lt;code&gt;DOM.describeNode({ backendNodeId })&lt;/code&gt; 精确定位元素，不需要查 AXTree 转译表。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// snapshot 生成 ref
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;ref&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="sb"&gt;`backend-&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nx"&gt;node&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;backendDOMNodeId&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="sb"&gt;`&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// click 解析 ref
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;ref&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;startsWith&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;backend-&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;backendNodeId&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;parseInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;ref&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;slice&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;8&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="mi"&gt;10&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;node&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="nx"&gt;cdp&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;send&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;DOM.describeNode&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;backendNodeId&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// ... 用 node 做点击
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;3. 保留 bounds 信息&lt;/strong&gt;：告诉 AI 元素的坐标和尺寸，方便后续 &lt;code&gt;mouse_click&lt;/code&gt; 精确定位。&lt;/p&gt;
+&lt;h3 id="34-session-与标签分组管理"&gt;3.4 Session 与标签分组管理
+&lt;/h3&gt;&lt;p&gt;为了让 AI 不把用户的标签页搞乱，OpenBridge 实现了 Session 级别的标签组管理：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;AI 调用 &lt;code&gt;new_tab&lt;/code&gt; / &lt;code&gt;select_tab&lt;/code&gt; / &lt;code&gt;navigate&lt;/code&gt; 时传 &lt;code&gt;sessionId&lt;/code&gt; 和 &lt;code&gt;groupTitle&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Extension 自动把标签页加入 Chrome Tab Group，命名如 &lt;code&gt;agent:session-abc123&lt;/code&gt;（可自定义）&lt;/li&gt;
+&lt;li&gt;颜色轮询分配（蓝/红/黄/绿/青/橙/粉/紫/灰），不同 session 不同颜色&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;close_session&lt;/code&gt; 批量关闭该 session 管理的所有标签页，&lt;strong&gt;不关浏览器&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;关键实现：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;async&lt;/span&gt; &lt;span class="nx"&gt;addTabToSession&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sessionId&lt;/span&gt;: &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;tabId&lt;/span&gt;: &lt;span class="kt"&gt;number&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;existing&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sessionGroups&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sessionId&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;existing&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 已存在的分组，把标签加进去
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="nx"&gt;chrome&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;tabs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;group&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="nx"&gt;groupId&lt;/span&gt;: &lt;span class="kt"&gt;existing.groupId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;tabIds&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt; &lt;span class="k"&gt;else&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="c1"&gt;// 新建分组
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;groupId&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="nx"&gt;chrome&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;tabs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;group&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;tabIds&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;],&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;createProperties&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;windowId&lt;/span&gt;: &lt;span class="kt"&gt;chrome.windows.WINDOW_ID_CURRENT&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="nx"&gt;chrome&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;tabGroups&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;update&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;groupId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;title&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;color&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="k"&gt;this&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sessionGroups&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;set&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;sessionId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="nx"&gt;groupId&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;color&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;title&lt;/span&gt; &lt;span class="p"&gt;});&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;状态通过 &lt;code&gt;chrome.storage.session&lt;/code&gt; 持久化，Service Worker 重启后可以恢复。&lt;/p&gt;
+&lt;h3 id="35-network-ring-buffer"&gt;3.5 Network Ring Buffer
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;browser_network&lt;/code&gt; 工具让 AI 可以观察页面发送的网络请求（类似 DevTools Network 面板）。实现要点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Ring Buffer&lt;/strong&gt;：每个 tab 上限 500 条，满了覆盖最旧的&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Listener 防泄漏&lt;/strong&gt;：用 &lt;code&gt;tabBuffers&lt;/code&gt; + &lt;code&gt;tabListeners&lt;/code&gt; 双 Map，每个 tab 独立管理生命周期&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;全局 &lt;code&gt;onDetach&lt;/code&gt; 监听&lt;/strong&gt;：debugger detach 时自动清理该 tab 的 listener 和 buffer&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;stop/get/clear&lt;/strong&gt;：支持停止捕获、获取当前请求列表、清空&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;start&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="nx"&gt;chrome&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;debugger&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sendCommand&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;Network.enable&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="nx"&gt;onEvent&lt;/span&gt; &lt;span class="err"&gt;监听&lt;/span&gt; &lt;span class="nx"&gt;loadingFinished&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="err"&gt;记录到&lt;/span&gt; &lt;span class="nx"&gt;ring&lt;/span&gt; &lt;span class="nx"&gt;buffer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="nx"&gt;removeListener&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="nx"&gt;buffer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="err"&gt;返回&lt;/span&gt; &lt;span class="nx"&gt;ring&lt;/span&gt; &lt;span class="nx"&gt;buffer&lt;/span&gt; &lt;span class="err"&gt;快照&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nx"&gt;clear&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="err"&gt;清空&lt;/span&gt; &lt;span class="nx"&gt;buffer&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="36-navigate-等待页面加载"&gt;3.6 Navigate 等待页面加载
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;browser_navigate&lt;/code&gt; 的难点在于：&lt;strong&gt;先监听后导航&lt;/strong&gt;，否则可能漏掉 load 事件。而且注册监听后要立即检查当前 tab 状态（可能页面已经 loaded），避免永远等不到事件。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 工厂化创建监听器（先监听，后导航）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;createLoadListener&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;=&amp;gt;&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="cm"&gt;/* 注册事件 */&lt;/span&gt; &lt;span class="p"&gt;};&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;listener&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;createLoadListener&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 立即检查当前状态
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;const&lt;/span&gt; &lt;span class="nx"&gt;currentTab&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="k"&gt;await&lt;/span&gt; &lt;span class="nx"&gt;chrome&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;tabs&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tabId&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;currentTab&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;status&lt;/span&gt; &lt;span class="o"&gt;===&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;complete&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt; &lt;span class="cm"&gt;/* 直接返回 */&lt;/span&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 否则等待 listener 触发
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id="37-光标覆盖层visual-cursor"&gt;3.7 光标覆盖层（Visual Cursor）
+&lt;/h3&gt;&lt;p&gt;参考 CodeX 的虚拟光标设计，OpenBridge 可选地在页面上注入光标覆盖层：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Element Highlighter&lt;/strong&gt;：snapshot 后高亮可交互元素（红框边框），让用户看到 AI 识别了哪些元素&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Cursor Overlay&lt;/strong&gt;：click 后在点击位置显示一个扩散动画（类似触摸反馈）&lt;/li&gt;
+&lt;li&gt;通过 Popup 中的开关控制启用/禁用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;内容脚本通过 &lt;code&gt;chrome.tabs.sendMessage&lt;/code&gt; 接收 background 的命令，用 Shadow DOM 隔离样式。&lt;/p&gt;
+&lt;h3 id="38-doctor-诊断工具"&gt;3.8 Doctor 诊断工具
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;openbridge doctor&lt;/code&gt; 一键检查所有常见问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Node.js 版本（&amp;gt;= 18）&lt;/li&gt;
+&lt;li&gt;pnpm 是否安装&lt;/li&gt;
+&lt;li&gt;构建状态（dist 是否存在）&lt;/li&gt;
+&lt;li&gt;Extension 版本是否匹配&lt;/li&gt;
+&lt;li&gt;配对状态（是否有 token）&lt;/li&gt;
+&lt;li&gt;数据目录权限&lt;/li&gt;
+&lt;li&gt;Daemon 运行状态（Local API 健康检查）&lt;/li&gt;
+&lt;li&gt;Extension 连接状态（通过 /health API 查询 connectedSessions）&lt;/li&gt;
+&lt;li&gt;工具数（是否为 19）&lt;/li&gt;
+&lt;li&gt;MCP 配置是否存在&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;h2 id="4-踩过的坑"&gt;4. 踩过的坑
+&lt;/h2&gt;&lt;h3 id="41-ws-client-状态顺序-bug"&gt;4.1 ws-client 状态顺序 Bug
+&lt;/h3&gt;&lt;p&gt;Service Worker 中 &lt;code&gt;onopen&lt;/code&gt; 回调：先调 &lt;code&gt;send()&lt;/code&gt; 再设 &lt;code&gt;state=&amp;quot;connected&amp;quot;&lt;/code&gt;，但 &lt;code&gt;send()&lt;/code&gt; 内部检查 &lt;code&gt;state !== &amp;quot;connected&amp;quot;&lt;/code&gt; 就抛异常。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：先设状态，再发消息。&lt;/p&gt;
+&lt;h3 id="42-pair_challenge-字段名不匹配"&gt;4.2 pair_challenge 字段名不匹配
+&lt;/h3&gt;&lt;p&gt;Daemon 发 &lt;code&gt;{ challenge: &amp;quot;xxx&amp;quot; }&lt;/code&gt;，但 Extension 读 &lt;code&gt;challenge.secret&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：统一字段名为 &lt;code&gt;challenge&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id="43-chrome-不支持空数组分组"&gt;4.3 Chrome 不支持空数组分组
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;chrome.tabs.group({ tabIds: [] })&lt;/code&gt; 直接报错。Chrome 要求至少一个 tabId。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：创建分组时一步完成 &lt;code&gt;chrome.tabs.group({ tabIds: [tabId], createProperties: ... })&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id="44-cdp-mouse_click-button-参数"&gt;4.4 CDP mouse_click button 参数
+&lt;/h3&gt;&lt;p&gt;&lt;code&gt;button&lt;/code&gt; 参数用了 &lt;code&gt;&amp;quot;mouseLeft&amp;quot;/&amp;quot;mouseRight&amp;quot;/&amp;quot;mouseMiddle&amp;quot;&lt;/code&gt;，但 CDP 只接受 &lt;code&gt;&amp;quot;left&amp;quot;/&amp;quot;right&amp;quot;/&amp;quot;middle&amp;quot;&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：改为标准 CDP 格式。&lt;/p&gt;
+&lt;h3 id="45-doctor-触发配对重置"&gt;4.5 Doctor 触发配对重置
+&lt;/h3&gt;&lt;p&gt;Doctor 最初发 fake hello 检查 Extension 连接状态，但这会触发 &lt;code&gt;initiatePairing()&lt;/code&gt; 把已有的 &lt;code&gt;extensionTokens&lt;/code&gt; 清空，导致已配对的 Extension 断开。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：&lt;code&gt;initiatePairing()&lt;/code&gt; 保留已有 tokens，Doctor 改用 &lt;code&gt;/health&lt;/code&gt; API 查连接状态。&lt;/p&gt;
+&lt;h3 id="46-snapshot-ref-与-click-ref-不匹配"&gt;4.6 Snapshot Ref 与 Click Ref 不匹配
+&lt;/h3&gt;&lt;p&gt;Compact 模式过滤掉部分 AXTree 节点后，剩余节点重新编号 &lt;code&gt;ax-0&lt;/code&gt;、&lt;code&gt;ax-1&lt;/code&gt;&amp;hellip;，导致 click 里的 &lt;code&gt;ax-N&lt;/code&gt; 对不上原始 AXTree。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：Ref 改为 &lt;code&gt;backend-{backendDOMNodeId}&lt;/code&gt;，直接对应 CDP 稳定 ID，不需要查 AXTree。&lt;/p&gt;
+&lt;h3 id="47-navigate-事件漏听"&gt;4.7 Navigate 事件漏听
+&lt;/h3&gt;&lt;p&gt;先 &lt;code&gt;chrome.tabs.update({ url })&lt;/code&gt; 再 &lt;code&gt;addListener&lt;/code&gt;，可能导航已经完成。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：先创建 listener 工厂，注册后立即 &lt;code&gt;chrome.tabs.get(tabId)&lt;/code&gt; 检查当前状态。&lt;/p&gt;
+&lt;h3 id="48-network-listener-泄漏"&gt;4.8 Network Listener 泄漏
+&lt;/h3&gt;&lt;p&gt;每次 &lt;code&gt;start&lt;/code&gt; 都 &lt;code&gt;addListener&lt;/code&gt;，但从不 &lt;code&gt;removeListener&lt;/code&gt;。反复 start/stop 会积累大量无用监听器。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;修复&lt;/strong&gt;：用 &lt;code&gt;tabListeners&lt;/code&gt; Map 保存每个 tab 的 listener 引用，stop 时 remove，detach 时自动清理。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="5-安全模型"&gt;5. 安全模型
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Daemon 只绑定 &lt;code&gt;127.0.0.1&lt;/code&gt;（loopback），不暴露到局域网&lt;/li&gt;
+&lt;li&gt;Extension 只连接本地 Daemon&lt;/li&gt;
+&lt;li&gt;配对 token 用 HMAC 签名，防篡改&lt;/li&gt;
+&lt;li&gt;Popup 中可暂停 AI 控制（paused toggle）&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;browser_evaluate&lt;/code&gt; 默认关闭，需用户显式开启&lt;/li&gt;
+&lt;li&gt;不上报任何遥测数据&lt;/li&gt;
+&lt;li&gt;不收集、不传输任何用户数据到远程服务器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id="6-接入方式"&gt;6. 接入方式
+&lt;/h2&gt;&lt;p&gt;OpenBridge 提供两种接入路径：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;路径 A：Skill + Local API（推荐）&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;install.sh&lt;/code&gt; 自动把 &lt;code&gt;openbridge-webbridge&lt;/code&gt; skill 安装到 Codex skills 目录。之后 Codex 通过 skill 直接调用 &lt;code&gt;http://127.0.0.1:10088/command&lt;/code&gt;，不需要 MCP 配置。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;路径 B：MCP stdio（标准）&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;标准的 MCP Server 配置：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-json" data-lang="json"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;mcpServers&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;openbridge&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;command&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;node&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nt"&gt;&amp;#34;args&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34;.../dist/cli/index.js&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;mcp&amp;#34;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;两种路径共享同一个 Daemon 实例，Daemon 内部做请求排队和并发控制。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="7-项目结构"&gt;7. 项目结构
+&lt;/h2&gt;&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-gdscript3" data-lang="gdscript3"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;openbridge&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;packages&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;daemon&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# Node.js 守护进程&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;cli&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# serve/mcp/status/doctor/reset-pairing&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;bridge&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# WebSocket Server + 配对管理&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;mcp&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# MCP Server + Schema 定义&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;service&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# BridgeController + Local API&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;extension&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# Chrome Extension (WXT)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;src&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;background&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="k"&gt;tool&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;registry&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# 19 个工具 Handler&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;session&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# TabGroupManager&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;ws&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ts&lt;/span&gt; &lt;span class="c1"&gt;# WebSocket 客户端&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;command&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;router&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ts&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;cdp&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;executor&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ts&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;reconnect&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;ts&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;shared&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="c1"&gt;# 共享协议 + 类型&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;PRIVACY&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;md&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;├──&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sh&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;└──&lt;/span&gt; &lt;span class="n"&gt;README&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;md&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;hr&gt;
+&lt;h2 id="8-设计致谢"&gt;8. 设计致谢
+&lt;/h2&gt;&lt;p&gt;OpenBridge 的三层架构借鉴了 &lt;strong&gt;Kimi WebBridge&lt;/strong&gt;（月之暗面）已验证的成熟模型。会话管理和视觉反馈的设计参考了 &lt;strong&gt;CodeX&lt;/strong&gt;（OpenAI）。OpenBridge 在这些理念之上，进行了独立开源实现。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="9-安装与使用"&gt;9. 安装与使用
+&lt;/h2&gt;&lt;p&gt;一条命令安装：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;curl -fsSL https://raw.githubusercontent.com/60ke/openBridge/master/install.sh &lt;span class="p"&gt;|&lt;/span&gt; bash
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;或 NPM 安装：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;npm install -g @openbridge-org/daemon
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;openbridge start
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;然后在 Chrome 扩展页面加载 unpacked extension（&lt;code&gt;packages/extension/.output/chrome-mv3&lt;/code&gt;），Daemon 和 Extension 自动配对授权。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id="10-未来计划"&gt;10. 未来计划
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Proxy 模式&lt;/strong&gt;：支持 &lt;code&gt;http://localhost:xxxx&lt;/code&gt; 代理浏览，让不支持 MCP 的工具也能接入&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多浏览器支持&lt;/strong&gt;：Firefox（通过 WebExtensions API）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Web UI&lt;/strong&gt;：一个本地 Web 控制面板&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工具增强&lt;/strong&gt;：更多视觉交互（拖拽、滚动、右键菜单等）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;strong&gt;GitHub&lt;/strong&gt;: &lt;a class="link" href="https://github.com/60ke/openBridge" target="_blank" rel="noopener"
+&gt;github.com/60ke/openBridge&lt;/a&gt;&lt;br&gt;
+&lt;strong&gt;NPM&lt;/strong&gt;: &lt;a class="link" href="https://www.npmjs.com/package/@openbridge-org/daemon" target="_blank" rel="noopener"
+&gt;@openbridge-org/daemon&lt;/a&gt;&lt;/p&gt;</description></item></channel></rss>
