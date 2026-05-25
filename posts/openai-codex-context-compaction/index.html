@@ -7,9 +7,9 @@
 <span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
 <span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
 <svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
-<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#1-问题背景为什么需要上下文压缩>1. 问题背景：为什么需要上下文压缩？</a></li><li><a href=#2-压缩触发条件>2. 压缩触发条件</a><ol><li><a href=#21-自动压缩auto-compact>2.1 自动压缩（Auto Compact）</a></li><li><a href=#22-手动压缩>2.2 手动压缩</a></li><li><a href=#23-两种触发方式的关键区别>2.3 两种触发方式的关键区别</a></li></ol></li><li><a href=#3-压缩-prompt让模型自己写摘要>3. 压缩 Prompt：让模型自己写摘要</a><ol><li><a href=#31-固定的压缩提示词>3.1 固定的压缩提示词</a></li><li><a href=#32-手动压缩的自定义指令>3.2 手动压缩的自定义指令</a></li></ol></li><li><a href=#4-压缩执行流程>4. 压缩执行流程</a><ol><li><a href=#41-完整流程图>4.1 完整流程图</a></li><li><a href=#42-核心实现run_compact_task_inner_impl>4.2 核心实现：run_compact_task_inner_impl</a></li></ol></li><li><a href=#5-摘要前缀告诉模型这是压缩摘要>5. 摘要前缀：告诉模型"这是压缩摘要"</a></li><li><a href=#6-压缩后的历史重建>6. 压缩后的历史重建</a><ol><li><a href=#61-build_compacted_history>6.1 build_compacted_history</a></li><li><a href=#62-压缩后历史的结构>6.2 压缩后历史的结构</a></li><li><a href=#63-初始上下文注入位置>6.3 初始上下文注入位置</a></li></ol></li><li><a href=#7-远程压缩remote-compaction>7. 远程压缩（Remote Compaction）</a></li><li><a href=#8-hook-系统压缩前后的扩展点>8. Hook 系统：压缩前后的扩展点</a></li><li><a href=#9-与-claude-code-上下文压缩的深度对比>9. 与 Claude Code 上下文压缩的深度对比</a><ol><li><a href=#91-架构对比>9.1 架构对比</a></li><li><a href=#92-触发机制对比>9.2 触发机制对比</a></li><li><a href=#93-压缩路径对比>9.3 压缩路径对比</a></li><li><a href=#94-摘要-prompt-对比>9.4 摘要 Prompt 对比</a></li><li><a href=#95-压缩后上下文恢复对比>9.5 压缩后上下文恢复对比</a></li><li><a href=#96-skill工具状态保留对比>9.6 Skill/工具状态保留对比</a></li><li><a href=#97-压缩后行为对比>9.7 压缩后行为对比</a></li><li><a href=#98-设计哲学总结>9.8 设计哲学总结</a></li></ol></li><li><a href=#10-关键源码文件索引>10. 关键源码文件索引</a></li><li><a href=#参考资料>参考资料</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/>系统设计</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/posts/openai-codex-context-compaction/>OpenAI Codex 上下文压缩源码剖析：Memento 策略与跨 Turn 记忆传递</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#1-问题背景为什么需要上下文压缩>1. 问题背景：为什么需要上下文压缩？</a></li><li><a href=#2-压缩触发条件>2. 压缩触发条件</a><ol><li><a href=#21-自动压缩auto-compact>2.1 自动压缩（Auto Compact）</a></li><li><a href=#22-手动压缩>2.2 手动压缩</a></li><li><a href=#23-两种触发方式的关键区别>2.3 两种触发方式的关键区别</a></li></ol></li><li><a href=#3-压缩-prompt让模型自己写摘要>3. 压缩 Prompt：让模型自己写摘要</a><ol><li><a href=#31-固定的压缩提示词>3.1 固定的压缩提示词</a></li><li><a href=#32-手动压缩的自定义指令>3.2 手动压缩的自定义指令</a></li></ol></li><li><a href=#4-压缩执行流程>4. 压缩执行流程</a><ol><li><a href=#41-完整流程图>4.1 完整流程图</a></li><li><a href=#42-核心实现run_compact_task_inner_impl>4.2 核心实现：run_compact_task_inner_impl</a></li></ol></li><li><a href=#5-摘要前缀告诉模型这是压缩摘要>5. 摘要前缀：告诉模型"这是压缩摘要"</a></li><li><a href=#6-压缩后的历史重建>6. 压缩后的历史重建</a><ol><li><a href=#61-build_compacted_history>6.1 build_compacted_history</a></li><li><a href=#62-压缩后历史的结构>6.2 压缩后历史的结构</a></li><li><a href=#63-初始上下文注入位置>6.3 初始上下文注入位置</a></li></ol></li><li><a href=#7-远程压缩remote-compaction>7. 远程压缩（Remote Compaction）</a></li><li><a href=#8-hook-系统压缩前后的扩展点>8. Hook 系统：压缩前后的扩展点</a></li><li><a href=#9-与-claude-code-上下文压缩的深度对比>9. 与 Claude Code 上下文压缩的深度对比</a><ol><li><a href=#91-架构对比>9.1 架构对比</a></li><li><a href=#92-触发机制对比>9.2 触发机制对比</a></li><li><a href=#93-压缩路径对比>9.3 压缩路径对比</a></li><li><a href=#94-摘要-prompt-对比基于真实源码>9.4 摘要 Prompt 对比（基于真实源码）</a></li><li><a href=#95-摘要前缀对比>9.5 摘要前缀对比</a></li><li><a href=#96-压缩后上下文恢复对比>9.6 压缩后上下文恢复对比</a></li><li><a href=#97-skill-恢复的源码级对比>9.7 Skill 恢复的源码级对比</a></li><li><a href=#98-session-memory-compact-的源码验证>9.8 Session Memory Compact 的源码验证</a></li><li><a href=#99-prompt-cache-共享机制>9.9 Prompt Cache 共享机制</a></li><li><a href=#910-设计哲学总结>9.10 设计哲学总结</a></li></ol></li><li><a href=#10-关键源码文件索引>10. 关键源码文件索引</a><ol><li><a href=#codex-源码>Codex 源码</a></li><li><a href=#claude-code-源码泄露>Claude Code 源码（泄露）</a></li></ol></li><li><a href=#参考资料>参考资料</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/>系统设计</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/posts/openai-codex-context-compaction/>OpenAI Codex 上下文压缩源码剖析：Memento 策略与跨 Turn 记忆传递</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>May 24, 2026</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>阅读时长: 9 分钟</time></div></footer></div></header><section class=article-content><blockquote><p>当 AI Agent 的对话历史超出上下文窗口时，如何在不丢失关键信息的前提下压缩历史？OpenAI Codex CLI 采用了一种名为 <strong>Memento</strong> 的上下文压缩策略——让模型自己生成"交接摘要"，再用摘要替换原始历史。本文将从源码级别完整剖析 Codex 的上下文压缩机制，包括触发条件、压缩流程、历史重建策略，并与 Claude Code 的实现进行深度对比。</p></blockquote><hr><h2 id=1-问题背景为什么需要上下文压缩>1. 问题背景：为什么需要上下文压缩？</h2><p>LLM 的上下文窗口是有限的。当 Agent 执行长任务时，对话历史（用户消息、工具调用、工具输出、模型回复）会不断增长，最终触及上下文窗口上限。此时面临三个选择：</p><ol><li><strong>截断</strong>：直接丢弃最早的消息——简单粗暴，但丢失关键上下文</li><li><strong>滑动窗口</strong>：只保留最近 N 条消息——稍好，但仍可能丢失早期决策</li><li><strong>压缩/摘要</strong>：让模型生成历史摘要，用摘要替换原始历史——保留语义，节省空间</li></ol><p>Codex 选择了第三种方案，并将其命名为 <strong>Memento</strong> 策略（取自电影《记忆碎片》，暗示"在碎片中保留关键记忆"）。</p><hr><h2 id=2-压缩触发条件>2. 压缩触发条件</h2><h3 id=21-自动压缩auto-compact>2.1 自动压缩（Auto Compact）</h3><p>自动压缩发生在 Turn 内的模型采样完成后。核心判断逻辑在 <code>auto_compact_token_status</code> 中：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<time class=article-time--reading>阅读时长: 14 分钟</time></div></footer></div></header><section class=article-content><blockquote><p>当 AI Agent 的对话历史超出上下文窗口时，如何在不丢失关键信息的前提下压缩历史？OpenAI Codex CLI 采用了一种名为 <strong>Memento</strong> 的上下文压缩策略——让模型自己生成"交接摘要"，再用摘要替换原始历史。本文将从源码级别完整剖析 Codex 的上下文压缩机制，包括触发条件、压缩流程、历史重建策略，并与 Claude Code 的实现进行深度对比。</p></blockquote><hr><h2 id=1-问题背景为什么需要上下文压缩>1. 问题背景：为什么需要上下文压缩？</h2><p>LLM 的上下文窗口是有限的。当 Agent 执行长任务时，对话历史（用户消息、工具调用、工具输出、模型回复）会不断增长，最终触及上下文窗口上限。此时面临三个选择：</p><ol><li><strong>截断</strong>：直接丢弃最早的消息——简单粗暴，但丢失关键上下文</li><li><strong>滑动窗口</strong>：只保留最近 N 条消息——稍好，但仍可能丢失早期决策</li><li><strong>压缩/摘要</strong>：让模型生成历史摘要，用摘要替换原始历史——保留语义，节省空间</li></ol><p>Codex 选择了第三种方案，并将其命名为 <strong>Memento</strong> 策略（取自电影《记忆碎片》，暗示"在碎片中保留关键记忆"）。</p><hr><h2 id=2-压缩触发条件>2. 压缩触发条件</h2><h3 id=21-自动压缩auto-compact>2.1 自动压缩（Auto Compact）</h3><p>自动压缩发生在 Turn 内的模型采样完成后。核心判断逻辑在 <code>auto_compact_token_status</code> 中：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -583,35 +583,415 @@
 </span></span></span><span class=line><span class=cl><span class=k>if</span><span class=w> </span><span class=kd>let</span><span class=w> </span><span class=n>PostCompactHookOutcome</span>::<span class=n>Stopped</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>post_compact_outcome</span><span class=w> </span><span class=p>{</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=nb>Err</span><span class=p>(</span><span class=n>CodexErr</span>::<span class=n>TurnAborted</span><span class=p>);</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=p>}</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><hr><h2 id=9-与-claude-code-上下文压缩的深度对比>9. 与 Claude Code 上下文压缩的深度对比</h2><p>Claude Code 的源码因 2025 年 3 月的 npm source map 泄露事件而公开，让我们可以对比两种实现的设计哲学。</p><h3 id=91-架构对比>9.1 架构对比</h3><div class=table-wrapper><table><thead><tr><th>维度</th><th>Codex (Rust)</th><th>Claude Code (TypeScript)</th></tr></thead><tbody><tr><td>语言</td><td>Rust</td><td>TypeScript</td></tr><tr><td>压缩策略名</td><td>Memento</td><td>传统 compact + session memory compact</td></tr><tr><td>摘要生成</td><td>本地模型调用 / 远程 API</td><td>本地 compact summarizer 模型调用</td></tr><tr><td>历史替换</td><td>整体替换（摘要 + 用户消息）</td><td>整体替换（摘要 + 附件 + 最近消息）</td></tr></tbody></table></div><h3 id=92-触发机制对比>9.2 触发机制对比</h3><p><strong>Codex</strong>：</p><ul><li>基于 Token 使用量精确计算</li><li>支持 <code>Total</code> 和 <code>BodyAfterPrefix</code> 两种范围</li><li>MidTurn 压缩后自动继续当前请求</li></ul><p><strong>Claude Code</strong>：</p><ul><li>阈值 ≈ 上下文窗口 - 20,000（摘要预留）- 13,000（缓冲）</li><li>对 200K 窗口约 83.5% 时触发</li><li>自动压缩后继续当前 query</li></ul><h3 id=93-压缩路径对比>9.3 压缩路径对比</h3><p><strong>Codex 的路径</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></span></code></pre></td></tr></table></div></div><hr><h2 id=9-与-claude-code-上下文压缩的深度对比>9. 与 Claude Code 上下文压缩的深度对比</h2><p>Claude Code 的源码因 2025 年 3 月的 npm source map 泄露事件而公开。以下对比基于泄露源码中的实际代码（<code>src/services/compact/</code>），而非二手分析。</p><h3 id=91-架构对比>9.1 架构对比</h3><div class=table-wrapper><table><thead><tr><th>维度</th><th>Codex (Rust)</th><th>Claude Code (TypeScript)</th></tr></thead><tbody><tr><td>语言</td><td>Rust</td><td>TypeScript</td></tr><tr><td>压缩策略名</td><td>Memento</td><td>传统 compact + session memory compact + microcompact + reactive compact</td></tr><tr><td>摘要生成</td><td>本地模型调用 / 远程 API</td><td>Forked Agent（共享 Prompt Cache）/ 流式回退</td></tr><tr><td>历史替换</td><td>整体替换（摘要 + 用户消息）</td><td>整体替换（boundary + 摘要 + 附件 + 保留消息）</td></tr></tbody></table></div><h3 id=92-触发机制对比>9.2 触发机制对比</h3><p><strong>Codex</strong>：</p><ul><li>基于 Token 使用量精确计算</li><li>支持 <code>Total</code> 和 <code>BodyAfterPrefix</code> 两种范围</li><li>MidTurn 压缩后自动继续当前请求</li></ul><p><strong>Claude Code</strong>：</p><ul><li>阈值 ≈ 上下文窗口 - 20,000（摘要预留）- 13,000（缓冲）</li><li>对 200K 窗口约 83.5% 时触发</li><li>自动压缩后继续当前 query</li></ul><h3 id=93-压缩路径对比>9.3 压缩路径对比</h3><p><strong>Codex 的路径</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>触发压缩 → run_inline_auto_compact_task (本地)
 </span></span><span class=line><span class=cl>         → run_inline_remote_auto_compact_task (远程 V1)
 </span></span><span class=line><span class=cl>         → run_inline_remote_auto_compact_task_v2 (远程 V2)
-</span></span></code></pre></td></tr></table></div></div><p>三条路径最终都产出相同结构的压缩历史。</p><p><strong>Claude Code 的路径</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>三条路径最终都产出相同结构的压缩历史。</p><p><strong>Claude Code 的路径</strong>（基于 <code>src/commands/compact/compact.ts</code> 源码）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/compact 命令入口
+</span></span><span class=line><span class=cl>    │
+</span></span><span class=line><span class=cl>    ├─ 无自定义指令 → trySessionMemoryCompaction()
+</span></span><span class=line><span class=cl>    │                    │ 成功 → 使用 session memory 作为摘要（快速路径）
+</span></span><span class=line><span class=cl>    │                    │ 失败 ↓
+</span></span><span class=line><span class=cl>    │
+</span></span><span class=line><span class=cl>    ├─ Reactive-only 模式 → compactViaReactive()
+</span></span><span class=line><span class=cl>    │
+</span></span><span class=line><span class=cl>    └─ 传统路径 → microcompactMessages() → compactConversation()
+</span></span><span class=line><span class=cl>                     │
+</span></span><span class=line><span class=cl>                     ├─ streamCompactSummary()
+</span></span><span class=line><span class=cl>                     │    ├─ Forked Agent（共享 Prompt Cache）
+</span></span><span class=line><span class=cl>                     │    └─ 流式回退（独立 API 调用）
+</span></span><span class=line><span class=cl>                     │
+</span></span><span class=line><span class=cl>                     └─ 生成 post-compact 附件
+</span></span></code></pre></td></tr></table></div></div><p>Claude Code 比 Codex 多了三种机制：</p><ol><li><strong>Session Memory Compact</strong>：使用后台已维护的 session memory 直接作为摘要，无需现场调用模型</li><li><strong>Microcompact</strong>：在传统压缩前先执行一轮轻量压缩（去除冗余内容）</li><li><strong>Reactive Compact</strong>：响应式压缩，在 Prompt-Too-Long 错误时触发</li></ol><h3 id=94-摘要-prompt-对比基于真实源码>9.4 摘要 Prompt 对比（基于真实源码）</h3><p>这是两者差异最大的地方。</p><p><strong>Codex 的压缩 Prompt</strong>（<code>core/templates/compact/prompt.md</code>，约 60 词）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl>You are performing a CONTEXT CHECKPOINT COMPACTION. Create a handoff summary
+</span></span><span class=line><span class=cl>for another LLM that will resume the task.
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Include:
+</span></span><span class=line><span class=cl><span class=k>-</span> Current progress and key decisions made
+</span></span><span class=line><span class=cl><span class=k>-</span> Important context, constraints, or user preferences
+</span></span><span class=line><span class=cl><span class=k>-</span> What remains to be done (clear next steps)
+</span></span><span class=line><span class=cl><span class=k>-</span> Any critical data, examples, or references needed to continue
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Be concise, structured, and focused on helping the next LLM seamlessly
+</span></span><span class=line><span class=cl>continue the work.
+</span></span></code></pre></td></tr></table></div></div><ul><li>极简设计，约 60 个词</li><li>强调"交接"视角——为下一个 LLM 写摘要</li><li>手动压缩时支持自定义指令</li></ul><p><strong>Claude Code 的压缩 Prompt</strong>（<code>src/services/compact/prompt.ts</code>，约 400 词）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// 源码中的 NO_TOOLS_PREAMBLE（防止模型调用工具）
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>NO_TOOLS_PREAMBLE</span> <span class=o>=</span> <span class=sb>`CRITICAL: Respond with TEXT ONLY. Do NOT call any tools.
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>- Do NOT use Read, Bash, Grep, Glob, Edit, Write, or ANY other tool.
+</span></span></span><span class=line><span class=cl><span class=sb>- You already have all the context you need in the conversation above.
+</span></span></span><span class=line><span class=cl><span class=sb>- Tool calls will be REJECTED and will waste your only turn — you will
+</span></span></span><span class=line><span class=cl><span class=sb>  fail the task.
+</span></span></span><span class=line><span class=cl><span class=sb>- Your entire response must be plain text: an &lt;analysis&gt; block followed
+</span></span></span><span class=line><span class=cl><span class=sb>  by a &lt;summary&gt; block.
+</span></span></span><span class=line><span class=cl><span class=sb>`</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 主体 Prompt（BASE_COMPACT_PROMPT）
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>BASE_COMPACT_PROMPT</span> <span class=o>=</span> <span class=sb>`Your task is to create a detailed summary of the
+</span></span></span><span class=line><span class=cl><span class=sb>conversation so far, paying close attention to the user&#39;s explicit requests
+</span></span></span><span class=line><span class=cl><span class=sb>and your previous actions.
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>This summary should be thorough in capturing technical details, code patterns,
+</span></span></span><span class=line><span class=cl><span class=sb>and architectural decisions that would be essential for continuing development
+</span></span></span><span class=line><span class=cl><span class=sb>work without losing context.
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>Before providing your final summary, wrap your analysis in &lt;analysis&gt; tags
+</span></span></span><span class=line><span class=cl><span class=sb>to organize your thoughts and ensure you&#39;ve covered all necessary points.
+</span></span></span><span class=line><span class=cl><span class=sb>In your analysis process:
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>1. Chronologically analyze each message and section of the conversation.
+</span></span></span><span class=line><span class=cl><span class=sb>   For each section thoroughly identify:
+</span></span></span><span class=line><span class=cl><span class=sb>   - The user&#39;s explicit requests and intents
+</span></span></span><span class=line><span class=cl><span class=sb>   - Your approach to addressing the user&#39;s requests
+</span></span></span><span class=line><span class=cl><span class=sb>   - Key decisions, technical concepts and code patterns
+</span></span></span><span class=line><span class=cl><span class=sb>   - Specific details like: file names, full code snippets,
+</span></span></span><span class=line><span class=cl><span class=sb>     function signatures, file edits
+</span></span></span><span class=line><span class=cl><span class=sb>   - Errors that you ran into and how you fixed them
+</span></span></span><span class=line><span class=cl><span class=sb>   - Pay special attention to specific user feedback that you received
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>2. Double-check for technical accuracy and completeness.
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>Your summary should include the following sections:
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=sb>1. Primary Request and Intent
+</span></span></span><span class=line><span class=cl><span class=sb>2. Key Technical Concepts
+</span></span></span><span class=line><span class=cl><span class=sb>3. Files and Code Sections
+</span></span></span><span class=line><span class=cl><span class=sb>4. Errors and fixes
+</span></span></span><span class=line><span class=cl><span class=sb>5. Problem Solving
+</span></span></span><span class=line><span class=cl><span class=sb>6. All user messages
+</span></span></span><span class=line><span class=cl><span class=sb>7. Pending Tasks
+</span></span></span><span class=line><span class=cl><span class=sb>8. Current Work
+</span></span></span><span class=line><span class=cl><span class=sb>9. Optional Next Step
+</span></span></span><span class=line><span class=cl><span class=sb>`</span>
+</span></span></code></pre></td></tr></table></div></div><p>Claude Code 的 Prompt 设计有几个显著特点：</p><ol><li><strong>结构化输出</strong>：要求模型先输出 <code>&lt;analysis></code> 思考过程，再输出 <code>&lt;summary></code> 正式摘要。<code>formatCompactSummary()</code> 会剥离 <code>&lt;analysis></code> 部分，只保留 <code>&lt;summary></code></li><li><strong>9 个固定章节</strong>：比 Codex 的 4 个要点详细得多，特别是"Files and Code Sections"和"All user messages"</li><li><strong>防工具调用</strong>：Prompt 前后都有 <code>NO_TOOLS_PREAMBLE</code> / <code>NO_TOOLS_TRAILER</code>，防止模型在压缩时调用工具</li><li><strong>支持自定义指令</strong>：通过 <code>Additional Instructions</code> 追加</li></ol><h3 id=95-摘要前缀对比>9.5 摘要前缀对比</h3><p><strong>Codex 的摘要前缀</strong>（<code>core/templates/compact/summary_prefix.md</code>）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
 </span><span class=lnt>5
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>触发压缩 → trySessionMemoryCompaction() (快速路径)
-</span></span><span class=line><span class=cl>              │ 成功 → 使用 session memory 作为摘要
-</span></span><span class=line><span class=cl>              │ 失败 ↓
-</span></span><span class=line><span class=cl>         → compactConversation() (传统路径)
-</span></span><span class=line><span class=cl>              → 现场调用 summarizer 生成摘要
-</span></span></code></pre></td></tr></table></div></div><p>Claude Code 多了一个 <strong>session memory compact</strong> 快速路径：它使用后台已维护的 session memory 直接作为摘要，无需现场调用模型生成。这更快更便宜，但摘要质量可能不如传统路径。</p><h3 id=94-摘要-prompt-对比>9.4 摘要 Prompt 对比</h3><p><strong>Codex</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl>Another language model started to solve this problem and produced a summary
+</span></span><span class=line><span class=cl>of its thinking process. You also have access to the state of the tools that
+</span></span><span class=line><span class=cl>were used by that language model. Use this to build on the work that has
+</span></span><span class=line><span class=cl>already been done and avoid duplicating work. Here is the summary produced
+</span></span><span class=line><span class=cl>by the other language model, use the information in this summary to assist
+</span></span><span class=line><span class=cl>your own analysis:
+</span></span></code></pre></td></tr></table></div></div><ul><li>使用"另一个语言模型"的人称分离策略</li><li>强调"工具状态可继承"和"避免重复劳动"</li></ul><p><strong>Claude Code 的摘要前缀</strong>（<code>src/services/compact/prompt.ts</code> 中的 <code>getCompactUserSummaryMessage</code>）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=kr>export</span> <span class=kd>function</span> <span class=nx>getCompactUserSummaryMessage</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=nx>summary</span>: <span class=kt>string</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>suppressFollowUpQuestions?</span>: <span class=kt>boolean</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>transcriptPath?</span>: <span class=kt>string</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nx>recentMessagesPreserved?</span>: <span class=kt>boolean</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>)</span><span class=o>:</span> <span class=kt>string</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>formattedSummary</span> <span class=o>=</span> <span class=nx>formatCompactSummary</span><span class=p>(</span><span class=nx>summary</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=kd>let</span> <span class=nx>baseSummary</span> <span class=o>=</span> <span class=sb>`This session is being continued from a previous conversation
+</span></span></span><span class=line><span class=cl><span class=sb>that ran out of context. The summary below covers the earlier portion of
+</span></span></span><span class=line><span class=cl><span class=sb>the conversation.
+</span></span></span><span class=line><span class=cl><span class=sb>
+</span></span></span><span class=line><span class=cl><span class=si>${</span><span class=nx>formattedSummary</span><span class=si>}</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>transcriptPath</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>baseSummary</span> <span class=o>+=</span> <span class=sb>`</span><span class=err>\</span><span class=sb>n</span><span class=err>\</span><span class=sb>nIf you need specific details from before compaction
+</span></span></span><span class=line><span class=cl><span class=sb>(like exact code snippets, error messages, or content you generated),
+</span></span></span><span class=line><span class=cl><span class=sb>read the full transcript at: </span><span class=si>${</span><span class=nx>transcriptPath</span><span class=si>}</span><span class=sb>`</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>recentMessagesPreserved</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>baseSummary</span> <span class=o>+=</span> <span class=sb>`</span><span class=err>\</span><span class=sb>n</span><span class=err>\</span><span class=sb>nRecent messages are preserved verbatim.`</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>suppressFollowUpQuestions</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>baseSummary</span> <span class=o>+=</span> <span class=sb>`</span><span class=err>\</span><span class=sb>nContinue the conversation from where it left off
+</span></span></span><span class=line><span class=cl><span class=sb>without asking the user any further questions. Resume directly — do not
+</span></span></span><span class=line><span class=cl><span class=sb>acknowledge the summary, do not recap what was happening, do not preface
+</span></span></span><span class=line><span class=cl><span class=sb>with &#34;I&#39;ll continue&#34; or similar. Pick up the last task as if the break
+</span></span></span><span class=line><span class=cl><span class=sb>never happened.`</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>baseSummary</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>Claude Code 的摘要前缀更丰富：</p><ol><li><strong>Transcript 路径</strong>：告诉模型可以去哪里读取完整的压缩前对话</li><li><strong>最近消息保留提示</strong>：如果 session memory compact 保留了最近消息，会告知模型</li><li><strong>自动继续指令</strong>：自动压缩时，明确要求模型"不要问用户、不要 recap、直接继续"</li></ol><h3 id=96-压缩后上下文恢复对比>9.6 压缩后上下文恢复对比</h3><p>这是两者最大的差异点。</p><p><strong>Codex 的恢复策略</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>压缩后历史 = [初始上下文(可选)] + [保留的用户消息(≤20K tokens)] + [摘要]
+</span></span></code></pre></td></tr></table></div></div><ul><li>用户消息从后往前保留，最多 20,000 tokens</li><li>摘要作为用户消息注入，带 <code>SUMMARY_PREFIX</code> 标识</li><li>初始上下文（工具定义等）在下一个常规 Turn 重新注入</li><li><strong>不显式恢复</strong> Skill、Plan、MCP 状态</li></ul><p><strong>Claude Code 的恢复策略</strong>（基于 <code>compactConversation()</code> 源码）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>压缩后历史 = [boundaryMarker] + [summaryMessages] + [messagesToKeep]
+</span></span><span class=line><span class=cl>           + [attachments] + [hookResults]
+</span></span></code></pre></td></tr></table></div></div><p>post-compact 附件在 <code>compactConversation()</code> 中按以下顺序生成：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// 1. 文件附件（最多 5 个文件，总计 50K tokens）
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=p>[</span><span class=nx>fileAttachments</span><span class=p>,</span> <span class=nx>asyncAgentAttachments</span><span class=p>]</span> <span class=o>=</span> <span class=k>await</span> <span class=nx>Promise</span><span class=p>.</span><span class=nx>all</span><span class=p>([</span>
+</span></span><span class=line><span class=cl>  <span class=nx>createPostCompactFileAttachments</span><span class=p>(</span><span class=nx>preCompactReadFileState</span><span class=p>,</span> <span class=nx>context</span><span class=p>,</span> <span class=mi>5</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>  <span class=nx>createAsyncAgentAttachmentsIfNeeded</span><span class=p>(</span><span class=nx>context</span><span class=p>),</span>
+</span></span><span class=line><span class=cl><span class=p>])</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 2. Plan 附件
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>planAttachment</span> <span class=o>=</span> <span class=nx>createPlanAttachmentIfNeeded</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nx>agentId</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 3. Plan Mode 附件
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>planModeAttachment</span> <span class=o>=</span> <span class=k>await</span> <span class=nx>createPlanModeAttachmentIfNeeded</span><span class=p>(</span><span class=nx>context</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 4. Skill 附件（每个最多 5K tokens，总计最多 25K tokens）
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>skillAttachment</span> <span class=o>=</span> <span class=nx>createSkillAttachmentIfNeeded</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nx>agentId</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 5. 工具/MCP/Agent Delta 附件（重新宣告完整集合）
+</span></span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>att</span> <span class=k>of</span> <span class=nx>getDeferredToolsDeltaAttachment</span><span class=p>(...))</span> <span class=p>{</span> <span class=p>...</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>att</span> <span class=k>of</span> <span class=nx>getAgentListingDeltaAttachment</span><span class=p>(...))</span> <span class=p>{</span> <span class=p>...</span> <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=p>(</span><span class=kr>const</span> <span class=nx>att</span> <span class=k>of</span> <span class=nx>getMcpInstructionsDeltaAttachment</span><span class=p>(...))</span> <span class=p>{</span> <span class=p>...</span> <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>关键常量（源码中直接定义）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-markdown data-lang=markdown><span class=line><span class=cl>You are performing a CONTEXT CHECKPOINT COMPACTION. Create a handoff summary
-</span></span><span class=line><span class=cl>for another LLM that will resume the task.
-</span></span><span class=line><span class=cl>Include: progress, context, next steps, critical data.
-</span></span><span class=line><span class=cl>Be concise, structured, and focused on helping the next LLM seamlessly continue.
-</span></span></code></pre></td></tr></table></div></div><ul><li>固定模板，简洁</li><li>强调"交接"视角——为下一个 LLM 写摘要</li><li>手动压缩时支持自定义指令</li></ul><p><strong>Claude Code</strong>：</p><ul><li>支持用户通过 <code>/compact [instructions]</code> 提供自定义指令</li><li>无参数时使用默认 summarizer prompt</li><li>session memory compact 路径不使用 summarizer prompt</li></ul><h3 id=95-压缩后上下文恢复对比>9.5 压缩后上下文恢复对比</h3><p>这是两者最大的差异点。</p><p><strong>Codex 的恢复策略</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>压缩后历史 = [初始上下文(可选)] + [保留的用户消息(≤20K tokens)] + [摘要]
-</span></span></code></pre></td></tr></table></div></div><ul><li>用户消息从后往前保留，最多 20,000 tokens</li><li>摘要作为用户消息注入，带 <code>SUMMARY_PREFIX</code> 标识</li><li>初始上下文（工具定义等）在下一个常规 Turn 重新注入</li><li><strong>不显式恢复</strong> Skill、Plan、MCP 状态</li></ul><p><strong>Claude Code 的恢复策略</strong>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>压缩后历史 = [摘要] + [post-compact 附件] + [最近消息片段]
-</span></span></code></pre></td></tr></table></div></div><p>post-compact 附件包括：</p><ul><li>最近文件（recent files）</li><li>计划（plan attachment）</li><li>MCP/tool delta</li><li>Agent listing</li><li><strong>已调用的 Skill</strong>（<code>invoked_skills</code> attachment）</li></ul><p>Skill 恢复有 Token 预算限制：</p><ul><li>每个 Skill 最多 5,000 tokens</li><li>所有 Skill 总计最多 25,000 tokens</li><li>最近调用的优先保留</li></ul><h3 id=96-skill工具状态保留对比>9.6 Skill/工具状态保留对比</h3><div class=table-wrapper><table><thead><tr><th>维度</th><th>Codex</th><th>Claude Code</th></tr></thead><tbody><tr><td>Skill 恢复</td><td>不显式恢复，依赖摘要中的信息</td><td>显式 <code>invoked_skills</code> 附件</td></tr><tr><td>Skill Token 预算</td><td>无</td><td>5K/个，25K 总计</td></tr><tr><td>Plan 恢复</td><td>不显式恢复</td><td><code>createPlanAttachmentIfNeeded()</code></td></tr><tr><td>MCP 状态</td><td>不显式恢复</td><td>MCP/tool delta 附件</td></tr><tr><td>文件状态</td><td>不显式恢复</td><td>recent files 附件</td></tr></tbody></table></div><p>Codex 的设计哲学是<strong>让摘要承载所有关键信息</strong>，不依赖结构化附件。Claude Code 则采用<strong>摘要 + 结构化附件</strong>的混合策略。</p><h3 id=97-压缩后行为对比>9.7 压缩后行为对比</h3><p><strong>Codex</strong>：</p><ul><li>自动压缩后，模型继续当前 Turn 的请求</li><li>发出警告：&ldquo;Long threads and multiple compactions can cause the model to be less accurate&rdquo;</li><li>不要求模型"不要问用户"——模型自然继续</li></ul><p><strong>Claude Code</strong>：</p><ul><li>自动压缩后，summary wrapper 要求模型"不要问用户、不要 recap、直接从中断处继续"</li><li>连续失败 3 次触发 circuit breaker</li><li>手动 <code>/compact</code> 不会自动继续请求</li></ul><h3 id=98-设计哲学总结>9.8 设计哲学总结</h3><div class=table-wrapper><table><thead><tr><th>维度</th><th>Codex</th><th>Claude Code</th></tr></thead><tbody><tr><td>核心理念</td><td>摘要即记忆</td><td>摘要 + 结构化附件</td></tr><tr><td>恢复粒度</td><td>语义级（依赖摘要质量）</td><td>结构级（显式附件）</td></tr><tr><td>快速路径</td><td>远程压缩（服务端执行）</td><td>session memory compact（后台记忆）</td></tr><tr><td>可扩展性</td><td>Hook 系统</td><td>附件系统</td></tr><tr><td>风险</td><td>摘要遗漏关键信息</td><td>附件 Token 开销大</td></tr></tbody></table></div><hr><h2 id=10-关键源码文件索引>10. 关键源码文件索引</h2><div class=table-wrapper><table><thead><tr><th>文件</th><th>职责</th></tr></thead><tbody><tr><td><code>core/src/compact.rs</code></td><td>压缩核心逻辑：触发、执行、历史重建</td></tr><tr><td><code>core/src/compact_remote.rs</code></td><td>远程压缩 V1</td></tr><tr><td><code>core/src/compact_remote_v2.rs</code></td><td>远程压缩 V2</td></tr><tr><td><code>core/templates/compact/prompt.md</code></td><td>压缩提示词模板</td></tr><tr><td><code>core/templates/compact/summary_prefix.md</code></td><td>摘要前缀模板</td></tr><tr><td><code>core/src/session/turn.rs</code></td><td>自动压缩触发判断</td></tr><tr><td><code>core/src/session/mod.rs</code></td><td><code>replace_compacted_history()</code></td></tr><tr><td><code>core/src/hooks/src/events/compact.rs</code></td><td>压缩 Hook 事件</td></tr><tr><td><code>codex-protocol/src/items.rs</code></td><td><code>ContextCompactionItem</code> 定义</td></tr></tbody></table></div><hr><h2 id=参考资料>参考资料</h2><ul><li><a class=link href=https://github.com/openai/codex target=_blank rel=noopener>OpenAI Codex CLI GitHub Repository</a></li><li><a class=link href=https://github.com/openai/codex/tree/main/codex-rs/core/src target=_blank rel=noopener>Codex Core Compact Module</a></li><li><a class=link href=https://m.toutiao.com/group/7643075536306192939/ target=_blank rel=noopener>Claude Code /compact 源码分析</a></li><li><a class=link href=https://m.toutiao.com/group/7623535419652817442/ target=_blank rel=noopener>Claude Code 源码泄露事件</a></li></ul></section><footer class=article-footer><section class=article-tags><a href=/tags/openai/>Openai</a>
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=kr>export</span> <span class=kr>const</span> <span class=nx>POST_COMPACT_MAX_FILES_TO_RESTORE</span> <span class=o>=</span> <span class=mi>5</span>
+</span></span><span class=line><span class=cl><span class=kr>export</span> <span class=kr>const</span> <span class=nx>POST_COMPACT_TOKEN_BUDGET</span> <span class=o>=</span> <span class=mi>50</span><span class=nx>_000</span>
+</span></span><span class=line><span class=cl><span class=kr>export</span> <span class=kr>const</span> <span class=nx>POST_COMPACT_MAX_TOKENS_PER_FILE</span> <span class=o>=</span> <span class=mi>5</span><span class=nx>_000</span>
+</span></span><span class=line><span class=cl><span class=kr>export</span> <span class=kr>const</span> <span class=nx>POST_COMPACT_MAX_TOKENS_PER_SKILL</span> <span class=o>=</span> <span class=mi>5</span><span class=nx>_000</span>
+</span></span><span class=line><span class=cl><span class=kr>export</span> <span class=kr>const</span> <span class=nx>POST_COMPACT_SKILLS_TOKEN_BUDGET</span> <span class=o>=</span> <span class=mi>25</span><span class=nx>_000</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=97-skill-恢复的源码级对比>9.7 Skill 恢复的源码级对比</h3><p><strong>Codex</strong>：不显式恢复 Skill，依赖摘要中的信息。</p><p><strong>Claude Code</strong>：显式恢复 Skill，源码如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// src/services/compact/compact.ts:1494
+</span></span></span><span class=line><span class=cl><span class=kr>export</span> <span class=kd>function</span> <span class=nx>createSkillAttachmentIfNeeded</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>  <span class=nx>agentId?</span>: <span class=kt>string</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>)</span><span class=o>:</span> <span class=nx>AttachmentMessage</span> <span class=o>|</span> <span class=kc>null</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>invokedSkills</span> <span class=o>=</span> <span class=nx>getInvokedSkillsForAgent</span><span class=p>(</span><span class=nx>agentId</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>invokedSkills</span><span class=p>.</span><span class=nx>size</span> <span class=o>===</span> <span class=mi>0</span><span class=p>)</span> <span class=k>return</span> <span class=kc>null</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// 按最近调用排序，预算压力下丢弃最久未用的
+</span></span></span><span class=line><span class=cl>  <span class=kd>let</span> <span class=nx>usedTokens</span> <span class=o>=</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>skills</span> <span class=o>=</span> <span class=nb>Array</span><span class=p>.</span><span class=kr>from</span><span class=p>(</span><span class=nx>invokedSkills</span><span class=p>.</span><span class=nx>values</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>sort</span><span class=p>((</span><span class=nx>a</span><span class=p>,</span> <span class=nx>b</span><span class=p>)</span> <span class=o>=&gt;</span> <span class=nx>b</span><span class=p>.</span><span class=nx>invokedAt</span> <span class=o>-</span> <span class=nx>a</span><span class=p>.</span><span class=nx>invokedAt</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>map</span><span class=p>(</span><span class=nx>skill</span> <span class=o>=&gt;</span> <span class=p>({</span>
+</span></span><span class=line><span class=cl>      <span class=nx>name</span>: <span class=kt>skill.skillName</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nx>path</span>: <span class=kt>skill.skillPath</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nx>content</span>: <span class=kt>truncateToTokens</span><span class=p>(</span><span class=nx>skill</span><span class=p>.</span><span class=nx>content</span><span class=p>,</span> <span class=nx>POST_COMPACT_MAX_TOKENS_PER_SKILL</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>    <span class=p>}))</span>
+</span></span><span class=line><span class=cl>    <span class=p>.</span><span class=nx>filter</span><span class=p>(</span><span class=nx>skill</span> <span class=o>=&gt;</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=kr>const</span> <span class=nx>tokens</span> <span class=o>=</span> <span class=nx>roughTokenCountEstimation</span><span class=p>(</span><span class=nx>skill</span><span class=p>.</span><span class=nx>content</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>      <span class=k>if</span> <span class=p>(</span><span class=nx>usedTokens</span> <span class=o>+</span> <span class=nx>tokens</span> <span class=o>&gt;</span> <span class=nx>POST_COMPACT_SKILLS_TOKEN_BUDGET</span><span class=p>)</span> <span class=k>return</span> <span class=kc>false</span>
+</span></span><span class=line><span class=cl>      <span class=nx>usedTokens</span> <span class=o>+=</span> <span class=nx>tokens</span>
+</span></span><span class=line><span class=cl>      <span class=k>return</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>    <span class=p>})</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>createAttachmentMessage</span><span class=p>({</span> <span class=kr>type</span><span class=o>:</span> <span class=s1>&#39;invoked_skills&#39;</span><span class=p>,</span> <span class=nx>skills</span> <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>截断策略保留 Skill 文件头部（setup/usage instructions 通常在顶部）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=kd>function</span> <span class=nx>truncateToTokens</span><span class=p>(</span><span class=nx>content</span>: <span class=kt>string</span><span class=p>,</span> <span class=nx>maxTokens</span>: <span class=kt>number</span><span class=p>)</span><span class=o>:</span> <span class=kt>string</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>if</span> <span class=p>(</span><span class=nx>roughTokenCountEstimation</span><span class=p>(</span><span class=nx>content</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=nx>maxTokens</span><span class=p>)</span> <span class=k>return</span> <span class=nx>content</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>charBudget</span> <span class=o>=</span> <span class=nx>maxTokens</span> <span class=o>*</span> <span class=mi>4</span> <span class=o>-</span> <span class=nx>SKILL_TRUNCATION_MARKER</span><span class=p>.</span><span class=nx>length</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=nx>content</span><span class=p>.</span><span class=nx>slice</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nx>charBudget</span><span class=p>)</span> <span class=o>+</span> <span class=nx>SKILL_TRUNCATION_MARKER</span>
+</span></span><span class=line><span class=cl>  <span class=c1>// SKILL_TRUNCATION_MARKER = &#39;[... skill content truncated for compaction;
+</span></span></span><span class=line><span class=cl>  <span class=c1>//   use Read on the skill path if you need the full text]&#39;
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=98-session-memory-compact-的源码验证>9.8 Session Memory Compact 的源码验证</h3><p>Session Memory Compact 是 Claude Code 独有的快速路径。源码确认：</p><ol><li><strong>只恢复 plan，不恢复 invoked_skills</strong>：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// src/services/compact/sessionMemoryCompact.ts:484-485
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>planAttachment</span> <span class=o>=</span> <span class=nx>createPlanAttachmentIfNeeded</span><span class=p>(</span><span class=nx>agentId</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>attachments</span> <span class=o>=</span> <span class=nx>planAttachment</span> <span class=o>?</span> <span class=p>[</span><span class=nx>planAttachment</span><span class=p>]</span> <span class=o>:</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl><span class=c1>// 注意：没有 createSkillAttachmentIfNeeded() 调用
+</span></span></span></code></pre></td></tr></table></div></div><ol start=2><li><strong>保留最近消息</strong>（而非全部替换）：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// src/services/compact/sessionMemoryCompact.ts:571-581
+</span></span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>startIndex</span> <span class=o>=</span> <span class=nx>calculateMessagesToKeepIndex</span><span class=p>(</span><span class=nx>messages</span><span class=p>,</span> <span class=nx>lastSummarizedIndex</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=kr>const</span> <span class=nx>messagesToKeep</span> <span class=o>=</span> <span class=nx>messages</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>slice</span><span class=p>(</span><span class=nx>startIndex</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=p>.</span><span class=nx>filter</span><span class=p>(</span><span class=nx>m</span> <span class=o>=&gt;</span> <span class=o>!</span><span class=nx>isCompactBoundaryMessage</span><span class=p>(</span><span class=nx>m</span><span class=p>))</span>
+</span></span></code></pre></td></tr></table></div></div><ol start=3><li><strong>有阈值检查</strong>（自动压缩时，压完仍超阈值则放弃）：</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// src/services/compact/sessionMemoryCompact.ts:605-614
+</span></span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>autoCompactThreshold</span> <span class=o>!==</span> <span class=kc>undefined</span> <span class=o>&amp;&amp;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>postCompactTokenCount</span> <span class=o>&gt;=</span> <span class=nx>autoCompactThreshold</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>logEvent</span><span class=p>(</span><span class=s1>&#39;tengu_sm_compact_threshold_exceeded&#39;</span><span class=p>,</span> <span class=p>{</span> <span class=p>...</span> <span class=p>})</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=kc>null</span>  <span class=c1>// 放弃，回退到传统路径
+</span></span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=99-prompt-cache-共享机制>9.9 Prompt Cache 共享机制</h3><p>Claude Code 有一个 Codex 没有的优化：<strong>Forked Agent 共享 Prompt Cache</strong>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-typescript data-lang=typescript><span class=line><span class=cl><span class=c1>// src/services/compact/compact.ts:1179-1200
+</span></span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>promptCacheSharingEnabled</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=kr>const</span> <span class=nx>result</span> <span class=o>=</span> <span class=k>await</span> <span class=nx>runForkedAgent</span><span class=p>({</span>
+</span></span><span class=line><span class=cl>    <span class=nx>promptMessages</span><span class=o>:</span> <span class=p>[</span><span class=nx>summaryRequest</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>    <span class=nx>cacheSafeParams</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>canUseTool</span>: <span class=kt>createCompactCanUseTool</span><span class=p>(),</span>
+</span></span><span class=line><span class=cl>    <span class=nx>querySource</span><span class=o>:</span> <span class=s1>&#39;compact&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>forkLabel</span><span class=o>:</span> <span class=s1>&#39;compact&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>maxTurns</span>: <span class=kt>1</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>skipCacheWrite</span>: <span class=kt>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nx>overrides</span><span class=o>:</span> <span class=p>{</span> <span class=nx>abortController</span>: <span class=kt>context.abortController</span> <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这个机制让压缩请求复用主对话的 Prompt Cache（system prompt + tools + context messages），避免重复创建缓存，显著降低成本。源码注释明确说明：</p><blockquote><p>DO NOT set maxOutputTokens here. The fork piggybacks on the main thread&rsquo;s prompt cache by sending identical cache-key params. Setting maxOutputTokens would create a thinking config mismatch that invalidates the cache.</p></blockquote><h3 id=910-设计哲学总结>9.10 设计哲学总结</h3><div class=table-wrapper><table><thead><tr><th>维度</th><th>Codex</th><th>Claude Code</th></tr></thead><tbody><tr><td>核心理念</td><td>摘要即记忆</td><td>摘要 + 结构化附件</td></tr><tr><td>恢复粒度</td><td>语义级（依赖摘要质量）</td><td>结构级（显式附件）</td></tr><tr><td>Prompt 风格</td><td>极简（60 词）</td><td>详尽（400 词，9 章节）</td></tr><tr><td>快速路径</td><td>远程压缩（服务端执行）</td><td>session memory compact（后台记忆）</td></tr><tr><td>Cache 优化</td><td>无</td><td>Forked Agent 共享 Prompt Cache</td></tr><tr><td>可扩展性</td><td>Hook 系统</td><td>附件系统 + Hook 系统</td></tr><tr><td>Skill 恢复</td><td>不显式恢复</td><td>显式 invoked_skills 附件（5K/个，25K 总计）</td></tr><tr><td>风险</td><td>摘要遗漏关键信息</td><td>附件 Token 开销大</td></tr></tbody></table></div><p>Codex 选择"简洁但依赖摘要质量"，Claude Code 选择"冗余但结构化恢复"。两种策略各有取舍：Codex 的压缩更轻量，但多次压缩后信息衰减更快；Claude Code 的附件系统更健壮，但 Token 开销更大。</p><hr><h2 id=10-关键源码文件索引>10. 关键源码文件索引</h2><h3 id=codex-源码>Codex 源码</h3><div class=table-wrapper><table><thead><tr><th>文件</th><th>职责</th></tr></thead><tbody><tr><td><code>core/src/compact.rs</code></td><td>压缩核心逻辑：触发、执行、历史重建</td></tr><tr><td><code>core/src/compact_remote.rs</code></td><td>远程压缩 V1</td></tr><tr><td><code>core/src/compact_remote_v2.rs</code></td><td>远程压缩 V2</td></tr><tr><td><code>core/templates/compact/prompt.md</code></td><td>压缩提示词模板</td></tr><tr><td><code>core/templates/compact/summary_prefix.md</code></td><td>摘要前缀模板</td></tr><tr><td><code>core/src/session/turn.rs</code></td><td>自动压缩触发判断</td></tr><tr><td><code>core/src/session/mod.rs</code></td><td><code>replace_compacted_history()</code></td></tr><tr><td><code>core/src/hooks/src/events/compact.rs</code></td><td>压缩 Hook 事件</td></tr><tr><td><code>codex-protocol/src/items.rs</code></td><td><code>ContextCompactionItem</code> 定义</td></tr></tbody></table></div><h3 id=claude-code-源码泄露>Claude Code 源码（泄露）</h3><div class=table-wrapper><table><thead><tr><th>文件</th><th>职责</th></tr></thead><tbody><tr><td><code>src/services/compact/compact.ts</code></td><td>传统压缩核心：<code>compactConversation()</code>、附件生成、Skill 恢复</td></tr><tr><td><code>src/services/compact/prompt.ts</code></td><td>压缩 Prompt 定义：<code>BASE_COMPACT_PROMPT</code>、<code>NO_TOOLS_PREAMBLE</code>、摘要前缀</td></tr><tr><td><code>src/services/compact/sessionMemoryCompact.ts</code></td><td>Session Memory 快速路径：<code>trySessionMemoryCompaction()</code></td></tr><tr><td><code>src/services/compact/microCompact.ts</code></td><td>轻量压缩：去除冗余内容</td></tr><tr><td><code>src/commands/compact/compact.ts</code></td><td><code>/compact</code> 命令入口：路径路由</td></tr></tbody></table></div><hr><h2 id=参考资料>参考资料</h2><ul><li><a class=link href=https://github.com/openai/codex target=_blank rel=noopener>OpenAI Codex CLI GitHub Repository</a></li><li><a class=link href=https://github.com/openai/codex/tree/main/codex-rs/core/src target=_blank rel=noopener>Codex Core Compact Module</a></li><li>Claude Code 泄露源码（本地路径：<code>cc-haha/src/services/compact/</code>）</li></ul></section><footer class=article-footer><section class=article-tags><a href=/tags/openai/>Openai</a>
 <a href=/tags/codex/>Codex</a>
 <a href=/tags/rust/>Rust</a>
 <a href=/tags/agent/>Agent</a>
