@@ -445,11 +445,74 @@ MCP 协议基于 stdio 传输，而 Chrome Extension 没有 stdin/stdout，无�
 &lt;/div&gt;&lt;p&gt;然后在 Chrome 扩展页面加载 unpacked extension（&lt;code&gt;packages/extension/.output/chrome-mv3&lt;/code&gt;），Daemon 和 Extension 自动配对授权。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id="10-未来计划"&gt;10. 未来计划
-&lt;/h2&gt;&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Proxy 模式&lt;/strong&gt;：支持 &lt;code&gt;http://localhost:xxxx&lt;/code&gt; 代理浏览，让不支持 MCP 的工具也能接入&lt;/li&gt;
+&lt;/h2&gt;&lt;h3 id="101-网页能力封装与多模态扩展"&gt;10.1 网页能力封装与多模态扩展
+&lt;/h3&gt;&lt;p&gt;当前 OpenBridge 的控制粒度是&amp;quot;浏览器标签页&amp;quot;——Agent 可以对标签页做导航、截图、取快照等操作。但每个网页本身是一个&amp;quot;能力单元&amp;quot;：有的页面是聊天机器人（Gemini/ChatGPT），有的是图像生成器（Midjourney/Stable Diffusion），有的是视频编辑工具。&lt;/p&gt;
+&lt;p&gt;设想中的&lt;strong&gt;网页能力封装&lt;/strong&gt;层，本质上是一个&amp;quot;网页扩展系统&amp;quot;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Agent 打开一个网页后，OpenBridge 通过 CDP 探测页面暴露的能力（表单、上传接口、API 端点等）&lt;/li&gt;
+&lt;li&gt;将网页的交互抽象为结构化工具——例如把 Gemini 网页版的对话输入框包装成 &lt;code&gt;send_message(text)&lt;/code&gt;、把图像生成页面的生成按钮包装成 &lt;code&gt;generate_image(prompt)&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;AI Agent 调用这些封装好的网页工具，就像调用本地函数一样自然&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-gdscript3" data-lang="gdscript3"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="n"&gt;Gemini&lt;/span&gt; &lt;span class="err"&gt;网页&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="err"&gt;能力封装层&lt;/span&gt; &lt;span class="err"&gt;→&lt;/span&gt; &lt;span class="n"&gt;Agent&lt;/span&gt; &lt;span class="err"&gt;调用&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;┌─────────────────┐&lt;/span&gt; &lt;span class="err"&gt;┌─────────────────┐&lt;/span&gt; &lt;span class="err"&gt;┌─────────────┐&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;对话输入框&lt;/span&gt; &lt;span class="err"&gt;│──&lt;/span&gt;&lt;span class="n"&gt;CDP&lt;/span&gt;&lt;span class="err"&gt;──▶&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="n"&gt;send_message&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="err"&gt;│──&lt;/span&gt;&lt;span class="n"&gt;MCP&lt;/span&gt;&lt;span class="err"&gt;──▶&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="n"&gt;AI&lt;/span&gt; &lt;span class="n"&gt;Agent&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;图片上传按钮&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="n"&gt;upload_image&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;代码执行区&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="n"&gt;execute_code&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="s2"&gt;&amp;#34;帮我生成一 │&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;模型切换下拉&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="n"&gt;switch_model&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;│&lt;/span&gt; &lt;span class="err"&gt;张猫咪图片&lt;/span&gt;&lt;span class="s2"&gt;&amp;#34; │&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="err"&gt;└─────────────────┘&lt;/span&gt; &lt;span class="err"&gt;└─────────────────┘&lt;/span&gt; &lt;span class="err"&gt;└─────────────┘&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;这意味着 AI Agent 不仅能&amp;quot;看&amp;quot;网页（screenshot/snapshot），还能真正&amp;quot;用&amp;quot;网页——把 Gemini/OpenAI 网页版的多模态能力（对话、图像生成、视频理解）作为工具直接调用，从而大幅扩展 Agent 自身的多模态边界，不再受限于 Agent 自带的模型能力。&lt;/p&gt;
+&lt;p&gt;这种模式对 AI 网页版产品尤其有价值：用户不需要 API Key，通过浏览器这个&amp;quot;万能适配器&amp;quot;，Agent 就能操控任何 SaaS 产品的完整功能。&lt;/p&gt;
+&lt;h3 id="102-精细化标签管理"&gt;10.2 精细化标签管理
+&lt;/h3&gt;&lt;p&gt;当前标签分组基于 &lt;code&gt;sessionId&lt;/code&gt;，同一个 session 的所有标签共享一个组名（如 &lt;code&gt;agent:session-abc123&lt;/code&gt;）。但这不够精细——一个 session 内可能有多个不同类型的标签页，AI 需要区分&amp;quot;搜索结果页&amp;quot;、&amp;ldquo;表单填写页&amp;rdquo;、&amp;ldquo;配置页&amp;quot;等不同角色。&lt;/p&gt;
+&lt;p&gt;改进方向是给每个标签页引入&lt;strong&gt;标签（Tag）系统&lt;/strong&gt;：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-typescript" data-lang="typescript"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;// 设想中的标签定义
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="kr"&gt;interface&lt;/span&gt; &lt;span class="nx"&gt;TabTag&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;id&lt;/span&gt;: &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;// 唯一标识，Agent 自己维护
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;label&lt;/span&gt;: &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;// 人类可读的标签名：&amp;#34;登录页&amp;#34;、&amp;#34;搜索结果&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;color?&lt;/span&gt;: &lt;span class="kt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;// 可选的颜色标记
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;pinned?&lt;/span&gt;: &lt;span class="kt"&gt;boolean&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="c1"&gt;// 是否固定（防止被 session 批量关闭误伤）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &lt;span class="nx"&gt;metadata?&lt;/span&gt;: &lt;span class="kt"&gt;Record&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;string&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="na"&gt;string&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;;&lt;/span&gt; &lt;span class="c1"&gt;// 扩展属性
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;Agent 可以在 &lt;code&gt;new_tab&lt;/code&gt; / &lt;code&gt;select_tab&lt;/code&gt; / &lt;code&gt;navigate&lt;/code&gt; 时附加一个或多个标签&lt;/li&gt;
+&lt;li&gt;通过 &lt;code&gt;list_tabs(tag=&amp;quot;login-page&amp;quot;)&lt;/code&gt; 精确过滤到特定标签页&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;close_tabs(tags=[&amp;quot;temp&amp;quot;])&lt;/code&gt; 批量关闭&amp;quot;临时&amp;quot;标签，保留&amp;quot;重要&amp;quot;标签&lt;/li&gt;
+&lt;li&gt;标签 + 分组两层嵌套：分组（session）决定颜色和批量生命周期，标签（tag）决定角色和精细化访问&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这套系统让 AI 对浏览器标签页的控制权从&amp;quot;分组管理&amp;quot;进一步细化到&amp;quot;按角色寻址&amp;rdquo;，更接近工程师操作 DevTools 的精细度。&lt;/p&gt;
+&lt;h3 id="103-其他规划"&gt;10.3 其他规划
+&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Proxy 模式&lt;/strong&gt;：支持 HTTP 代理浏览，让不支持 MCP 的工具也能接入&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;多浏览器支持&lt;/strong&gt;：Firefox（通过 WebExtensions API）&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;Web UI&lt;/strong&gt;：一个本地 Web 控制面板&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;工具增强&lt;/strong&gt;：更多视觉交互（拖拽、滚动、右键菜单等）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;工具增强&lt;/strong&gt;：更多交互类型（拖拽、滚动、右键菜单等）&lt;/li&gt;
 &lt;/ul&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;strong&gt;GitHub&lt;/strong&gt;: &lt;a class="link" href="https://github.com/60ke/openBridge" target="_blank" rel="noopener"
